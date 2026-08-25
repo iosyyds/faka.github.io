@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动发卡商城</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">自动发卡商城</h1>
+            <p class="subtitle">24小时自动发货 · 扫码即购 · 秒发卡密</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 商品列表 -->
+        <section id="product-section" class="section">
+            <h2 class="section-title">选择商品</h2>
+            <div id="product-list" class="product-grid">
+                <!-- 商品卡片由JS动态生成 -->
+            </div>
+        </section>
+
+        <!-- 订单详情 -->
+        <section id="order-section" class="section hidden">
+            <h2 class="section-title">订单信息</h2>
+            <div class="order-card">
+                <div class="order-info">
+                    <p><span>商品：</span><span id="order-product-name"></span></p>
+                    <p><span>数量：</span><span id="order-quantity"></span></p>
+                    <p><span>金额：</span><span class="price" id="order-amount"></span></p>
+                    <p><span>订单号：</span><span id="order-no"></span></p>
+                </div>
+                <div class="qr-container">
+                    <div id="qrcode" class="qrcode"></div>
+                    <p class="qr-tip">请使用支付宝扫码支付</p>
+                </div>
+                <div class="order-actions">
+                    <button id="check-status-btn" class="btn btn-primary">我已完成支付</button>
+                    <button id="back-btn" class="btn btn-secondary">返回商品列表</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 发卡结果 -->
+        <section id="result-section" class="section hidden">
+            <h2 class="section-title">支付成功 · 卡密信息</h2>
+            <div class="result-card">
+                <div class="result-success-icon">✓</div>
+                <p class="result-tip">请妥善保管以下卡密，关闭页面后无法再次查看</p>
+                <div id="card-list" class="card-list">
+                    <!-- 卡密由JS动态生成 -->
+                </div>
+                <button id="copy-all-btn" class="btn btn-primary">复制全部卡密</button>
+                <button id="back-home-btn" class="btn btn-secondary">返回首页</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 自动发卡商城 ·  Powered by GitHub Pages + Vercel</p>
+        </div>
+    </footer>
+
+    <!-- 支付弹窗 -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="modal-close" class="modal-close">&times;</span>
+            <p id="modal-message"></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
