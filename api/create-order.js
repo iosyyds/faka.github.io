@@ -85,6 +85,13 @@ module.exports = async (req, res) => {
             amount          // 金额服务端计算
         );
 
+        // 检查支付宝是否已配置
+        if (!process.env.ALIPAY_APP_ID || process.env.ALIPAY_APP_ID === 'placeholder' ||
+            !process.env.ALIPAY_PRIVATE_KEY || process.env.ALIPAY_PRIVATE_KEY === 'placeholder' ||
+            !process.env.ALIPAY_PUBLIC_KEY || process.env.ALIPAY_PUBLIC_KEY === 'placeholder') {
+            return error(res, '支付宝支付尚未配置，请联系管理员在 Vercel 环境变量中设置 ALIPAY_APP_ID、ALIPAY_PRIVATE_KEY、ALIPAY_PUBLIC_KEY');
+        }
+
         // 调用支付宝预下单（生成扫码支付二维码）
         const alipay = new Alipay({
             appId: process.env.ALIPAY_APP_ID,
