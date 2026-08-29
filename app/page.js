@@ -90,8 +90,17 @@ export default function Home() {
 
   const submitOrder = async () => {
     if (!selectedProduct) return;
-    if (!orderContact.trim()) {
+    const contact = orderContact.trim();
+    if (!contact) {
       showToast('请输入联系方式', 'warning');
+      return;
+    }
+    if (contact.length < 5) {
+      showToast('联系方式不少于5位', 'warning');
+      return;
+    }
+    if (!/^[a-zA-Z0-9]+$/.test(contact)) {
+      showToast('联系方式只能是数字或字母', 'warning');
       return;
     }
     setLoading(true);
@@ -99,7 +108,7 @@ export default function Home() {
       const res = await fetch(`${API_BASE}/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: selectedProduct.id, quantity: 1, contact: orderContact })
+        body: JSON.stringify({ productId: selectedProduct.id, quantity: 1, contact })
       });
       const data = await res.json();
       if (data.success) {
@@ -379,7 +388,7 @@ export default function Home() {
               <input
                 type="text"
                 className="pay-form-input"
-                placeholder="输入联系人，严禁乱码与空格"
+                placeholder="请输入5位以上数字或字母"
                 value={orderContact}
                 onChange={(e) => setOrderContact(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && submitOrder()}

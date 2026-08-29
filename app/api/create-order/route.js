@@ -12,6 +12,12 @@ export async function POST(req) {
     }
 
     const contactClean = (contact || '').trim().substring(0, 100);
+    if (contactClean.length < 5) {
+      return NextResponse.json({ success: false, message: '联系方式不少于5位' }, { status: 400 });
+    }
+    if (!/^[a-zA-Z0-9]+$/.test(contactClean)) {
+      return NextResponse.json({ success: false, message: '联系方式只能是数字或字母' }, { status: 400 });
+    }
 
     let quantity = parseInt(body.quantity, 10);
     if (isNaN(quantity) || quantity < 1) quantity = 1;
