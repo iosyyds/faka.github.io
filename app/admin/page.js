@@ -405,7 +405,7 @@ export default function AdminPage() {
                 <tbody>
                   {products.map(p => (
                     <tr key={p.id}>
-                      <Td style={{ fontFamily: 'monospace', fontSize: '12px', color: '#8c8c8c' }}>{p.id.substring(0, 8)}...</Td>
+                      <Td style={{ fontFamily: 'monospace', fontSize: '12px', color: '#8c8c8c' }}>{p.id}</Td>
                       <Td style={{ fontWeight: 500 }}>{p.name}</Td>
                       <Td>{p.category || '全部'}</Td>
                       <Td style={{ color: '#ff4d4f', fontWeight: 600 }}>¥{Number(p.price).toFixed(2)}</Td>

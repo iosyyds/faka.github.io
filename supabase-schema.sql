@@ -1,14 +1,15 @@
 -- ============================================
 -- 自动发卡商城 - Supabase 数据库建表脚本
 -- 在 Supabase SQL Editor 中执行以下代码
+-- 商品ID为自增数字（从1开始）
 -- ============================================
 
--- 启用 UUID 扩展（如果尚未启用）
+-- 启用 UUID 扩展（订单ID仍使用UUID）
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- ========== 1. 商品表 ==========
+-- ========== 1. 商品表（ID为自增数字） ==========
 CREATE TABLE IF NOT EXISTS products (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     description TEXT DEFAULT '',
     category VARCHAR(50) DEFAULT '全部',
@@ -25,7 +26,7 @@ CREATE INDEX IF NOT EXISTS idx_products_sort ON products(sort_order ASC);
 -- ========== 2. 卡密表 ==========
 CREATE TABLE IF NOT EXISTS cards (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     card_type VARCHAR(50) DEFAULT 'default',
     card_content TEXT NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'available' CHECK (status IN ('available', 'used')),
@@ -44,7 +45,7 @@ CREATE INDEX IF NOT EXISTS idx_cards_order_id ON cards(order_id);
 CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_no VARCHAR(30) NOT NULL UNIQUE,
-    product_id UUID NOT NULL REFERENCES products(id),
+    product_id INTEGER NOT NULL REFERENCES products(id),
     product_name VARCHAR(200) NOT NULL,
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     amount DECIMAL(10, 2) NOT NULL CHECK (amount > 0),
@@ -96,12 +97,30 @@ ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
 -- 所有数据访问通过 service_role key（后端服务）进行
 
 -- ============================================
--- 升级说明：如果是从旧版本升级，请执行以下 ALTER 语句
+-- 从UUID商品ID迁移到数字ID的脚本
+-- 如果你之前已经创建了表并有数据，请执行以下代码
+-- 注意：请先备份数据！
 -- ============================================
--- ALTER TABLE products ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
--- ALTER TABLE products ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
--- ALTER TABLE orders ADD COLUMN IF NOT EXISTS buyer_email VARCHAR(100);
--- ALTER TABLE orders ADD COLUMN IF NOT EXISTS contact VARCHAR(100) DEFAULT '';
--- ALTER TABLE orders ADD COLUMN IF NOT EXISTS remark TEXT DEFAULT '';
--- CREATE TABLE IF NOT EXISTS settings (...);  -- 见上方建表语句
--- ============================================
+/*
+-- 1. 删除旧的外键约束
+ALTER TABLE cards DROP CONSTRAINT IF EXISTS cards_product_id_fkey;
+ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_product_id_fkey;
+
+-- 2. 修改商品表ID类型（需要先删除数据或备份）
+-- 最简单的方式：清空旧数据，重新开始
+TRUNCATE TABLE cards, orders, products RESTART IDENTITY CASCADE;
+
+-- 3. 修改商品表ID为自增数字
+ALTER TABLE products ALTER COLUMN id TYPE INTEGER USING (row_number() OVER (ORDER BY created_at));
+CREATE SEQUENCE IF NOT EXISTS products_id_seq OWNED BY products.id;
+SELECT setval('products_id_seq', (SELECT MAX(id) FROM products));
+ALTER TABLE products ALTER COLUMN id SET DEFAULT nextval('products_id_seq');
+
+-- 4. 修改关联表字段类型
+ALTER TABLE cards ALTER COLUMN product_id TYPE INTEGER USING product_id::text::integer;
+ALTER TABLE orders ALTER COLUMN product_id TYPE INTEGER USING product_id::text::integer;
+
+-- 5. 重新添加外键约束
+ALTER TABLE cards ADD CONSTRAINT cards_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
+ALTER TABLE orders ADD CONSTRAINT orders_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id);
+*/
