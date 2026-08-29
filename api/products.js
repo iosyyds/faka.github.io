@@ -28,6 +28,7 @@ module.exports = async (req, res) => {
             id: p.id,
             name: p.name,
             description: p.description,
+            category: p.category || '全部',
             price: p.price,
             stock: p.stock
         }));
