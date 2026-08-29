@@ -9,8 +9,10 @@ export async function GET(req) {
       id: p.id,
       name: p.name,
       description: p.description,
+      image: p.image || '',
       category: p.category || '全部',
       price: p.price,
+      original_price: p.original_price || 0,
       stock: p.stock
     }));
     return NextResponse.json({ success: true, products: safeProducts });

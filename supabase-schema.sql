@@ -18,8 +18,10 @@ CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     description TEXT DEFAULT '',
+    image VARCHAR(500) DEFAULT '',
     category VARCHAR(50) DEFAULT '全部',
     price DECIMAL(10, 2) NOT NULL CHECK (price > 0),
+    original_price DECIMAL(10, 2) DEFAULT 0,
     sort_order INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT NOW()
