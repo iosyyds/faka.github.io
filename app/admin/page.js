@@ -271,12 +271,12 @@ export default function AdminPage() {
     </div>
   );
 
-  const Th = ({ children, style }) => (
-    <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '13px', color: '#8c8c8c', fontWeight: 500, background: '#fafafa', borderBottom: '1px solid #f0f0f0', ...style }}>{children}</th>
+  const Th = ({ children, style, ...props }) => (
+    <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '13px', color: '#8c8c8c', fontWeight: 500, background: '#fafafa', borderBottom: "1px solid #f0f0f0", ...style }} {...props}>{children}</th>
   );
 
-  const Td = ({ children, style }) => (
-    <td style={{ padding: '14px 12px', fontSize: '14px', color: '#1f1f1f', borderBottom: '1px solid #f5f5f5', ...style }}>{children}</td>
+  const Td = ({ children, style, ...props }) => (
+    <td style={{ padding: '14px 12px', fontSize: '14px', color: '#1f1f1f', borderBottom: "1px solid #f5f5f5", ...style }} {...props}>{children}</td>
   );
 
   return (

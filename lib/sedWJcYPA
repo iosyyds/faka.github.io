@@ -1,0 +1,128 @@
+const { createClient } = require('@supabase/supabase-js');
+
+/**
+ * 数据库操作层（基于 Supabase）
+ */
+class Database {
+    constructor() {
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+        if (!supabaseUrl || !supabaseKey) {
+            console.warn('Supabase 环境变量未配置，数据库功能不可用');
+            this.client = null;
+        } else {
+            this.client = createClient(supabaseUrl, supabaseKey, {
+                auth: { persistSession: false }
+            });
+        }
+    }
+
+    checkReady() {
+        if (!this.client) {
+            throw new Error('数据库未配置，请设置 SUPABASE_URL 和 SUPABASE_SERVICE_KEY 环境变量');
+        }
+    }
+
+    // ========== 商品相关 ==========
+
+    async getProducts(includeInactive = false) {
+        this.checkReady();
+        let query = this.client.from('products').select('*');
+        if (!includeInactive) {
+            query = query.eq('is_active', true);
+        }
+        const { data, error } = await query.order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+        if (error) throw error;
+        for (const product of data) {
+            const { count } = await this.client
+                .from('cards')
+                .select('id', { count: 'exact' })
+                .eq('product_id', product.id)
+                .eq('status', 'available');
+            product.stock = count || 0;
+        }
+        return data;
+    }
+
+    async getProductById(id) {
+        this.checkReady();
+        const { data, error } = await this.client
+            .from('products')
+            .select('*')
+            .eq('id', id)
+            .single();
+        if (error) throw error;
+        return data;
+    }
+
+    async addProduct(name, description, price, sortOrder = 0, category = '全部') {
+        this.checkReady();
+        const { data, error } = await this.client
+            .from('products')
+            .insert({ name, description, price, sort_order: sortOrder, category })
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    }
+
+    async updateProduct(id, updates) {
+        this.checkReady();
+        const allowed = ['name', 'description', 'price', 'sort_order', 'is_active', 'category'];
+        const clean = {};
+        for (const key of allowed) {
+            if (updates[key] !== undefined) clean[key] = updates[key];
+        }
+        const { data, error } = await this.client
+            .from('products')
+            .update(clean)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    }
+
+    async deleteProduct(id) {
+        this.checkReady();
+        const { error } = await this.client
+            .from('products')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        return true;
+    }
+
+    // ========== 卡密相关 ==========
+
+    async addCards(productId, cards) {
+        this.checkReady();
+        const rows = cards.map(c => ({
+            product_id: productId,
+            card_type: c.type || 'default',
+            card_content: c.content,
+            status: 'available'
+        }));
+        const { data, error } = await this.client
+            .from('cards')
+            .insert(rows)
+            .select();
+        if (error) throw error;
+        return data;
+    }
+
+    async consumeCards(productId, quantity, orderId) {
+        this.checkReady();
+        const { data: availableCards, error: queryError } = await this.client
+            .from('cards')
+            .select('*')
+            .eq('product_id', productId)
+            .eq('status', 'available')
+            .order('created_at', { ascending: true })
+            .limit(quantity);
+        if (queryError) throw queryError;
+        if (!availableCards || availableCards.length < quantity) {
+            throw new Error('库存不足');
+        }
+        const cardIds = availableCards.map(c => c.id);
+        const { error: updateErr

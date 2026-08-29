@@ -7,6 +7,12 @@
 -- 启用 UUID 扩展（订单ID仍使用UUID）
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- ========== 订单号自增序列表 ==========
+CREATE TABLE IF NOT EXISTS order_sequence (
+    id SERIAL PRIMARY KEY,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ========== 1. 商品表（ID为自增数字） ==========
 CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,
