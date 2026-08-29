@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
+import { verifyAdminToken } from '@/lib/security';
 
 function getAuthToken(req) {
   const auth = req.headers.get('authorization') || '';
@@ -7,18 +8,11 @@ function getAuthToken(req) {
   return null;
 }
 
-// 简单的token验证（和security.js里的逻辑一致）
-function verifyAdminToken(token) {
-  if (!token) return false;
-  const adminToken = process.env.ADMIN_TOKEN || 'faka-admin-token-2026';
-  return token === adminToken;
-}
-
 export async function POST(req) {
   try {
     const token = getAuthToken(req);
     if (!verifyAdminToken(token)) {
-      return NextResponse.json({ success: false, message: '未授权' }, { status: 401 });
+      return NextResponse.json({ success: false, message: '未授权或登录已过期，请重新登录' }, { status: 401 });
     }
 
     const body = await req.json();
