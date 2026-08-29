@@ -16,7 +16,6 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [ordering, setOrdering] = useState(false);
   const [order, setOrder] = useState(null);
-  const [payUrl, setPayUrl] = useState('');
 
   useEffect(() => { loadProduct(); }, [params.id]);
 
@@ -39,28 +38,19 @@ export default function ProductDetail() {
       const res = await fetch(`${API_BASE}/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_id: product.id,
-          email,
-          quantity,
-          pay_method: 'epay'
-        })
+        body: JSON.stringify({ product_id: product.id, email, quantity, pay_method: 'epay' })
       });
       const data = await res.json();
       if (data.order || data.data) {
         const ord = data.order || data.data;
         setOrder(ord);
         if (data.pay_url) {
-          setPayUrl(data.pay_url);
           window.open(data.pay_url, '_blank');
         } else {
-          // 模拟支付成功，直接显示卡密
           setTimeout(() => {
             fetch(`${API_BASE}/query-order?order_no=${ord.order_no || ord.id}&email=${email}`)
               .then(r => r.json())
-              .then(d => {
-                if (d.order || d.data) setOrder(d.order || d.data);
-              });
+              .then(d => { if (d.order || d.data) setOrder(d.order || d.data); });
           }, 2000);
         }
       } else {
@@ -77,76 +67,84 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', color: 'rgba(255,255,255,0.5)' }}>
-        <div style={{ fontSize: '48px', marginRight: '16px' }}>⏳</div>加载中...
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh'}}>
+        <div className="spinner"></div>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="container" style={{ padding: '80px 20px', textAlign: 'center' }}>
-        <div className="glass" style={{ padding: '60px 40px', maxWidth: '400px', margin: '0 auto' }}>
-          <div style={{ fontSize: '64px', marginBottom: '16px', opacity: 0.5 }}>❌</div>
-          <div style={{ fontSize: '18px', color: 'rgba(255,255,255,0.7)', marginBottom: '20px' }}>商品不存在</div>
-          <button className="btn-gold" onClick={() => router.push('/')}>返回首页</button>
+      <div className="container">
+        <div className="card">
+          <div className="empty">
+            <div className="empty-icon">❌</div>
+            <div className="empty-text">商品不存在</div>
+            <button className="btn btn-primary" style={{marginTop: '16px'}} onClick={() => router.push('/')}>返回首页</button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
-      <div className="noise-overlay"></div>
-
-      <nav className="nav-glass">
-        <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => router.push('/')}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(228,184,99,0.3), rgba(228,184,99,0.1))', border: '1px solid rgba(228,184,99,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E4B863', fontWeight: 800 }}>N</div>
-            <span style={{ fontSize: '16px', fontWeight: 700, color: '#fff' }}>夜航发卡</span>
+    <div>
+      <nav className="nav">
+        <div className="nav-inner">
+          <div className="nav-logo" onClick={() => router.push('/')} style={{cursor:'pointer'}}>
+            <div className="nav-logo-icon">N</div>
+            <span>Nova Key</span>
           </div>
-          <button className="btn-ghost" onClick={() => router.push('/')}>← 返回首页</button>
+          <div className="nav-right">
+            <button className="btn btn-secondary btn-sm" onClick={() => router.push('/')}>← 返回首页</button>
+          </div>
         </div>
       </nav>
 
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '24px' }}>
-        <div className="glass glass-lg animate-fade-in" style={{ overflow: 'hidden', marginBottom: '24px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0' }}>
-            <div style={{ position: 'relative', minHeight: '360px', background: 'rgba(255,255,255,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="container">
+        <div className="card" style={{marginBottom: '20px', overflow: 'hidden'}}>
+          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0'}}>
+            <div style={{background: '#f9fafb', minHeight: '360px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative'}}>
               {product.image ? (
-                <img src={product.image} alt={product.name} style={{ maxWidth: '100%', maxHeight: '360px', objectFit: 'contain' }} />
+                <img src={product.image} alt={product.name} style={{maxWidth: '100%', maxHeight: '360px', objectFit: 'contain'}} />
               ) : (
-                <div style={{ fontSize: '100px', opacity: 0.3 }}>🎁</div>
+                <div style={{fontSize: '96px', opacity: 0.3}}>🎁</div>
               )}
-              <div style={{ position: 'absolute', top: '16px', left: '16px', padding: '6px 14px', background: product.stock > 0 ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)', border: `1px solid ${product.stock > 0 ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`, color: product.stock > 0 ? '#34d399' : '#f87171', borderRadius: '9999px', fontSize: '12px', fontWeight: 600, backdropFilter: 'blur(10px)' }}>
-                {product.stock > 0 ? '现货充足' : '已售空'}
+              <div className="badge" style={{
+                position: 'absolute',
+                top: '16px',
+                left: '16px',
+                background: product.stock > 0 ? '#d1fae5' : '#fee2e2',
+                color: product.stock > 0 ? '#065f46' : '#991b1b'
+              }}>
+                {product.stock > 0 ? `库存充足 (${product.stock})` : '已售空'}
               </div>
             </div>
 
-            <div style={{ padding: '32px' }}>
-              <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#fff', marginBottom: '12px' }}>{product.name}</h1>
+            <div style={{padding: '28px'}}>
+              <h1 style={{fontSize: '22px', fontWeight: 600, color: '#111827', marginBottom: '10px', letterSpacing: '-0.01em'}}>{product.name}</h1>
               {product.category && (
-                <div style={{ marginBottom: '16px' }}>
-                  <span className="badge-gold">{product.category}</span>
+                <div style={{marginBottom: '16px'}}>
+                  <span className="badge badge-primary">{product.category}</span>
                 </div>
               )}
-              <div style={{ background: 'rgba(228,184,99,0.06)', border: '1px solid rgba(228,184,99,0.15)', borderRadius: '16px', padding: '20px', marginBottom: '20px' }}>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '6px' }}>商品价格</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
-                  <span className="price-gold" style={{ fontSize: '32px' }}><small>¥</small>{product.price}</span>
+              <div style={{background: '#f9fafb', borderRadius: '8px', padding: '16px', marginBottom: '20px'}}>
+                <div style={{fontSize: '13px', color: '#6b7280', marginBottom: '4px'}}>商品价格</div>
+                <div style={{display: 'flex', alignItems: 'baseline', gap: '10px'}}>
+                  <span className="price-primary" style={{fontSize: '28px'}}><span style={{fontSize: '16px'}}>¥</span>{product.price}</span>
                   {product.original_price && product.original_price > product.price && (
-                    <span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>¥{product.original_price}</span>
+                    <span style={{fontSize: '14px', color: '#9ca3af', textDecoration: 'line-through'}}>¥{product.original_price}</span>
                   )}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', fontSize: '14px' }}>
-                <span style={{ color: 'rgba(255,255,255,0.5)' }}>库存：<span style={{ color: product.stock > 0 ? '#34d399' : '#f87171', fontWeight: 600 }}>{product.stock} 件</span></span>
-                <span style={{ color: 'rgba(255,255,255,0.5)' }}>销量：<span style={{ color: '#fff', fontWeight: 600 }}>{product.sales || 0} 件</span></span>
+              <div style={{display: 'flex', gap: '24px', marginBottom: '20px', fontSize: '14px'}}>
+                <span style={{color: '#6b7280'}}>库存：<span style={{color: product.stock > 0 ? '#059669' : '#dc2626', fontWeight: 600}}>{product.stock} 件</span></span>
+                <span style={{color: '#6b7280'}}>销量：<span style={{color: '#111827', fontWeight: 600}}>{product.sales || 0} 件</span></span>
               </div>
               {product.description && (
-                <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.8, marginBottom: '24px' }}>{product.description}</p>
+                <p style={{fontSize: '14px', color: '#4b5563', lineHeight: 1.7, marginBottom: '24px'}}>{product.description}</p>
               )}
-              <button className="btn-gold" style={{ width: '100%', padding: '14px', fontSize: '16px' }} disabled={product.stock <= 0} onClick={() => setShowBuy(true)}>
+              <button className="btn btn-primary btn-lg" style={{width: '100%'}} disabled={product.stock <= 0} onClick={() => setShowBuy(true)}>
                 {product.stock > 0 ? '立即购买' : '已售空'}
               </button>
             </div>
@@ -154,80 +152,82 @@ export default function ProductDetail() {
         </div>
 
         {product.detail && (
-          <div className="glass animate-fade-in" style={{ padding: '28px 32px' }}>
-            <div style={{ fontSize: '18px', fontWeight: 600, color: '#fff', marginBottom: '16px' }}>商品详情</div>
-            <div style={{ lineHeight: 1.8, fontSize: '15px', color: 'rgba(255,255,255,0.7)' }} dangerouslySetInnerHTML={{ __html: product.detail }} />
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">商品详情</div>
+            </div>
+            <div className="card-body" style={{lineHeight: 1.8, fontSize: '15px', color: '#4b5563'}} dangerouslySetInnerHTML={{__html: product.detail}} />
           </div>
         )}
       </div>
 
       {showBuy && (
         <div className="modal-overlay" onClick={() => !order && setShowBuy(false)}>
-          <div className="modal-glass" onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '28px 32px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>{order ? '支付结果' : '确认下单'}</div>
-              <div style={{ fontSize: '24px', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }} onClick={() => { setShowBuy(false); setOrder(null); }}>×</div>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title">{order ? '支付结果' : '确认下单'}</div>
+              <div className="modal-close" onClick={() => { setShowBuy(false); setOrder(null); }}>×</div>
             </div>
-            <div style={{ padding: '28px 32px' }}>
+            <div className="modal-body">
               {!order ? (
                 <>
-                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '16px', padding: '16px', marginBottom: '20px' }}>
-                    <div style={{ fontWeight: 600, color: '#fff', marginBottom: '8px' }}>{product.name}</div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
+                  <div style={{padding: '14px', background: '#f9fafb', borderRadius: '8px', marginBottom: '18px'}}>
+                    <div style={{fontWeight: 600, color: '#111827', marginBottom: '6px'}}>{product.name}</div>
+                    <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#6b7280'}}>
                       <span>单价：¥{product.price}</span>
                       <span>库存：{product.stock}</span>
                     </div>
                   </div>
-                  <div style={{ marginBottom: '16px' }}>
-                    <label style={{ display: 'block', fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginBottom: '8px' }}>邮箱地址（用于接收卡密）</label>
-                    <input type="email" className="input-glass" placeholder="请输入您的邮箱" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <div className="form-group">
+                    <label className="form-label">邮箱地址（用于接收卡密）</label>
+                    <input type="email" className="form-input" placeholder="请输入您的邮箱" value={email} onChange={(e) => setEmail(e.target.value)} />
                   </div>
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginBottom: '8px' }}>购买数量</label>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <button className="btn-ghost" style={{ width: '40px', height: '40px', padding: 0, borderRadius: '12px' }} onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
-                      <span style={{ fontSize: '20px', fontWeight: 700, color: '#fff', minWidth: '40px', textAlign: 'center' }}>{quantity}</span>
-                      <button className="btn-ghost" style={{ width: '40px', height: '40px', padding: 0, borderRadius: '12px' }} onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}>+</button>
+                  <div className="form-group">
+                    <label className="form-label">购买数量</label>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                      <button className="btn btn-secondary btn-sm" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                      <span style={{fontSize: '18px', fontWeight: 600, color: '#111827', minWidth: '40px', textAlign: 'center'}}>{quantity}</span>
+                      <button className="btn btn-secondary btn-sm" onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}>+</button>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'rgba(228,184,99,0.06)', border: '1px solid rgba(228,184,99,0.15)', borderRadius: '16px', marginBottom: '20px' }}>
-                    <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)' }}>合计金额</span>
-                    <span className="price-gold" style={{ fontSize: '24px' }}><small>¥</small>{(product.price * quantity).toFixed(2)}</span>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px', background: '#eff6ff', borderRadius: '8px', marginBottom: '18px'}}>
+                    <span style={{fontSize: '14px', color: '#4b5563'}}>合计金额</span>
+                    <span className="price-primary" style={{fontSize: '20px'}}><span style={{fontSize: '14px'}}>¥</span>{(product.price * quantity).toFixed(2)}</span>
                   </div>
-                  <button className="btn-gold" style={{ width: '100%', padding: '14px', fontSize: '16px' }} disabled={ordering} onClick={handleBuy}>
+                  <button className="btn btn-primary btn-lg" style={{width: '100%'}} disabled={ordering} onClick={handleBuy}>
                     {ordering ? '处理中...' : `确认支付 ¥${(product.price * quantity).toFixed(2)}`}
                   </button>
                 </>
               ) : (
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '56px', marginBottom: '16px' }}>✅</div>
-                  <h3 style={{ fontSize: '22px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>支付成功</h3>
-                  <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', marginBottom: '20px' }}>订单号：{order.order_no || order.id}</p>
-                  <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginBottom: '20px' }}>卡密已发送至您的邮箱，也可在下方查看</p>
+                <div style={{textAlign: 'center'}}>
+                  <div style={{fontSize: '48px', marginBottom: '12px'}}>✅</div>
+                  <h3 style={{fontSize: '20px', fontWeight: 600, color: '#111827', marginBottom: '6px'}}>支付成功</h3>
+                  <p style={{fontSize: '14px', color: '#6b7280', marginBottom: '18px'}}>订单号：{order.order_no || order.id}</p>
+                  <p style={{fontSize: '13px', color: '#9ca3af', marginBottom: '18px'}}>卡密已发送至您的邮箱，也可在下方查看</p>
                   {order.cards && order.cards.length > 0 && (
-                    <div style={{ textAlign: 'left', marginBottom: '20px' }}>
-                      <div style={{ fontSize: '14px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>您的卡密：</div>
+                    <div style={{textAlign: 'left', marginBottom: '18px'}}>
+                      <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '10px'}}>您的卡密：</div>
                       {order.cards.map((card, i) => (
-                        <div key={i} style={{ padding: '14px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '13px', fontFamily: 'monospace', color: 'rgba(255,255,255,0.8)', wordBreak: 'break-all' }}>{card.card_content || card.content || card}</span>
-                          <button className="btn-ghost" style={{ padding: '6px 12px', fontSize: '12px', borderRadius: '8px', flexShrink: 0, marginLeft: '12px' }} onClick={() => copyCard(card.card_content || card.content || card)}>复制</button>
+                        <div key={i} style={{padding: '12px 14px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                          <span className="mono" style={{fontSize: '13px', color: '#2563eb', wordBreak: 'break-all'}}>{card.card_content || card.content || card}</span>
+                          <button className="btn btn-secondary btn-sm" style={{flexShrink: 0, marginLeft: '10px'}} onClick={() => copyCard(card.card_content || card.content || card)}>复制</button>
                         </div>
                       ))}
                     </div>
                   )}
                   {(!order.cards || order.cards.length === 0) && (
-                    <div style={{ padding: '20px', background: 'rgba(255,255,255,0.04)', borderRadius: '12px', marginBottom: '20px' }}>
-                      <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>卡密将在支付确认后自动发放，请在订单查询中查看</p>
+                    <div style={{padding: '16px', background: '#f9fafb', borderRadius: '8px', marginBottom: '18px'}}>
+                      <p style={{fontSize: '14px', color: '#6b7280'}}>卡密将在支付确认后自动发放，请在订单查询中查看</p>
                     </div>
                   )}
                 </div>
               )}
             </div>
-            <div style={{ padding: '20px 32px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="modal-footer">
               {!order ? (
-                <button className="btn-ghost" style={{ width: '100%' }} onClick={() => setShowBuy(false)}>取消</button>
+                <button className="btn btn-secondary" onClick={() => setShowBuy(false)}>取消</button>
               ) : (
-                <button className="btn-gold" style={{ width: '100%' }} onClick={() => { setShowBuy(false); setOrder(null); router.push('/query'); }}>
+                <button className="btn btn-primary" onClick={() => { setShowBuy(false); setOrder(null); router.push('/query'); }}>
                   订单查询
                 </button>
               )}
