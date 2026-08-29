@@ -6,16 +6,33 @@ const API_BASE = typeof window !== 'undefined' && window.location.hostname === '
   ? 'http://localhost:3000/api'
   : '/api';
 
+// 轮播图
 const banners = [
-  { title: 'DCSHOP 多财商城', sub: '安全 · 稳定 · 高效 · 便捷', desc: '7×24小时全自动发货，下单即时收货', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', icon: '🛒' },
-  { title: '聚合数字权益货源', sub: '品类齐全 / 官方正版 / 稳定高效', desc: '视频会员、音乐会员、软件激活码等', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', icon: '🎁' },
-  { title: '会员权益聚合平台', sub: '官方正品 · 快速直充 · 售后无忧', desc: '支持微信、支付宝多种支付方式', bg: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', icon: '⚡' }
+  { title: '聚合数字权益货源', sub: '品类齐全 / 官方正版 / 稳定高效', bg: 'linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)', icon: '🎁' },
+  { title: 'DCSHOP 多财商城', sub: '安全 · 稳定 · 高效 · 便捷', bg: 'linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%)', icon: '🛒' },
+  { title: '会员权益聚合平台', sub: '官方正品 · 快速直充 · 售后无忧', bg: 'linear-gradient(135deg, #fce7f3 0%, #fdf2f8 100%)', icon: '⚡' }
+];
+
+// 分类图标
+const catIcons = [
+  { icon: '📅', name: '有奖签到' },
+  { icon: '🎁', name: '积分任务' },
+  { icon: '💰', name: '货币充值' },
+  { icon: '⌚', name: '数码产品' },
+  { icon: '🏃', name: '健身运动' },
+  { icon: '🍔', name: '美食餐饮' },
+  { icon: '📱', name: '数码产品' },
+  { icon: '🐰', name: '盲盒测试' },
+  { icon: '🧃', name: '自由设置' },
+  { icon: '🎰', name: '自由设置' },
+  { icon: '➕', name: '更多分类' },
+  { icon: '🎨', name: '装修' }
 ];
 
 export default function Home() {
   const [siteSettings, setSiteSettings] = useState({});
   const [allProducts, setAllProducts] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState('全部');
+  const [currentCategory, setCurrentCategory] = useState('全部商品');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(null);
@@ -31,7 +48,7 @@ export default function Home() {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [sortBy, setSortBy] = useState('default');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 12;
+  const pageSize = 10;
   const pollTimerRef = useRef(null);
   const qrRef = useRef(null);
 
@@ -60,15 +77,18 @@ export default function Home() {
     } catch (e) { console.error(e); }
   };
 
+  // 分类统计
   const categories = {};
-  allProducts.forEach(p => { const c = p.category || '全部'; categories[c] = (categories[c] || 0) + 1; });
+  allProducts.forEach(p => { const c = p.category || '其他'; categories[c] = (categories[c] || 0) + 1; });
 
+  // 筛选
   let filtered = allProducts.filter(p => {
-    const mc = currentCategory === '全部' || (p.category || '全部') === currentCategory;
+    const mc = currentCategory === '全部商品' || (p.category || '其他') === currentCategory;
     const ms = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || (p.description || '').toLowerCase().includes(searchQuery.toLowerCase());
     return mc && ms;
   });
 
+  // 排序
   if (sortBy === 'sales') filtered = [...filtered].sort((a, b) => (b.sales || 0) - (a.sales || 0));
   else if (sortBy === 'price_asc') filtered = [...filtered].sort((a, b) => a.price - b.price);
   else if (sortBy === 'price_desc') filtered = [...filtered].sort((a, b) => b.price - a.price);
@@ -110,7 +130,7 @@ export default function Home() {
 
   const closeQr = () => { if (pollTimerRef.current) clearInterval(pollTimerRef.current); setShowQrModal(false); setCurrentOrder(null); };
 
-  const backHome = () => { if (pollTimerRef.current) clearInterval(pollTimerRef.current); setShowSuccess(false); setCurrentOrder(null); setSelectedProduct(null); setCurrentCategory('全部'); setSearchQuery(''); loadProducts(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const backHome = () => { if (pollTimerRef.current) clearInterval(pollTimerRef.current); setShowSuccess(false); setCurrentOrder(null); setSelectedProduct(null); setCurrentCategory('全部商品'); setSearchQuery(''); loadProducts(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   const doQuery = async () => {
     if (!queryOrderNo.trim()) { showToast('请输入订单编号', 'warning'); return; }
@@ -145,125 +165,212 @@ export default function Home() {
 
   const getImg = (p) => {
     if (p.image) return p.image;
-    const colors = ['#667eea', '#f5576c', '#4facfe', '#43e97b', '#fa709a', '#fee140', '#a8edea', '#ff9a9e'];
+    const colors = ['#667eea', '#f5576c', '#4facfe', '#43e97b', '#fa709a', '#fee140', '#a8edea', '#ff9a9e', '#a18cd1', '#fbc2eb'];
     const c = colors[p.id % colors.length];
-    return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect fill="${c}" width="400" height="300"/><text x="50%" y="50%" font-size="64" fill="white" text-anchor="middle" dominant-baseline="middle">🎁</text></svg>`)}`;
+    return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="140"><rect fill="${c}" width="200" height="140"/><text x="50%" y="50%" font-size="40" fill="white" text-anchor="middle" dominant-baseline="middle">🎁</text></svg>`)}`;
+  };
+
+  const getTag = (p) => {
+    if (p.stock <= 0) return { text: '已售空', color: 'rgba(0,0,0,0.6)' };
+    if (p.category && p.category.includes('实物')) return { text: '实物发货', color: '#ff9500' };
+    if (p.category && p.category.includes('人工')) return { text: '人工服务', color: '#722ed1' };
+    return { text: '自动发货', color: '#1677ff' };
   };
 
   return (
     <>
       <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
-      {/* 顶部导航 */}
-      <nav className="dc-nav">
-        <div className="dc-nav-inner">
-          <a href="#" className="dc-logo" onClick={(e) => { e.preventDefault(); backHome(); }}>
-            <div className="dc-logo-icon">DC</div>
-            <div className="dc-logo-text">
-              <div className="dc-logo-title">{siteSettings.site_name || 'DCSHOP多财商城'}</div>
-              <div className="dc-logo-sub">{siteSettings.site_subtitle || '多财商城'}</div>
+      {/* 顶部导航栏 - 蓝色 */}
+      <nav className="dc-topbar">
+        <div className="dc-topbar-inner">
+          <div className="dc-topbar-left">
+            <div className="dc-topbar-logo">
+              <div className="dc-topbar-logo-icon">DC</div>
+              <div className="dc-topbar-logo-text">
+                <div className="dc-topbar-title">{siteSettings.site_name || 'DCSHOP多财商城'}</div>
+                <div className="dc-topbar-sub">订单问题请查看买家帮助</div>
+              </div>
             </div>
-          </a>
-          <div className="dc-search">
-            <input type="text" placeholder="搜索商品..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} />
-            <button>🔍</button>
+            <div className="dc-topbar-nav">
+              <a href="#" className="dc-topbar-nav-item active" onClick={(e) => { e.preventDefault(); backHome(); }}>🏠 首页</a>
+              <a href="#" className="dc-topbar-nav-item">👤 个人博客</a>
+            </div>
           </div>
-          <div className="dc-nav-right">
-            <button className="dc-nav-btn" onClick={() => setShowQueryModal(true)}>订单查询</button>
-            <a href="/admin" className="dc-nav-btn dc-nav-btn-primary">登录</a>
+          <div className="dc-topbar-right">
+            <button className="dc-topbar-icon" title="搜索">🔍</button>
+            <button className="dc-topbar-icon" title="用户">👤</button>
+            <button className="dc-topbar-btn" onClick={() => setShowQueryModal(true)}>查询订单</button>
+            <button className="dc-topbar-btn">买家帮助</button>
           </div>
         </div>
       </nav>
 
-      {/* 轮播图 */}
+      {/* 主内容区 */}
       {!showSuccess && (
-        <div className="dc-banner">
-          <div className="dc-banner-slide" style={{ background: banners[currentBanner].bg }}>
-            <div className="dc-banner-content">
-              <div className="dc-banner-icon">{banners[currentBanner].icon}</div>
-              <div>
-                <h1 className="dc-banner-title">{banners[currentBanner].title}</h1>
-                <p className="dc-banner-sub">{banners[currentBanner].sub}</p>
-                <p className="dc-banner-desc">{banners[currentBanner].desc}</p>
+        <div className="dc-container">
+          {/* 上半部分：轮播图 + 公告 */}
+          <div className="dc-top-section">
+            <div className="dc-banner-wrap">
+              <div className="dc-banner" style={{ background: banners[currentBanner].bg }}>
+                <div className="dc-banner-content">
+                  <div className="dc-banner-left">
+                    <div className="dc-banner-logo">
+                      <span className="dc-banner-logo-icon">🐕</span>
+                      <div>
+                        <div className="dc-banner-logo-title">DCSHOP</div>
+                        <div className="dc-banner-logo-sub">多财商城</div>
+                      </div>
+                    </div>
+                    <h1 className="dc-banner-title">{banners[currentBanner].title}</h1>
+                    <p className="dc-banner-sub">{banners[currentBanner].sub}</p>
+                    <div className="dc-banner-features">
+                      <span className="dc-banner-feature">✅ 官方正版</span>
+                      <span className="dc-banner-feature">📦 品类齐全</span>
+                      <span className="dc-banner-feature">⚡ 极速发货</span>
+                      <span className="dc-banner-feature">🛡️ 安全可靠</span>
+                    </div>
+                    <button className="dc-banner-btn">立即选购 →</button>
+                  </div>
+                  <div className="dc-banner-right">
+                    <div className="dc-banner-mascot">{banners[currentBanner].icon}</div>
+                  </div>
+                </div>
+              </div>
+              <div className="dc-banner-arrows">
+                <span className="dc-banner-arrow" onClick={() => setCurrentBanner((currentBanner - 1 + banners.length) % banners.length)}>‹</span>
+                <span className="dc-banner-arrow" onClick={() => setCurrentBanner((currentBanner + 1) % banners.length)}>›</span>
+              </div>
+              <div className="dc-banner-dots">
+                {banners.map((_, i) => <span key={i} className={`dc-banner-dot ${currentBanner === i ? 'active' : ''}`} onClick={() => setCurrentBanner(i)} />)}
+              </div>
+            </div>
+
+            {/* 公告 */}
+            <div className="dc-notice-card">
+              <div className="dc-notice-header">
+                <span className="dc-notice-icon">🔔</span>
+                <span className="dc-notice-title">网站公告</span>
+              </div>
+              <div className="dc-notice-body">
+                <p>欢迎来到 <strong>DCSHOP 多财商城</strong>！本站基于 DCSHOP 多财商城免费系统搭建。</p>
+                <p>全部商品 <strong style={{ color: '#ff4d4f' }}>仅演示测试请勿下单</strong></p>
+                <div className="dc-notice-demo">
+                  <p>演示账号：admin　演示密码：admin123</p>
+                  <p style={{ color: '#faad14' }}>⚠️ 演示后台数据30分钟内会自动恢复默认！</p>
+                </div>
               </div>
             </div>
           </div>
-          <div className="dc-banner-dots">
-            {banners.map((_, i) => <span key={i} className={`dc-dot ${currentBanner === i ? 'active' : ''}`} onClick={() => setCurrentBanner(i)} />)}
+
+          {/* 提示条 */}
+          <div className="dc-tip-bar">
+            <span className="dc-tip-icon">🔒</span>
+            <span>本站全部商品 7×24 小时全自动发货，下单即时收货</span>
           </div>
-        </div>
-      )}
 
-      {/* 公告 */}
-      {!showSuccess && siteSettings.announcement && (
-        <div className="dc-notice"><span className="dc-notice-icon">📢</span><span>{siteSettings.announcement}</span></div>
-      )}
-
-      {/* 主内容 */}
-      {!showSuccess && (
-        <div className="dc-main">
-          <div className="dc-filter">
-            <div className="dc-cats">
-              <button className={`dc-cat ${currentCategory === '全部' ? 'active' : ''}`} onClick={() => { setCurrentCategory('全部'); setCurrentPage(1); }}>全部</button>
-              {Object.entries(categories).filter(([c]) => c !== '全部').map(([c]) => (
-                <button key={c} className={`dc-cat ${currentCategory === c ? 'active' : ''}`} onClick={() => { setCurrentCategory(c); setCurrentPage(1); }}>{esc(c)}</button>
+          {/* 分类图标导航 */}
+          <div className="dc-cat-icons">
+            <div className="dc-cat-icons-scroll">
+              {catIcons.map((cat, i) => (
+                <div key={i} className="dc-cat-icon-item">
+                  <div className="dc-cat-icon">{cat.icon}</div>
+                  <span className="dc-cat-icon-name">{cat.name}</span>
+                </div>
               ))}
             </div>
-            <div className="dc-sort">
-              <button className={sortBy === 'default' ? 'active' : ''} onClick={() => setSortBy('default')}>综合</button>
-              <button className={sortBy === 'sales' ? 'active' : ''} onClick={() => setSortBy('sales')}>销量</button>
-              <button className={sortBy === 'price_asc' ? 'active' : ''} onClick={() => setSortBy('price_asc')}>价格↑</button>
-              <button className={sortBy === 'price_desc' ? 'active' : ''} onClick={() => setSortBy('price_desc')}>价格↓</button>
-              <button className={sortBy === 'stock' ? 'active' : ''} onClick={() => setSortBy('stock')}>库存</button>
-            </div>
           </div>
 
-          <div className="dc-grid">
-            {pageProducts.length === 0 ? (
-              <div className="dc-empty"><div className="dc-empty-icon">📦</div><p>暂无商品</p></div>
-            ) : pageProducts.map(p => {
-              const inStock = p.stock > 0;
-              return (
-                <div key={p.id} className={`dc-card ${!inStock ? 'oos' : ''}`} onClick={() => inStock && openOrder(p.id)}>
-                  <div className="dc-card-img">
-                    <img src={getImg(p)} alt={p.name} />
-                    <span className="dc-card-tag">{inStock ? '自动发货' : '已售空'}</span>
-                  </div>
-                  <div className="dc-card-body">
-                    <h3 className="dc-card-name">{esc(p.name)}</h3>
-                    <p className="dc-card-desc">{esc(p.description || '暂无商品描述')}</p>
-                    <div className="dc-card-bottom">
-                      <div className="dc-card-price">
-                        <span className="dc-price-now">¥{Number(p.price).toFixed(2)}</span>
-                        {p.original_price && p.original_price > p.price && <span className="dc-price-old">¥{Number(p.original_price).toFixed(2)}</span>}
-                      </div>
-                      <button className="dc-buy" disabled={!inStock} onClick={(e) => { e.stopPropagation(); inStock && openOrder(p.id); }}>立即购买</button>
-                    </div>
-                  </div>
+          {/* 商品区：左侧分类 + 右侧商品列表 */}
+          <div className="dc-product-section">
+            {/* 左侧分类边栏 */}
+            <div className="dc-sidebar">
+              <div className="dc-sidebar-title">
+                <span className="dc-sidebar-title-icon">📋</span>
+                商品分类
+              </div>
+              <div className="dc-sidebar-list">
+                <div className={`dc-sidebar-item ${currentCategory === '全部商品' ? 'active' : ''}`} onClick={() => { setCurrentCategory('全部商品'); setCurrentPage(1); }}>
+                  <span className="dc-sidebar-item-name">全部商品</span>
                 </div>
-              );
-            })}
-          </div>
-
-          {totalPages > 1 && (
-            <div className="dc-page">
-              <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>上一页</button>
-              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                let pg = i + 1;
-                if (currentPage > 3 && totalPages > 5) pg = currentPage - 2 + i;
-                if (pg > totalPages) pg = totalPages - (4 - i);
-                return <button key={pg} className={currentPage === pg ? 'active' : ''} onClick={() => setCurrentPage(pg)}>{pg}</button>;
-              })}
-              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>下一页</button>
+                {Object.entries(categories).map(([cat, count]) => (
+                  <div key={cat} className={`dc-sidebar-item ${currentCategory === cat ? 'active' : ''}`} onClick={() => { setCurrentCategory(cat); setCurrentPage(1); }}>
+                    <span className="dc-sidebar-item-dot">›</span>
+                    <span className="dc-sidebar-item-name">{esc(cat)}</span>
+                    <span className="dc-sidebar-item-count">({count})</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
+
+            {/* 右侧商品列表 */}
+            <div className="dc-product-main">
+              {/* 排序栏 */}
+              <div className="dc-sort-bar">
+                <div className="dc-sort-left">
+                  <button className={`dc-sort-btn ${sortBy === 'default' ? 'active' : ''}`} onClick={() => setSortBy('default')}>88 综合</button>
+                  <button className={`dc-sort-btn ${sortBy === 'sales' ? 'active' : ''}`} onClick={() => setSortBy('sales')}>🔥 销量</button>
+                  <button className={`dc-sort-btn ${sortBy === 'price_asc' ? 'active' : ''}`} onClick={() => setSortBy('price_asc')}>◇ 价格</button>
+                  <button className={`dc-sort-btn ${sortBy === 'stock' ? 'active' : ''}`} onClick={() => setSortBy('stock')}>◇ 库存</button>
+                </div>
+                <div className="dc-sort-right">
+                  <input type="text" placeholder="输入商品关键词搜索" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} />
+                  <button onClick={() => setCurrentPage(1)}>🔍</button>
+                </div>
+              </div>
+
+              {/* 商品列表 - 横向卡片 2列 */}
+              <div className="dc-product-list">
+                {pageProducts.length === 0 ? (
+                  <div className="dc-empty"><div className="dc-empty-icon">📦</div><p>暂无商品</p></div>
+                ) : pageProducts.map(p => {
+                  const inStock = p.stock > 0;
+                  const tag = getTag(p);
+                  return (
+                    <div key={p.id} className={`dc-product-item ${!inStock ? 'oos' : ''}`} onClick={() => inStock && openOrder(p.id)}>
+                      <div className="dc-product-img">
+                        <img src={getImg(p)} alt={p.name} />
+                        <span className="dc-product-tag" style={{ background: tag.color }}>{tag.text}</span>
+                      </div>
+                      <div className="dc-product-info">
+                        <h3 className="dc-product-name">{esc(p.name)}</h3>
+                        <p className="dc-product-desc">{esc(p.description || '暂无商品描述')}</p>
+                        <div className="dc-product-bottom">
+                          <div className="dc-product-price">
+                            <span className="dc-price-now">¥{Number(p.price).toFixed(2)}</span>
+                            {p.original_price && p.original_price > p.price && <span className="dc-price-unit">/件</span>}
+                            {p.original_price && p.original_price > p.price && <span className="dc-price-old">¥{Number(p.original_price).toFixed(2)}</span>}
+                          </div>
+                          <button className="dc-buy-btn" disabled={!inStock} onClick={(e) => { e.stopPropagation(); inStock && openOrder(p.id); }}>立即购买</button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* 分页 */}
+              {totalPages > 1 && (
+                <div className="dc-pagination">
+                  <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>上一页</button>
+                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                    let pg = i + 1;
+                    if (currentPage > 3 && totalPages > 5) pg = currentPage - 2 + i;
+                    if (pg > totalPages) pg = totalPages - (4 - i);
+                    return <button key={pg} className={currentPage === pg ? 'active' : ''} onClick={() => setCurrentPage(pg)}>{pg}</button>;
+                  })}
+                  <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>下一页</button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
-      {/* 支付成功 */}
+      {/* 支付成功页面 */}
       {showSuccess && (
-        <div className="dc-main">
-          <div className="dc-success">
+        <div className="dc-container">
+          <div className="dc-success-card">
             <div className="dc-success-icon">✓</div>
             <h2>支付成功 · 卡密已发放</h2>
             <p className="dc-success-tip">请妥善保管以下卡密，关闭页面后可通过订单号查询</p>
@@ -283,13 +390,13 @@ export default function Home() {
         </div>
       )}
 
-      {/* 页脚 */}
-      <footer className="dc-footer">
-        <div className="dc-footer-inner">
-          <p>{siteSettings.footer_text || `© ${new Date().getFullYear()} ${siteSettings.site_name || 'DCSHOP多财商城'}`}</p>
-          {siteSettings.icp_number && <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer" className="dc-icp">{siteSettings.icp_number}</a>}
+      {/* 右下角客服 */}
+      {!showSuccess && (
+        <div className="dc-service">
+          <div className="dc-service-icon">🐕</div>
+          <span className="dc-service-text">买家帮助</span>
         </div>
-      </footer>
+      )}
 
       {/* 下单弹窗 */}
       {showOrderModal && (
