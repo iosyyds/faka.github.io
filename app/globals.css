@@ -2027,3 +2027,34 @@ main {
         display: none !important;
     }
 }
+
+/* ===== PC端导航右侧按钮加框 ===== */
+@media (min-width: 769px) {
+    .shop-nav-right {
+        border: 1.5px solid #e8e8e8 !important;
+        border-radius: 10px !important;
+        padding: 4px 6px !important;
+        gap: 0 !important;
+        background: #fff;
+    }
+    .shop-nav-right .nav-login {
+        padding: 6px 14px !important;
+        font-size: 14px !important;
+        background: transparent !important;
+        border-radius: 6px !important;
+        position: relative;
+    }
+    .shop-nav-right .nav-login:first-child::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 16px;
+        background: #e8e8e8;
+    }
+    .shop-nav-right .nav-login:hover {
+        background: #f5f7fa !important;
+    }
+}
