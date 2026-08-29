@@ -1,6 +1,5 @@
 'use client';
-
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
 const API_BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost'
@@ -12,82 +11,51 @@ export default function ProductDetail() {
   const router = useRouter();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [currentImg, setCurrentImg] = useState(0);
-  const [showOrderModal, setShowOrderModal] = useState(false);
-  const [showQrModal, setShowQrModal] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [currentOrder, setCurrentOrder] = useState(null);
-  const [orderContact, setOrderContact] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [toast, setToast] = useState(null);
+  const [showBuy, setShowBuy] = useState(false);
+  const [contact, setContact] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [ordering, setOrdering] = useState(false);
+  const [order, setOrder] = useState(null);
+  const [payMethod, setPayMethod] = useState('alipay');
   const [user, setUser] = useState(null);
-  const pollTimerRef = useRef(null);
-  const qrRef = useRef(null);
 
   useEffect(() => {
     loadProduct();
-    checkLogin();
-    return () => { if (pollTimerRef.current) clearInterval(pollTimerRef.current); };
+    checkUser();
   }, [params.id]);
 
-  const showToast = (message, type = 'success') => { setToast({ message, type }); setTimeout(() => setToast(null), 2500); };
-
-  const checkLogin = () => {
+  const checkUser = () => {
     const token = localStorage.getItem('user_token');
-    const userInfo = localStorage.getItem('user_info');
-    if (token && userInfo) {
-      try { setUser(JSON.parse(userInfo)); } catch {}
+    if (token) {
+      fetch(`${API_BASE}/user/info`, { headers: { 'Authorization': `Bearer ${token}` } })
+        .then(r => r.json())
+        .then(data => { if (data.user) setUser(data.user); })
+        .catch(() => {});
     }
   };
 
   const loadProduct = async () => {
-    setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/product/${params.id}`);
       const data = await res.json();
-      if (data.success) {
-        setProduct(data.product);
-        document.title = data.product.name;
-      } else {
-        showToast(data.message || '商品不存在', 'error');
-        setTimeout(() => router.push('/'), 1500);
-      }
+      setProduct(data.product || data.data || null);
     } catch (e) {
-      showToast('加载失败', 'error');
+      console.error(e);
     } finally {
       setLoading(false);
     }
   };
 
-  const getProductImages = () => {
-    if (!product) return [];
-    const imgs = [];
-    if (product.image) imgs.push(product.image);
-    if (product.images) {
-      try {
-        const parsed = JSON.parse(product.images);
-        if (Array.isArray(parsed)) imgs.push(...parsed);
-      } catch {
-        if (product.images.includes(',')) {
-          imgs.push(...product.images.split(',').filter(Boolean));
-        }
-      }
+  const handleBuy = async () => {
+    if (!contact || contact.length < 5) {
+      alert('请输入联系方式（不少于5位，仅数字或字母）');
+      return;
     }
-    if (imgs.length === 0) {
-      const colors = ['#667eea', '#f5576c', '#4facfe', '#43e97b'];
-      const c = colors[product.id % colors.length];
-      imgs.push(`data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect fill="${c}" width="800" height="600"/><text x="50%" y="50%" font-size="80" fill="white" text-anchor="middle" dominant-baseline="middle">🎁</text></svg>`)}`);
+    if (!/^[a-zA-Z0-9]+$/.test(contact)) {
+      alert('联系方式只能包含数字或字母');
+      return;
     }
-    return imgs;
-  };
-
-  const submitOrder = async () => {
-    if (!product) return;
-    const contact = orderContact.trim();
-    if (!contact) { showToast('请输入联系方式', 'warning'); return; }
-    if (contact.length < 5) { showToast('联系方式不少于5位', 'warning'); return; }
-    if (!/^[a-zA-Z0-9]+$/.test(contact)) { showToast('联系方式只能是数字或字母', 'warning'); return; }
-    setSubmitting(true);
+    setOrdering(true);
     try {
       const token = localStorage.getItem('user_token');
       const headers = { 'Content-Type': 'application/json' };
@@ -95,257 +63,316 @@ export default function ProductDetail() {
       const res = await fetch(`${API_BASE}/create-order`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ productId: product.id, quantity: 1, contact })
+        body: JSON.stringify({
+          product_id: product.id,
+          contact,
+          quantity,
+          pay_method: payMethod
+        })
       });
       const data = await res.json();
-      if (data.success) {
-        setCurrentOrder(data.order);
-        setShowOrderModal(false);
-        setShowQrModal(true);
-        setTimeout(() => {
-          if (qrRef.current && window.QRCode) {
-            qrRef.current.innerHTML = '';
-            new window.QRCode(qrRef.current, { text: data.qrCode, width: 200, height: 200, correctLevel: window.QRCode.CorrectLevel.H });
-          }
-        }, 100);
-        startPolling(data.order.order_no);
-      } else showToast(data.message || '创建订单失败', 'error');
-    } catch (e) { showToast('网络错误', 'error'); } finally { setSubmitting(false); }
+      if (data.order || data.data) {
+        setOrder(data.order || data.data);
+      } else {
+        alert(data.error || '下单失败');
+      }
+    } catch (e) {
+      alert('下单失败，请重试');
+    } finally {
+      setOrdering(false);
+    }
   };
 
-  const startPolling = (orderNo) => {
-    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-    pollTimerRef.current = setInterval(async () => {
-      try {
-        const res = await fetch(`${API_BASE}/query-order?orderNo=${orderNo}`);
-        const data = await res.json();
-        if (data.success && data.order.status === 'paid') {
-          clearInterval(pollTimerRef.current);
-          setShowQrModal(false);
-          setCurrentOrder(data.order);
-          setShowSuccess(true);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      } catch (e) { console.error(e); }
-    }, 3000);
+  const copyCard = (text) => {
+    navigator.clipboard.writeText(text);
+    alert('已复制到剪贴板');
   };
-
-  const closeQr = () => { if (pollTimerRef.current) clearInterval(pollTimerRef.current); setShowQrModal(false); setCurrentOrder(null); };
-
-  const esc = (t) => { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f9ff' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div className="loading" style={{ width: 40, height: 40, margin: '0 auto 16px' }}></div>
-          <p style={{ color: '#8c8c8c' }}>加载中...</p>
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh'}}>
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="container">
+        <div className="empty">
+          <div className="empty-icon">❌</div>
+          <div className="empty-text">商品不存在</div>
+          <button className="btn btn-primary" style={{marginTop: '16px'}} onClick={() => router.push('/')}>返回首页</button>
         </div>
       </div>
     );
   }
 
-  if (!product) return null;
-
-  const images = getProductImages();
-
   return (
-    <>
-      <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-
-      {/* 顶部导航 */}
-      <nav className="dc-topbar">
-        <div className="dc-topbar-inner">
-          <div className="dc-topbar-left">
-            <a href="/" className="dc-topbar-logo">
-              <div className="dc-topbar-logo-icon">DC</div>
-              <div className="dc-topbar-logo-text">
-                <div className="dc-topbar-title">DCSHOP多财商城</div>
-                <div className="dc-topbar-sub">订单问题请查看买家帮助</div>
-              </div>
-            </a>
+    <div>
+      {/* 导航栏 */}
+      <nav className="nav">
+        <div className="nav-inner">
+          <div className="nav-logo" onClick={() => router.push('/')} style={{cursor:'pointer'}}>
+            <div className="nav-logo-icon">N</div>
+            <span>Nova Key</span>
           </div>
-          <div className="dc-topbar-right">
-            <a href="/" className="dc-topbar-btn">返回首页</a>
+          <div className="nav-right">
+            <button className="btn btn-secondary btn-sm" onClick={() => router.push('/')}>← 返回首页</button>
           </div>
         </div>
       </nav>
 
-      <div className="dc-container" style={{ paddingBottom: 80 }}>
-        {/* 商品主信息 */}
-        <div className="dc-detail-main">
-          {/* 图片轮播 */}
-          <div className="dc-detail-gallery">
-            <div className="dc-detail-img-main">
-              <img src={images[currentImg]} alt={product.name} />
-              {images.length > 1 && (
-                <>
-                  <span className="dc-detail-img-arrow left" onClick={() => setCurrentImg((currentImg - 1 + images.length) % images.length)}>‹</span>
-                  <span className="dc-detail-img-arrow right" onClick={() => setCurrentImg((currentImg + 1) % images.length)}>›</span>
-                </>
+      <div className="container">
+        <div className="card" style={{overflow: 'hidden', marginBottom: '24px'}}>
+          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0'}}>
+            {/* 商品图片 */}
+            <div style={{
+              background: 'var(--bg-hover)',
+              minHeight: '400px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative'
+            }}>
+              {product.image ? (
+                <img src={product.image} alt={product.name} style={{maxWidth: '100%', maxHeight: '400px', objectFit: 'contain'}} />
+              ) : (
+                <div style={{fontSize: '120px'}}>🎁</div>
               )}
-              <span className="dc-detail-img-count">{currentImg + 1}/{images.length}</span>
-            </div>
-            {images.length > 1 && (
-              <div className="dc-detail-thumbs">
-                {images.map((img, i) => (
-                  <div key={i} className={`dc-detail-thumb ${currentImg === i ? 'active' : ''}`} onClick={() => setCurrentImg(i)}>
-                    <img src={img} alt="" />
-                  </div>
-                ))}
+              <div style={{
+                position: 'absolute',
+                top: '16px',
+                left: '16px',
+                padding: '6px 14px',
+                background: product.stock > 0 ? 'var(--success)' : 'var(--danger)',
+                color: '#fff',
+                borderRadius: '9999px',
+                fontSize: '13px',
+                fontWeight: 600
+              }}>
+                {product.stock > 0 ? '现货充足' : '已售空'}
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* 商品信息 */}
-          <div className="dc-detail-info">
-            <h1 className="dc-detail-title">{esc(product.name)}</h1>
-            <p className="dc-detail-desc">{esc(product.description || '暂无商品描述')}</p>
-            <div className="dc-detail-price-box">
-              <div className="dc-detail-price">
-                <span className="dc-detail-price-label">价格</span>
-                <span className="dc-detail-price-now">¥{Number(product.price).toFixed(2)}</span>
-                {product.original_price && product.original_price > product.price && (
-                  <span className="dc-detail-price-old">¥{Number(product.original_price).toFixed(2)}</span>
-                )}
+            {/* 商品信息 */}
+            <div style={{padding: '32px'}}>
+              <h1 style={{fontSize: '24px', fontWeight: 700, marginBottom: '12px', color: 'var(--text)'}}>
+                {product.name}
+              </h1>
+              {product.category && (
+                <div style={{marginBottom: '16px'}}>
+                  <span className="badge badge-primary">{product.category}</span>
+                </div>
+              )}
+              <div style={{
+                background: 'linear-gradient(135deg, #fef2f2, #fff1f2)',
+                borderRadius: '12px',
+                padding: '20px',
+                marginBottom: '24px'
+              }}>
+                <div style={{fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '4px'}}>价格</div>
+                <div style={{display: 'flex', alignItems: 'baseline', gap: '12px'}}>
+                  <span style={{fontSize: '36px', fontWeight: 800, color: 'var(--danger)'}}>
+                    ¥{product.price}
+                  </span>
+                  {product.original_price && product.original_price > product.price && (
+                    <span style={{fontSize: '16px', color: 'var(--text-muted)', textDecoration: 'line-through'}}>
+                      ¥{product.original_price}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="dc-detail-meta">
-                <span>销量 {product.sales || 0}</span>
-                <span>库存 {product.stock}</span>
-                <span>分类 {esc(product.category)}</span>
+
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px'}}>
+                <div style={{padding: '12px', background: 'var(--bg)', borderRadius: '8px'}}>
+                  <div style={{fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px'}}>库存</div>
+                  <div style={{fontSize: '18px', fontWeight: 600}}>{product.stock} 件</div>
+                </div>
+                <div style={{padding: '12px', background: 'var(--bg)', borderRadius: '8px'}}>
+                  <div style={{fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px'}}>销量</div>
+                  <div style={{fontSize: '18px', fontWeight: 600}}>{product.sales || 0} 件</div>
+                </div>
               </div>
-            </div>
-            <div className="dc-detail-tags">
-              <span className="dc-detail-tag">✅ 官方正版</span>
-              <span className="dc-detail-tag">⚡ 自动发货</span>
-              <span className="dc-detail-tag">🛡️ 安全可靠</span>
-              <span className="dc-detail-tag">💬 售后无忧</span>
-            </div>
-            <div className="dc-detail-buy">
+
+              {product.description && (
+                <p style={{fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: 1.8}}>
+                  {product.description}
+                </p>
+              )}
+
               <button
-                className="dc-detail-btn dc-detail-btn-primary"
+                className="btn btn-primary btn-lg"
+                style={{width: '100%', fontSize: '16px'}}
                 disabled={product.stock <= 0}
-                onClick={() => { if (product.stock > 0) { setOrderContact(''); setShowOrderModal(true); } }}
+                onClick={() => setShowBuy(true)}
               >
                 {product.stock > 0 ? '立即购买' : '已售空'}
               </button>
-              <button className="dc-detail-btn dc-detail-btn-secondary" onClick={() => router.push('/')}>返回首页</button>
             </div>
-            {user && (
-              <div className="dc-detail-user">
-                <span>👤 已登录：{user.nickname || user.username}</span>
-                <span>💰 余额：¥{Number(user.balance || 0).toFixed(2)}</span>
-              </div>
-            )}
           </div>
         </div>
 
         {/* 商品详情 */}
-        <div className="dc-detail-content">
-          <div className="dc-detail-content-title">
-            <span className="dc-detail-content-line"></span>
-            <h2>商品详情</h2>
-            <span className="dc-detail-content-line"></span>
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">商品详情</div>
           </div>
-          <div className="dc-detail-content-body">
+          <div className="card-body" style={{lineHeight: 1.8, fontSize: '15px'}}>
             {product.detail ? (
-              <div dangerouslySetInnerHTML={{ __html: product.detail }} />
+              <div dangerouslySetInnerHTML={{__html: product.detail}} />
             ) : (
-              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#8c8c8c' }}>
-                <p style={{ fontSize: 48, marginBottom: 16 }}>📦</p>
-                <p>暂无商品详情</p>
-                <p style={{ fontSize: 13, marginTop: 8 }}>支付成功后将自动发货，请在订单中查看卡密</p>
-              </div>
+              <p style={{color: 'var(--text-muted)'}}>暂无详细描述</p>
             )}
           </div>
         </div>
       </div>
 
-      {/* 底部导航栏（移动端） */}
-      <nav className="dc-bottom-nav">
-        <a href="/" className="dc-bottom-nav-item">
-          <span className="dc-bottom-nav-icon">🏠</span>
-          <span className="dc-bottom-nav-text">首页</span>
-        </a>
-        <a href="/#category" className="dc-bottom-nav-item">
-          <span className="dc-bottom-nav-icon">📋</span>
-          <span className="dc-bottom-nav-text">分类</span>
-        </a>
-        <a href="/user" className="dc-bottom-nav-item">
-          <span className="dc-bottom-nav-icon">📄</span>
-          <span className="dc-bottom-nav-text">查单</span>
-        </a>
-        <a href="/user" className="dc-bottom-nav-item">
-          <span className="dc-bottom-nav-icon">👤</span>
-          <span className="dc-bottom-nav-text">我的</span>
-        </a>
-      </nav>
-
-      {/* 下单弹窗 */}
-      {showOrderModal && (
-        <div className="dc-modal" onClick={(e) => e.target === e.currentTarget && setShowOrderModal(false)}>
-          <div className="dc-modal-box">
-            <span className="dc-modal-close" onClick={() => setShowOrderModal(false)}>&times;</span>
-            <h3 className="dc-modal-title">{product.name}</h3>
-            <div className="dc-modal-amount">¥{Number(product.price).toFixed(2)}</div>
-            <div className="dc-form-group">
-              <label>联系方式 (数字或字母，不少于5位)</label>
-              <input type="text" placeholder="请输入5位以上数字或字母" value={orderContact} onChange={(e) => setOrderContact(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && submitOrder()} />
+      {/* 购买弹窗 */}
+      {showBuy && (
+        <div className="modal-overlay" onClick={() => !order && setShowBuy(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title">{order ? '支付订单' : '确认下单'}</div>
+              <div className="modal-close" onClick={() => { setShowBuy(false); setOrder(null); }}>×</div>
             </div>
-            <div className="dc-form-group">
-              <label>支付方式</label>
-              <div className="dc-pay-channels">
-                <div className="dc-pay-channel active">💙 支付宝</div>
-                <div className="dc-pay-channel disabled">💚 微信支付</div>
-              </div>
-            </div>
-            <button className="dc-submit" onClick={submitOrder} disabled={submitting}>{submitting ? '创建订单中...' : '立即支付购买'}</button>
-          </div>
-        </div>
-      )}
+            <div className="modal-body">
+              {!order ? (
+                <>
+                  <div style={{
+                    padding: '16px',
+                    background: 'var(--bg)',
+                    borderRadius: '8px',
+                    marginBottom: '20px'
+                  }}>
+                    <div style={{fontWeight: 600, marginBottom: '8px'}}>{product.name}</div>
+                    <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'var(--text-secondary)'}}>
+                      <span>单价：¥{product.price}</span>
+                      <span>库存：{product.stock}</span>
+                    </div>
+                  </div>
 
-      {/* 二维码弹窗 */}
-      {showQrModal && (
-        <div className="dc-modal">
-          <div className="dc-modal-box dc-qr-box">
-            <span className="dc-modal-close" onClick={closeQr}>&times;</span>
-            <h3 className="dc-modal-title">{product.name}</h3>
-            <div className="dc-modal-amount">¥{currentOrder ? Number(currentOrder.amount).toFixed(2) : '0.00'}</div>
-            <div className="dc-qr-wrap"><div ref={qrRef} style={{ width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="loading"></span></div></div>
-            <p className="dc-qr-tip">请使用支付宝扫码支付，支付成功后将自动跳转</p>
-            <p className="dc-order-no">订单号：{currentOrder?.order_no}</p>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button className="dc-btn dc-btn-primary" style={{ flex: 1 }} onClick={() => currentOrder && startPolling(currentOrder.order_no)}>我已完成支付</button>
-              <button className="dc-btn dc-btn-secondary" style={{ flex: 1 }} onClick={closeQr}>取消支付</button>
-            </div>
-          </div>
-        </div>
-      )}
+                  <div className="form-group">
+                    <label className="form-label">联系方式（QQ/邮箱/手机号，仅数字字母，不少于5位）</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="请输入联系方式"
+                      value={contact}
+                      onChange={(e) => setContact(e.target.value)}
+                    />
+                  </div>
 
-      {/* 支付成功 */}
-      {showSuccess && (
-        <div className="dc-modal" style={{ background: 'rgba(0,0,0,0.7)' }}>
-          <div className="dc-modal-box" style={{ maxWidth: 420 }}>
-            <div className="dc-success-icon" style={{ margin: '0 auto 16px' }}>✓</div>
-            <h2 style={{ fontSize: 20, marginBottom: 8 }}>支付成功 · 卡密已发放</h2>
-            <p style={{ fontSize: 13, color: '#8c8c8c', marginBottom: 20 }}>请妥善保管以下卡密</p>
-            <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 20 }}>
-              {currentOrder?.cards?.map((c, i) => (
-                <div key={i} style={{ background: '#f5f7fa', borderRadius: 8, padding: 12, marginBottom: 8, textAlign: 'left' }}>
-                  <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>卡密 {i + 1}</div>
-                  <div style={{ fontSize: 13, fontFamily: 'monospace', wordBreak: 'break-all', userSelect: 'all' }}>{esc(c.card_content)}</div>
+                  <div className="form-group">
+                    <label className="form-label">购买数量</label>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                      <button className="btn btn-secondary btn-sm" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                      <span style={{fontSize: '18px', fontWeight: 600, minWidth: '40px', textAlign: 'center'}}>{quantity}</span>
+                      <button className="btn btn-secondary btn-sm" onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}>+</button>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">支付方式</label>
+                    <div style={{display: 'flex', gap: '12px'}}>
+                      <div
+                        style={{
+                          flex: 1,
+                          padding: '12px',
+                          border: '2px solid',
+                          borderColor: payMethod === 'alipay' ? 'var(--primary)' : 'var(--border)',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          background: payMethod === 'alipay' ? 'var(--primary-light)' : 'transparent'
+                        }}
+                        onClick={() => setPayMethod('alipay')}
+                      >
+                        <div style={{fontSize: '24px'}}>💙</div>
+                        <div style={{fontSize: '13px', marginTop: '4px'}}>支付宝</div>
+                      </div>
+                      <div
+                        style={{
+                          flex: 1,
+                          padding: '12px',
+                          border: '2px solid',
+                          borderColor: payMethod === 'wechat' ? 'var(--primary)' : 'var(--border)',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          background: payMethod === 'wechat' ? 'var(--primary-light)' : 'transparent'
+                        }}
+                        onClick={() => setPayMethod('wechat')}
+                      >
+                        <div style={{fontSize: '24px'}}>💚</div>
+                        <div style={{fontSize: '13px', marginTop: '4px'}}>微信支付</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: '16px',
+                    background: 'var(--bg)',
+                    borderRadius: '8px',
+                    marginTop: '20px'
+                  }}>
+                    <span style={{fontSize: '14px', color: 'var(--text-secondary)'}}>合计</span>
+                    <span style={{fontSize: '24px', fontWeight: 700, color: 'var(--danger)'}}>¥{(product.price * quantity).toFixed(2)}</span>
+                  </div>
+                </>
+              ) : (
+                <div style={{textAlign: 'center'}}>
+                  <div style={{fontSize: '48px', marginBottom: '16px'}}>✅</div>
+                  <h3 style={{fontSize: '20px', fontWeight: 700, marginBottom: '8px'}}>支付成功</h3>
+                  <p style={{fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px'}}>
+                    订单号：{order.order_no || order.id}
+                  </p>
+                  {order.cards && order.cards.length > 0 && (
+                    <div style={{textAlign: 'left', marginBottom: '20px'}}>
+                      <div style={{fontSize: '14px', fontWeight: 600, marginBottom: '12px'}}>您的卡密：</div>
+                      {order.cards.map((card, i) => (
+                        <div key={i} style={{
+                          padding: '12px',
+                          background: 'var(--bg)',
+                          borderRadius: '8px',
+                          marginBottom: '8px',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}>
+                          <span style={{fontSize: '13px', fontFamily: 'monospace', wordBreak: 'break-all'}}>{card.card_content || card.content || card}</span>
+                          <button className="btn btn-secondary btn-sm" onClick={() => copyCard(card.card_content || card.content || card)}>复制</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {(!order.cards || order.cards.length === 0) && (
+                    <div style={{padding: '16px', background: 'var(--bg)', borderRadius: '8px', marginBottom: '20px'}}>
+                      <p style={{fontSize: '14px', color: 'var(--text-secondary)'}}>卡密将在支付确认后自动发放，请在订单查询中查看</p>
+                    </div>
+                  )}
                 </div>
-              ))}
+              )}
             </div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button className="dc-btn dc-btn-primary" style={{ flex: 1 }} onClick={() => { navigator.clipboard.writeText(currentOrder?.cards?.map((c, i) => `卡密${i + 1}：${c.card_content}`).join('\n') || ''); showToast('已复制', 'success'); }}>复制全部</button>
-              <button className="dc-btn dc-btn-secondary" style={{ flex: 1 }} onClick={() => router.push('/user')}>查看订单</button>
+            <div className="modal-footer">
+              {!order ? (
+                <>
+                  <button className="btn btn-secondary" onClick={() => setShowBuy(false)}>取消</button>
+                  <button className="btn btn-primary" disabled={ordering} onClick={handleBuy}>
+                    {ordering ? '处理中...' : `确认支付 ¥${(product.price * quantity).toFixed(2)}`}
+                  </button>
+                </>
+              ) : (
+                <button className="btn btn-primary" onClick={() => { setShowBuy(false); setOrder(null); router.push('/user'); }}>
+                  查看我的订单
+                </button>
+              )}
             </div>
           </div>
         </div>
       )}
-
-      {toast && <div className={`dc-toast ${toast.type}`}>{toast.message}</div>}
-    </>
+    </div>
   );
 }
