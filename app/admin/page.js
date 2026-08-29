@@ -21,11 +21,18 @@ export default function AdminPage() {
   const [productForm, setProductForm] = useState({ name: '', description: '', price: '', sort_order: '0', category: '全部' });
   const [cardProductId, setCardProductId] = useState('');
   const [cardRawText, setCardRawText] = useState('');
-  const [cardStats, setCardStats] = useState(null);
   const [cards, setCards] = useState([]);
   const [showCardManage, setShowCardManage] = useState(false);
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth > 768);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
 
   useEffect(() => {
     const savedToken = localStorage.getItem('admin_token');
@@ -103,7 +110,6 @@ export default function AdminPage() {
     }
   };
 
-  // 商品管理
   const openAddProduct = () => {
     setProductForm({ name: '', description: '', price: '', sort_order: '0', category: '全部' });
     setEditingProduct(null);
@@ -152,13 +158,11 @@ export default function AdminPage() {
     if (data.success) { showToast(product.is_active ? '已下架' : '已上架'); loadDashboard(); }
   };
 
-  // 卡密管理
   const loadCards = async (productId) => {
     if (!productId) return;
     const data = await apiCall(`/admin-card-manage?productId=${productId}`);
     if (data.success) {
       setCards(data.cards);
-      setCardStats(data.stats);
       setShowCardManage(true);
     }
   };
@@ -186,7 +190,6 @@ export default function AdminPage() {
     else showToast(data.message || '操作失败', 'error');
   };
 
-  // 订单管理
   const filteredOrders = orders.filter(o => orderStatusFilter === 'all' || o.status === orderStatusFilter);
 
   const markOrderPaid = async (orderId) => {
@@ -207,7 +210,6 @@ export default function AdminPage() {
     if (data.success) { showToast('订单已删除'); loadDashboard(); }
   };
 
-  // 网站设置
   const saveSettings = async () => {
     setLoading(true);
     try {
@@ -223,6 +225,14 @@ export default function AdminPage() {
     pending: { text: '待支付', bg: '#fffbe6', color: '#faad14' },
     failed: { text: '已失败', bg: '#fff2f0', color: '#ff4d4f' }
   };
+
+  const tabs = [
+    { key: 'dashboard', label: '概览', icon: '📊' },
+    { key: 'products', label: '商品', icon: '📦' },
+    { key: 'cards', label: '卡密', icon: '🎫' },
+    { key: 'orders', label: '订单', icon: '📋' },
+    { key: 'settings', label: '设置', icon: '⚙️' }
+  ];
 
   // 登录页
   if (!token) {
@@ -252,95 +262,167 @@ export default function AdminPage() {
     );
   }
 
-  const tabs = [
-    { key: 'dashboard', label: '概览', icon: '📊' },
-    { key: 'products', label: '商品', icon: '📦' },
-    { key: 'cards', label: '卡密', icon: '🎫' },
-    { key: 'orders', label: '订单', icon: '📋' },
-    { key: 'settings', label: '设置', icon: '⚙️' }
-  ];
+  // PC端表格样式组件
+  const TableWrapper = ({ children }) => (
+    <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        {children}
+      </table>
+    </div>
+  );
+
+  const Th = ({ children, style }) => (
+    <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '13px', color: '#8c8c8c', fontWeight: 500, background: '#fafafa', borderBottom: '1px solid #f0f0f0', ...style }}>{children}</th>
+  );
+
+  const Td = ({ children, style }) => (
+    <td style={{ padding: '14px 12px', fontSize: '14px', color: '#1f1f1f', borderBottom: '1px solid #f5f5f5', ...style }}>{children}</td>
+  );
 
   return (
-    <div className="admin-page" style={{ minHeight: '100vh', background: '#f5f7fa', paddingBottom: '100px' }}>
+    <div className="admin-page" style={{ minHeight: '100vh', background: '#f5f7fa', paddingBottom: isDesktop ? '0' : '100px' }}>
       {/* PC端左侧边栏 */}
-      <div className="admin-sidebar">
-        <div className="admin-sidebar-logo">🎫 发卡管理</div>
-        {tabs.map(tab => (
-          <div
-            key={tab.key}
-            className={`admin-sidebar-item ${activeTab === tab.key ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.key)}
-          >
-            <span className="admin-sidebar-icon">{tab.icon}</span>
-            <span>{tab.label}</span>
-          </div>
-        ))}
-        <div className="admin-sidebar-logout" onClick={handleLogout}>退出登录</div>
-      </div>
+      {isDesktop && (
+        <div style={{ position: 'fixed', left: 0, top: 0, bottom: 0, width: '220px', background: '#fff', boxShadow: '2px 0 8px rgba(0,0,0,0.06)', zIndex: 200, padding: '20px 12px', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontSize: '18px', fontWeight: 700, color: '#1677ff', padding: '12px 16px', marginBottom: '16px', borderRadius: '10px', background: '#f0f7ff' }}>🎫 发卡管理</div>
+          {tabs.map(tab => (
+            <div
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', color: activeTab === tab.key ? '#1677ff' : '#595959', background: activeTab === tab.key ? '#e6f4ff' : 'transparent', fontWeight: activeTab === tab.key ? 600 : 400, marginBottom: '4px', transition: 'all 0.2s' }}
+            >
+              <span style={{ fontSize: '18px' }}>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </div>
+          ))}
+          <div onClick={handleLogout} style={{ marginTop: 'auto', padding: '12px 16px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', color: '#ff4d4f', textAlign: 'center', background: '#fff2f0', fontWeight: 500 }}>退出登录</div>
+        </div>
+      )}
 
-      {/* 顶部导航 - 仅移动端显示 */}
-      <div className="admin-topbar" style={{ background: '#fff', padding: '0 16px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ fontSize: '17px', fontWeight: 700, color: '#1677ff' }}>{tabs.find(t => t.key === activeTab)?.label}</div>
-        <button onClick={handleLogout} style={{ background: '#fff2f0', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '13px', padding: '6px 12px', borderRadius: '8px', fontWeight: 500 }}>退出</button>
-      </div>
+      {/* 移动端顶部导航 */}
+      {!isDesktop && (
+        <div style={{ background: '#fff', padding: '0 16px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', position: 'sticky', top: 0, zIndex: 100 }}>
+          <div style={{ fontSize: '17px', fontWeight: 700, color: '#1677ff' }}>{tabs.find(t => t.key === activeTab)?.label}</div>
+          <button onClick={handleLogout} style={{ background: '#fff2f0', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '13px', padding: '6px 12px', borderRadius: '8px', fontWeight: 500 }}>退出</button>
+        </div>
+      )}
 
-      <div className="admin-content" style={{ padding: '16px' }}>
+      <div style={{ padding: isDesktop ? '24px' : '16px', marginLeft: isDesktop ? '220px' : '0', maxWidth: isDesktop ? 'none' : 'none' }}>
         {/* 概览页 */}
         {activeTab === 'dashboard' && (
           <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(5, 1fr)' : '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
               {[
                 { label: '商品总数', value: stats.totalProducts, icon: '📦', bg: '#e6f4ff', color: '#1677ff' },
                 { label: '卡密总数', value: stats.totalCards, icon: '🎫', bg: '#f6ffed', color: '#52c41a' },
                 { label: '订单总数', value: stats.totalOrders, icon: '📋', bg: '#fffbe6', color: '#faad14' },
-                { label: '已支付', value: stats.paidOrders, icon: '✅', bg: '#f9f0ff', color: '#722ed1' }
+                { label: '已支付', value: stats.paidOrders, icon: '✅', bg: '#f9f0ff', color: '#722ed1' },
+                { label: '总收入', value: `¥${stats.totalRevenue}`, icon: '💰', bg: '#fff2f0', color: '#ff4d4f' }
               ].map((stat, i) => (
-                <div key={i} style={{ background: '#fff', padding: '16px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '40px', height: '40px', background: stat.bg, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>{stat.icon}</div>
+                <div key={i} style={{ background: '#fff', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '44px', height: '44px', background: stat.bg, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>{stat.icon}</div>
                     <div>
-                      <div style={{ fontSize: '22px', fontWeight: 700, color: stat.color, lineHeight: 1.2 }}>{stat.value}</div>
-                      <div style={{ fontSize: '12px', color: '#8c8c8c' }}>{stat.label}</div>
+                      <div style={{ fontSize: isDesktop ? '24px' : '22px', fontWeight: 700, color: stat.color, lineHeight: 1.2 }}>{stat.value}</div>
+                      <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '2px' }}>{stat.label}</div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-            <div style={{ background: 'linear-gradient(135deg, #ff6b6b, #ee5a5a)', padding: '20px', borderRadius: '12px', color: '#fff', marginBottom: '16px' }}>
-              <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '4px' }}>总收入</div>
-              <div style={{ fontSize: '32px', fontWeight: 700 }}>¥{stats.totalRevenue}</div>
-            </div>
-            <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '15px', fontWeight: 600, marginBottom: '12px', color: '#1f1f1f' }}>最近订单</div>
-              {orders.slice(0, 5).length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '30px', color: '#8c8c8c', fontSize: '13px' }}>暂无订单</div>
-              ) : (
-                orders.slice(0, 5).map(o => (
-                  <div key={o.id} style={{ padding: '12px 0', borderBottom: '1px solid #f5f5f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#1f1f1f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.product_name}</div>
-                      <div style={{ fontSize: '11px', color: '#8c8c8c', marginTop: '2px' }}>{new Date(o.created_at).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>
+
+            {isDesktop ? (
+              <TableWrapper>
+                <thead>
+                  <tr>
+                    <Th>商品</Th>
+                    <Th>订单号</Th>
+                    <Th>金额</Th>
+                    <Th>状态</Th>
+                    <Th>时间</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.slice(0, 10).map(o => (
+                    <tr key={o.id}>
+                      <Td style={{ fontWeight: 500 }}>{o.product_name}</Td>
+                      <Td style={{ fontFamily: 'monospace', fontSize: '12px', color: '#8c8c8c' }}>{o.order_no}</Td>
+                      <Td style={{ color: '#ff4d4f', fontWeight: 600 }}>¥{Number(o.amount).toFixed(2)}</Td>
+                      <Td><span style={{ padding: '3px 10px', borderRadius: '6px', fontSize: '12px', background: statusMap[o.status]?.bg, color: statusMap[o.status]?.color, fontWeight: 500 }}>{statusMap[o.status]?.text}</span></Td>
+                      <Td style={{ color: '#8c8c8c', fontSize: '13px' }}>{new Date(o.created_at).toLocaleString('zh-CN')}</Td>
+                    </tr>
+                  ))}
+                  {orders.length === 0 && (
+                    <tr><Td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: '#8c8c8c' }}>暂无订单</Td></tr>
+                  )}
+                </tbody>
+              </TableWrapper>
+            ) : (
+              <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                <div style={{ fontSize: '15px', fontWeight: 600, marginBottom: '12px', color: '#1f1f1f' }}>最近订单</div>
+                {orders.slice(0, 5).length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '30px', color: '#8c8c8c', fontSize: '13px' }}>暂无订单</div>
+                ) : (
+                  orders.slice(0, 5).map(o => (
+                    <div key={o.id} style={{ padding: '12px 0', borderBottom: '1px solid #f5f5f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '14px', fontWeight: 500, color: '#1f1f1f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.product_name}</div>
+                        <div style={{ fontSize: '11px', color: '#8c8c8c', marginTop: '2px' }}>{new Date(o.created_at).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>
+                      </div>
+                      <div style={{ textAlign: 'right', marginLeft: '12px' }}>
+                        <div style={{ fontSize: '15px', fontWeight: 600, color: '#ff4d4f' }}>¥{Number(o.amount).toFixed(2)}</div>
+                        <span style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '4px', background: statusMap[o.status]?.bg, color: statusMap[o.status]?.color }}>{statusMap[o.status]?.text}</span>
+                      </div>
                     </div>
-                    <div style={{ textAlign: 'right', marginLeft: '12px' }}>
-                      <div style={{ fontSize: '15px', fontWeight: 600, color: '#ff4d4f' }}>¥{Number(o.amount).toFixed(2)}</div>
-                      <span style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '4px', background: statusMap[o.status]?.bg, color: statusMap[o.status]?.color }}>{statusMap[o.status]?.text}</span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         )}
 
         {/* 商品管理 */}
         {activeTab === 'products' && (
           <div>
-            <button onClick={openAddProduct} style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg, #1677ff, #4096ff)', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', marginBottom: '16px', boxShadow: '0 4px 12px rgba(22,119,255,0.25)' }}>+ 添加商品</button>
-            {products.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '50px 20px', background: '#fff', borderRadius: '12px' }}>
-                <div style={{ fontSize: '40px', marginBottom: '10px' }}>📦</div>
-                <div style={{ color: '#8c8c8c', fontSize: '14px' }}>暂无商品，点击上方按钮添加</div>
-              </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>商品管理</h3>
+              <button onClick={openAddProduct} style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #1677ff, #4096ff)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(22,119,255,0.25)' }}>+ 添加商品</button>
+            </div>
+
+            {isDesktop ? (
+              <TableWrapper>
+                <thead>
+                  <tr>
+                    <Th style={{ width: '80px' }}>ID</Th>
+                    <Th>商品名称</Th>
+                    <Th style={{ width: '100px' }}>分类</Th>
+                    <Th style={{ width: '100px' }}>价格</Th>
+                    <Th style={{ width: '80px' }}>库存</Th>
+                    <Th style={{ width: '90px' }}>状态</Th>
+                    <Th style={{ width: '200px' }}>操作</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map(p => (
+                    <tr key={p.id}>
+                      <Td style={{ fontFamily: 'monospace', fontSize: '12px', color: '#8c8c8c' }}>{p.id.substring(0, 8)}...</Td>
+                      <Td style={{ fontWeight: 500 }}>{p.name}</Td>
+                      <Td>{p.category || '全部'}</Td>
+                      <Td style={{ color: '#ff4d4f', fontWeight: 600 }}>¥{Number(p.price).toFixed(2)}</Td>
+                      <Td>{p.stock}</Td>
+                      <Td><span style={{ padding: '3px 10px', borderRadius: '6px', fontSize: '12px', background: p.is_active ? '#f6ffed' : '#fff2f0', color: p.is_active ? '#52c41a' : '#ff4d4f', fontWeight: 500 }}>{p.is_active ? '上架中' : '已下架'}</span></Td>
+                      <Td>
+                        <button onClick={() => openEditProduct(p)} style={{ color: '#1677ff', background: 'none', border: 'none', cursor: 'pointer', marginRight: '12px', fontSize: '13px' }}>编辑</button>
+                        <button onClick={() => toggleProductActive(p)} style={{ color: '#faad14', background: 'none', border: 'none', cursor: 'pointer', marginRight: '12px', fontSize: '13px' }}>{p.is_active ? '下架' : '上架'}</button>
+                        <button onClick={() => deleteProduct(p.id)} style={{ color: '#ff4d4f', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px' }}>删除</button>
+                      </Td>
+                    </tr>
+                  ))}
+                  {products.length === 0 && (
+                    <tr><Td colSpan={7} style={{ textAlign: 'center', padding: '50px', color: '#8c8c8c' }}>暂无商品，点击右上角添加</Td></tr>
+                  )}
+                </tbody>
+              </TableWrapper>
             ) : (
               products.map(p => (
                 <div key={p.id} style={{ background: '#fff', borderRadius: '12px', padding: '16px', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
@@ -365,48 +447,78 @@ export default function AdminPage() {
         {/* 卡密管理 */}
         {activeTab === 'cards' && (
           <div>
-            <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', marginBottom: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '10px', color: '#1f1f1f' }}>选择商品</div>
-              <select
-                value={cardProductId}
-                onChange={(e) => setCardProductId(e.target.value)}
-                style={{ width: '100%', padding: '12px', border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '14px', background: '#fff', marginBottom: '12px' }}
-              >
-                <option value="">请选择商品</option>
-                {products.map(p => <option key={p.id} value={p.id}>{p.name}（库存{p.stock}）</option>)}
-              </select>
-              <textarea
-                value={cardRawText}
-                onChange={(e) => setCardRawText(e.target.value)}
-                placeholder="每行一个卡密，粘贴后点击导入"
-                style={{ width: '100%', height: '120px', padding: '12px', border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '13px', fontFamily: 'monospace', resize: 'vertical', marginBottom: '12px', boxSizing: 'border-box' }}
-              />
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button onClick={importCards} disabled={loading} style={{ flex: 1, padding: '12px', background: 'linear-gradient(135deg, #1677ff, #4096ff)', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>{loading ? '导入中...' : '导入卡密'}</button>
-                {cardProductId && <button onClick={() => clearAvailableCards(cardProductId)} style={{ padding: '12px 16px', background: '#fff2f0', color: '#ff4d4f', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>清空</button>}
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 700 }}>卡密管理</h3>
+            <div style={{ background: '#fff', borderRadius: '12px', padding: '20px', marginBottom: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1fr 2fr' : '1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>选择商品</label>
+                  <select
+                    value={cardProductId}
+                    onChange={(e) => setCardProductId(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '14px', background: '#fff' }}
+                  >
+                    <option value="">请选择商品</option>
+                    {products.map(p => <option key={p.id} value={p.id}>{p.name}（库存{p.stock}）</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>卡密内容（每行一个）</label>
+                  <textarea
+                    value={cardRawText}
+                    onChange={(e) => setCardRawText(e.target.value)}
+                    placeholder="粘贴卡密，每行一个"
+                    style={{ width: '100%', height: '100px', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '13px', fontFamily: 'monospace', resize: 'vertical', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                <button onClick={importCards} disabled={loading} style={{ padding: '10px 24px', background: 'linear-gradient(135deg, #1677ff, #4096ff)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>{loading ? '导入中...' : '导入卡密'}</button>
+                {cardProductId && <button onClick={() => clearAvailableCards(cardProductId)} style={{ padding: '10px 20px', background: '#fff2f0', color: '#ff4d4f', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}>清空未使用</button>}
+                {cardProductId && <button onClick={() => loadCards(cardProductId)} style={{ padding: '10px 20px', background: '#f6ffed', color: '#52c41a', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}>查看列表</button>}
               </div>
             </div>
-            {cardProductId && (
-              <button onClick={() => loadCards(cardProductId)} style={{ width: '100%', padding: '12px', background: '#f6ffed', color: '#52c41a', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', marginBottom: '16px' }}>查看卡密列表</button>
-            )}
+
             {showCardManage && cards.length > 0 && (
-              <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <div style={{ fontSize: '14px', fontWeight: 600 }}>卡密列表（{cards.length}）</div>
-                  <button onClick={() => setShowCardManage(false)} style={{ background: 'none', border: 'none', color: '#8c8c8c', fontSize: '13px', cursor: 'pointer' }}>收起</button>
-                </div>
-                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  {cards.map(c => (
-                    <div key={c.id} style={{ padding: '12px', background: '#fafafa', borderRadius: '8px', marginBottom: '8px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <span style={{ fontSize: '11px', color: '#8c8c8c' }}>ID: {c.id}</span>
-                        <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: c.status === 'available' ? '#f6ffed' : '#fff2f0', color: c.status === 'available' ? '#52c41a' : '#ff4d4f' }}>{c.status === 'available' ? '未使用' : '已使用'}</span>
+              isDesktop ? (
+                <TableWrapper>
+                  <thead>
+                    <tr>
+                      <Th style={{ width: '80px' }}>ID</Th>
+                      <Th>卡密内容</Th>
+                      <Th style={{ width: '100px' }}>状态</Th>
+                      <Th style={{ width: '80px' }}>操作</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cards.map(c => (
+                      <tr key={c.id}>
+                        <Td style={{ fontFamily: 'monospace', fontSize: '12px', color: '#8c8c8c' }}>{c.id}</Td>
+                        <Td style={{ fontFamily: 'monospace', fontSize: '13px', wordBreak: 'break-all' }}>{c.card_content}</Td>
+                        <Td><span style={{ padding: '3px 10px', borderRadius: '6px', fontSize: '12px', background: c.status === 'available' ? '#f6ffed' : '#fff2f0', color: c.status === 'available' ? '#52c41a' : '#ff4d4f', fontWeight: 500 }}>{c.status === 'available' ? '未使用' : '已使用'}</span></Td>
+                        <Td><button onClick={async () => { const data = await apiCall('/admin-card-manage', { method: 'POST', body: JSON.stringify({ action: 'delete', cardId: c.id }) }); if (data.success) { showToast('已删除'); loadCards(cardProductId); } }} style={{ color: '#ff4d4f', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px' }}>删除</button></Td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </TableWrapper>
+              ) : (
+                <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 600 }}>卡密列表（{cards.length}）</div>
+                    <button onClick={() => setShowCardManage(false)} style={{ background: 'none', border: 'none', color: '#8c8c8c', fontSize: '13px', cursor: 'pointer' }}>收起</button>
+                  </div>
+                  <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    {cards.map(c => (
+                      <div key={c.id} style={{ padding: '12px', background: '#fafafa', borderRadius: '8px', marginBottom: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <span style={{ fontSize: '11px', color: '#8c8c8c' }}>ID: {c.id}</span>
+                          <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: c.status === 'available' ? '#f6ffed' : '#fff2f0', color: c.status === 'available' ? '#52c41a' : '#ff4d4f' }}>{c.status === 'available' ? '未使用' : '已使用'}</span>
+                        </div>
+                        <div style={{ fontSize: '13px', fontFamily: 'monospace', wordBreak: 'break-all', color: '#1f1f1f' }}>{c.card_content}</div>
                       </div>
-                      <div style={{ fontSize: '13px', fontFamily: 'monospace', wordBreak: 'break-all', color: '#1f1f1f' }}>{c.card_content}</div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )
             )}
           </div>
         )}
@@ -414,25 +526,60 @@ export default function AdminPage() {
         {/* 订单管理 */}
         {activeTab === 'orders' && (
           <div>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', overflowX: 'auto', paddingBottom: '4px' }}>
-              {[
-                { key: 'all', label: '全部' },
-                { key: 'pending', label: '待支付' },
-                { key: 'paid', label: '已支付' },
-                { key: 'failed', label: '已失败' }
-              ].map(f => (
-                <button
-                  key={f.key}
-                  onClick={() => setOrderStatusFilter(f.key)}
-                  style={{ flexShrink: 0, padding: '8px 16px', background: orderStatusFilter === f.key ? '#1677ff' : '#fff', color: orderStatusFilter === f.key ? '#fff' : '#595959', border: 'none', borderRadius: '20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', boxShadow: orderStatusFilter === f.key ? '0 2px 8px rgba(22,119,255,0.3)' : '0 1px 4px rgba(0,0,0,0.05)' }}
-                >{f.label}</button>
-              ))}
-            </div>
-            {filteredOrders.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '50px 20px', background: '#fff', borderRadius: '12px' }}>
-                <div style={{ fontSize: '40px', marginBottom: '10px' }}>📋</div>
-                <div style={{ color: '#8c8c8c', fontSize: '14px' }}>暂无订单</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>订单管理</h3>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {[
+                  { key: 'all', label: '全部' },
+                  { key: 'pending', label: '待支付' },
+                  { key: 'paid', label: '已支付' },
+                  { key: 'failed', label: '已失败' }
+                ].map(f => (
+                  <button
+                    key={f.key}
+                    onClick={() => setOrderStatusFilter(f.key)}
+                    style={{ padding: '8px 16px', background: orderStatusFilter === f.key ? '#1677ff' : '#fff', color: orderStatusFilter === f.key ? '#fff' : '#595959', border: '1px solid ' + (orderStatusFilter === f.key ? '#1677ff' : '#e8e8e8'), borderRadius: '20px', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}
+                  >{f.label}</button>
+                ))}
               </div>
+            </div>
+
+            {isDesktop ? (
+              <TableWrapper>
+                <thead>
+                  <tr>
+                    <Th>订单号</Th>
+                    <Th>商品</Th>
+                    <Th style={{ width: '100px' }}>金额</Th>
+                    <Th style={{ width: '90px' }}>状态</Th>
+                    <Th style={{ width: '160px' }}>时间</Th>
+                    <Th style={{ width: '200px' }}>操作</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredOrders.map(o => (
+                    <tr key={o.id}>
+                      <Td style={{ fontFamily: 'monospace', fontSize: '12px', color: '#8c8c8c' }}>{o.order_no}</Td>
+                      <Td style={{ fontWeight: 500 }}>{o.product_name}</Td>
+                      <Td style={{ color: '#ff4d4f', fontWeight: 600 }}>¥{Number(o.amount).toFixed(2)}</Td>
+                      <Td><span style={{ padding: '3px 10px', borderRadius: '6px', fontSize: '12px', background: statusMap[o.status]?.bg, color: statusMap[o.status]?.color, fontWeight: 500 }}>{statusMap[o.status]?.text}</span></Td>
+                      <Td style={{ color: '#8c8c8c', fontSize: '13px' }}>{new Date(o.created_at).toLocaleString('zh-CN')}</Td>
+                      <Td>
+                        {o.status === 'pending' && (
+                          <>
+                            <button onClick={() => markOrderPaid(o.id)} style={{ color: '#52c41a', background: 'none', border: 'none', cursor: 'pointer', marginRight: '12px', fontSize: '13px' }}>标记支付</button>
+                            <button onClick={() => markOrderFailed(o.id)} style={{ color: '#faad14', background: 'none', border: 'none', cursor: 'pointer', marginRight: '12px', fontSize: '13px' }}>标记失败</button>
+                          </>
+                        )}
+                        <button onClick={() => deleteOrder(o.id)} style={{ color: '#ff4d4f', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px' }}>删除</button>
+                      </Td>
+                    </tr>
+                  ))}
+                  {filteredOrders.length === 0 && (
+                    <tr><Td colSpan={6} style={{ textAlign: 'center', padding: '50px', color: '#8c8c8c' }}>暂无订单</Td></tr>
+                  )}
+                </tbody>
+              </TableWrapper>
             ) : (
               filteredOrders.map(o => (
                 <div key={o.id} style={{ background: '#fff', borderRadius: '12px', padding: '16px', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
@@ -467,88 +614,97 @@ export default function AdminPage() {
 
         {/* 网站设置 */}
         {activeTab === 'settings' && (
-          <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-            {[
-              { key: 'site_logo', label: '网站Logo（图片URL）', type: 'text' },
-              { key: 'site_name', label: '网站名称', type: 'text' },
-              { key: 'site_subtitle', label: '网站副标题', type: 'text' },
-              { key: 'site_description', label: '网站描述', type: 'text' },
-              { key: 'contact_qq', label: '联系QQ', type: 'text' },
-              { key: 'contact_wechat', label: '联系微信', type: 'text' },
-              { key: 'contact_email', label: '联系邮箱', type: 'text' },
-              { key: 'icp_number', label: 'ICP备案号', type: 'text' },
-              { key: 'footer_text', label: '页脚文字', type: 'text' },
-              { key: 'payment_tip', label: '支付提示语', type: 'text' },
-              { key: 'announcement', label: '网站公告', type: 'textarea' }
-            ].map(item => (
-              <div key={item.key} style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>{item.label}</label>
-                {item.type === 'textarea' ? (
-                  <textarea
-                    value={settings[item.key] || ''}
-                    onChange={(e) => setSettings({ ...settings, [item.key]: e.target.value })}
-                    style={{ width: '100%', height: '80px', padding: '12px', border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '14px', resize: 'vertical', boxSizing: 'border-box' }}
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    value={settings[item.key] || ''}
-                    onChange={(e) => setSettings({ ...settings, [item.key]: e.target.value })}
-                    style={{ width: '100%', padding: '12px', border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '14px', boxSizing: 'border-box' }}
-                  />
-                )}
+          <div>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 700 }}>网站设置</h3>
+            <div style={{ background: '#fff', borderRadius: '12px', padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1fr 1fr' : '1fr', gap: '20px' }}>
+                {[
+                  { key: 'site_logo', label: '网站Logo（图片URL）', type: 'text' },
+                  { key: 'site_name', label: '网站名称', type: 'text' },
+                  { key: 'site_subtitle', label: '网站副标题', type: 'text' },
+                  { key: 'site_description', label: '网站描述', type: 'text' },
+                  { key: 'contact_qq', label: '联系QQ', type: 'text' },
+                  { key: 'contact_wechat', label: '联系微信', type: 'text' },
+                  { key: 'contact_email', label: '联系邮箱', type: 'text' },
+                  { key: 'icp_number', label: 'ICP备案号', type: 'text' },
+                  { key: 'footer_text', label: '页脚文字', type: 'text' },
+                  { key: 'payment_tip', label: '支付提示语', type: 'text' },
+                  { key: 'announcement', label: '网站公告', type: 'textarea', full: true }
+                ].map(item => (
+                  <div key={item.key} style={{ gridColumn: item.full && isDesktop ? '1 / -1' : 'auto' }}>
+                    <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>{item.label}</label>
+                    {item.type === 'textarea' ? (
+                      <textarea
+                        value={settings[item.key] || ''}
+                        onChange={(e) => setSettings({ ...settings, [item.key]: e.target.value })}
+                        style={{ width: '100%', height: '100px', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '14px', resize: 'vertical', boxSizing: 'border-box' }}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        value={settings[item.key] || ''}
+                        onChange={(e) => setSettings({ ...settings, [item.key]: e.target.value })}
+                        style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }}
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-            <button onClick={saveSettings} disabled={loading} style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg, #1677ff, #4096ff)', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', marginTop: '8px', boxShadow: '0 4px 12px rgba(22,119,255,0.25)' }}>{loading ? '保存中...' : '保存设置'}</button>
+              <div style={{ marginTop: '24px', textAlign: isDesktop ? 'right' : 'center' }}>
+                <button onClick={saveSettings} disabled={loading} style={{ padding: '12px 32px', background: 'linear-gradient(135deg, #1677ff, #4096ff)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(22,119,255,0.25)' }}>{loading ? '保存中...' : '保存设置'}</button>
+              </div>
+            </div>
           </div>
         )}
       </div>
 
-      {/* 底部导航 - 浮动胶囊式（仅移动端） */}
-      <div className="admin-bottom-nav" style={{ position: 'fixed', bottom: '16px', left: '50%', transform: 'translateX(-50%)', background: '#fff', display: 'flex', borderRadius: '28px', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', zIndex: 100, padding: '6px 8px', paddingBottom: 'calc(6px + env(safe-area-inset-bottom))', gap: '4px' }}>
-        {tabs.map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', padding: '6px 14px', borderRadius: '20px', transition: 'all 0.2s' }}
-          >
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: activeTab === tab.key ? '#e6f4ff' : 'transparent', transition: 'all 0.2s' }}>
-              <span style={{ fontSize: '20px', opacity: activeTab === tab.key ? 1 : 0.6 }}>{tab.icon}</span>
-            </div>
-            <span style={{ fontSize: '10px', color: activeTab === tab.key ? '#1677ff' : '#8c8c8c', fontWeight: activeTab === tab.key ? 600 : 400 }}>{tab.label}</span>
-          </button>
-        ))}
-      </div>
+      {/* 移动端底部导航 */}
+      {!isDesktop && (
+        <div style={{ position: 'fixed', bottom: '16px', left: '50%', transform: 'translateX(-50%)', background: '#fff', display: 'flex', borderRadius: '28px', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', zIndex: 100, padding: '6px 8px', paddingBottom: 'calc(6px + env(safe-area-inset-bottom))', gap: '4px' }}>
+          {tabs.map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', padding: '6px 14px', borderRadius: '20px' }}
+            >
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: activeTab === tab.key ? '#e6f4ff' : 'transparent' }}>
+                <span style={{ fontSize: '20px', opacity: activeTab === tab.key ? 1 : 0.6 }}>{tab.icon}</span>
+              </div>
+              <span style={{ fontSize: '10px', color: activeTab === tab.key ? '#1677ff' : '#8c8c8c', fontWeight: activeTab === tab.key ? 600 : 400 }}>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* 添加/编辑商品弹窗 */}
       {showAddProduct && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', zIndex: 1000 }} onClick={(e) => e.target === e.currentTarget && setShowAddProduct(false)}>
-          <div style={{ background: '#fff', width: '100%', borderRadius: '16px 16px 0 0', padding: '24px 20px', maxHeight: '85vh', overflowY: 'auto' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: isDesktop ? 'center' : 'flex-end', justifyContent: 'center', zIndex: 1000 }} onClick={(e) => e.target === e.currentTarget && setShowAddProduct(false)}>
+          <div style={{ background: '#fff', width: isDesktop ? '480px' : '100%', borderRadius: isDesktop ? '16px' : '16px 16px 0 0', padding: '24px', maxHeight: '85vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>{editingProduct ? '编辑商品' : '添加商品'}</h3>
               <button onClick={() => setShowAddProduct(false)} style={{ background: '#f5f7fa', border: 'none', width: '32px', height: '32px', borderRadius: '50%', fontSize: '18px', color: '#8c8c8c', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
             </div>
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>商品名称 *</label>
-              <input type="text" value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} style={{ width: '100%', padding: '12px', border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '14px', boxSizing: 'border-box' }} />
+              <input type="text" value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }} />
             </div>
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>商品描述</label>
-              <textarea value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} style={{ width: '100%', height: '80px', padding: '12px', border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '14px', resize: 'vertical', boxSizing: 'border-box' }} />
+              <textarea value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} style={{ width: '100%', height: '80px', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '14px', resize: 'vertical', boxSizing: 'border-box' }} />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>价格 (元) *</label>
-                <input type="number" step="0.01" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} style={{ width: '100%', padding: '12px', border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '14px', boxSizing: 'border-box' }} />
+                <input type="number" step="0.01" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }} />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>分类</label>
-                <input type="text" value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} style={{ width: '100%', padding: '12px', border: '1.5px solid #e8e8e8', borderRadius: '10px', fontSize: '14px', boxSizing: 'border-box' }} />
+                <input type="text" value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }} />
               </div>
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => setShowAddProduct(false)} style={{ flex: 1, padding: '14px', background: '#f5f7fa', color: '#595959', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 600, cursor: 'pointer' }}>取消</button>
-              <button onClick={saveProduct} disabled={loading} style={{ flex: 1, padding: '14px', background: 'linear-gradient(135deg, #1677ff, #4096ff)', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 600, cursor: 'pointer' }}>{loading ? '保存中...' : '保存'}</button>
+              <button onClick={() => setShowAddProduct(false)} style={{ flex: 1, padding: '12px', background: '#f5f7fa', color: '#595959', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>取消</button>
+              <button onClick={saveProduct} disabled={loading} style={{ flex: 1, padding: '12px', background: 'linear-gradient(135deg, #1677ff, #4096ff)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>{loading ? '保存中...' : '保存'}</button>
             </div>
           </div>
         </div>
@@ -556,7 +712,7 @@ export default function AdminPage() {
 
       {/* Toast */}
       {toast && (
-        <div style={{ position: 'fixed', top: '70px', left: '50%', transform: 'translateX(-50%)', padding: '12px 24px', borderRadius: '10px', color: '#fff', fontSize: '14px', zIndex: 2000, background: toast.type === 'error' ? '#ff4d4f' : toast.type === 'warning' ? '#faad14' : '#52c41a', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontWeight: 500 }}>
+        <div style={{ position: 'fixed', top: isDesktop ? '24px' : '70px', left: '50%', transform: 'translateX(-50%)', padding: '12px 24px', borderRadius: '10px', color: '#fff', fontSize: '14px', zIndex: 2000, background: toast.type === 'error' ? '#ff4d4f' : toast.type === 'warning' ? '#faad14' : '#52c41a', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontWeight: 500 }}>
           {toast.message}
         </div>
       )}
