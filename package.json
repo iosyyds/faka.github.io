@@ -1,17 +1,17 @@
 {
-  "name": "auto-card-shop",
+  "name": "faka-nextjs",
   "version": "1.0.0",
-  "description": "自动发卡商城 - GitHub Pages + Vercel + Supabase + 支付宝当面付",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "dev": "vercel dev",
-    "deploy": "vercel --prod"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
+    "next": "14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "@supabase/supabase-js": "^2.45.0"
-  },
-  "engines": {
-    "node": ">=18"
-  },
-  "license": "MIT"
+  }
 }

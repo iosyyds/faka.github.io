@@ -1,0 +1,21 @@
+import { NextResponse } from 'next/server';
+import { getDB } from '@/lib/db';
+
+export async function GET(req) {
+  try {
+    const db = getDB();
+    const products = await db.getProducts();
+    const safeProducts = products.map(p => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      category: p.category || '全部',
+      price: p.price,
+      stock: p.stock
+    }));
+    return NextResponse.json({ success: true, products: safeProducts });
+  } catch (err) {
+    console.error('获取商品列表失败:', err);
+    return NextResponse.json({ success: false, message: '获取商品列表失败' }, { status: 500 });
+  }
+}
