@@ -59,128 +59,104 @@ export default function Home() {
   const goProduct = (id) => router.push(`/product/${id}`);
   const goLogin = () => router.push('/login');
   const goUser = () => router.push('/user');
-  const goAdmin = () => router.push('/admin');
 
   return (
     <div>
-      {/* 导航栏 */}
+      {/* 导航栏 - 精简一行 */}
       <nav className="nav">
         <div className="nav-inner">
           <div className="nav-logo" onClick={() => router.push('/')} style={{cursor:'pointer'}}>
             <div className="nav-logo-icon">N</div>
             <span>{settings.site_name || 'Nova Key'}</span>
           </div>
-          <div className="nav-search">
-            <span className="nav-search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="搜索商品..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="nav-right">
-            <button className="btn btn-secondary btn-sm" onClick={() => router.push('/user')}>
-              📋 查单
-            </button>
+          <div className="nav-right" style={{gap: '8px'}}>
+            <button className="btn btn-secondary btn-sm" onClick={goUser}>查单</button>
             {user ? (
-              <button className="btn btn-primary btn-sm" onClick={goUser}>
-                👤 {user.username}
-              </button>
+              <button className="btn btn-primary btn-sm" onClick={goUser}>{user.username}</button>
             ) : (
-              <button className="btn btn-primary btn-sm" onClick={goLogin}>
-                登录 / 注册
-              </button>
+              <button className="btn btn-primary btn-sm" onClick={goLogin}>登录</button>
             )}
           </div>
         </div>
       </nav>
 
-      {/* Hero区域 */}
+      {/* 精简顶部区域 - 小搜索框 */}
       <div style={{
-        background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #c084fc 100%)',
-        padding: '60px 20px',
+        background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+        padding: '24px 20px',
         textAlign: 'center',
         color: '#fff'
       }}>
-        <h1 style={{fontSize: '36px', fontWeight: 800, marginBottom: '12px'}}>
-          {settings.site_name || 'Nova Key'} 自动发卡平台
+        <h1 style={{fontSize: '20px', fontWeight: 700, marginBottom: '12px'}}>
+          {settings.site_name || 'Nova Key'}
         </h1>
-        <p style={{fontSize: '16px', opacity: 0.9, marginBottom: '24px'}}>
-          {settings.site_subtitle || '安全、快捷、全自动的数字商品交易平台'}
-        </p>
-        <div style={{
-          maxWidth: '500px',
-          margin: '0 auto',
-          position: 'relative'
-        }}>
+        <div style={{maxWidth: '400px', margin: '0 auto', position: 'relative'}}>
           <input
             type="text"
-            placeholder="输入关键词搜索商品..."
+            placeholder="搜索商品..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
               width: '100%',
-              padding: '14px 20px 14px 48px',
-              borderRadius: '9999px',
+              padding: '10px 16px 10px 38px',
+              borderRadius: '8px',
               border: 'none',
-              fontSize: '15px',
-              outline: 'none',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+              fontSize: '14px',
+              outline: 'none'
             }}
           />
-          <span style={{
-            position: 'absolute',
-            left: '18px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            fontSize: '18px'
-          }}>🔍</span>
-        </div>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '40px',
-          marginTop: '32px',
-          flexWrap: 'wrap'
-        }}>
-          <div>
-            <div style={{fontSize: '28px', fontWeight: 700}}>{products.length}</div>
-            <div style={{fontSize: '13px', opacity: 0.8}}>在售商品</div>
-          </div>
-          <div>
-            <div style={{fontSize: '28px', fontWeight: 700}}>24/7</div>
-            <div style={{fontSize: '13px', opacity: 0.8}}>自动发货</div>
-          </div>
-          <div>
-            <div style={{fontSize: '28px', fontWeight: 700}}>100%</div>
-            <div style={{fontSize: '13px', opacity: 0.8}}>安全保障</div>
-          </div>
+          <span style={{position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px'}}>🔍</span>
         </div>
       </div>
 
       {/* 主内容 */}
-      <div className="container">
+      <div className="container" style={{paddingTop: '16px', paddingBottom: '16px'}}>
         {/* 公告 */}
         {settings.notice && (
-          <div className="card" style={{marginBottom: '24px', padding: '14px 20px', display: 'flex', alignItems: 'center', gap: '10px'}}>
-            <span style={{fontSize: '18px'}}>📢</span>
-            <span style={{fontSize: '14px', color: 'var(--text-secondary)'}}>{settings.notice}</span>
+          <div style={{
+            marginBottom: '12px',
+            padding: '10px 14px',
+            background: '#fef3c7',
+            borderRadius: '8px',
+            fontSize: '13px',
+            color: '#92400e',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span>📢</span>
+            <span>{settings.notice}</span>
           </div>
         )}
 
-        {/* 分类标签 */}
-        <div className="category-tabs">
+        {/* 分类标签 - 精简一行 */}
+        <div style={{display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '12px'}}>
           <div
-            className={`category-tab ${activeCategory === 'all' ? 'active' : ''}`}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '9999px',
+              fontSize: '13px',
+              cursor: 'pointer',
+              background: activeCategory === 'all' ? '#7c3aed' : '#f3f4f6',
+              color: activeCategory === 'all' ? '#fff' : '#6b7280',
+              fontWeight: 500
+            }}
             onClick={() => setActiveCategory('all')}
           >
-            全部商品
+            全部
           </div>
           {categories.map((cat, i) => (
             <div
               key={i}
-              className={`category-tab ${activeCategory === cat ? 'active' : ''}`}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '9999px',
+                fontSize: '13px',
+                cursor: 'pointer',
+                background: activeCategory === cat ? '#7c3aed' : '#f3f4f6',
+                color: activeCategory === cat ? '#fff' : '#6b7280',
+                fontWeight: 500
+              }}
               onClick={() => setActiveCategory(cat)}
             >
               {cat}
@@ -188,7 +164,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* 商品列表 */}
+        {/* 商品列表 - 紧凑卡片 */}
         {loading ? (
           <div className="empty">
             <div className="spinner" style={{margin: '0 auto 16px'}}></div>
@@ -202,46 +178,41 @@ export default function Home() {
         ) : (
           <div className="product-grid">
             {filteredProducts.map((p) => (
-              <div key={p.id} className="product-card" onClick={() => goProduct(p.id)}>
-                <div className="product-card-img">
+              <div key={p.id} className="product-card" onClick={() => goProduct(p.id)} style={{cursor: 'pointer'}}>
+                <div className="product-card-img" style={{aspectRatio: '16/9'}}>
                   {p.image ? (
-                    <img src={p.image} alt={p.name} />
+                    <img src={p.image} alt={p.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                   ) : (
                     <div style={{
-                      position: 'absolute',
-                      top: 0, left: 0, right: 0, bottom: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '48px',
-                      background: 'linear-gradient(135deg, #ede9fe, #f3e8ff)'
+                      width: '100%', height: '100%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '36px', background: 'linear-gradient(135deg, #ede9fe, #f3e8ff)'
                     }}>🎁</div>
                   )}
-                  <div className="product-card-tag">
-                    {p.stock > 0 ? '自动发货' : '已售空'}
+                  <div style={{
+                    position: 'absolute',
+                    top: '8px', left: '8px',
+                    padding: '3px 8px',
+                    background: p.stock > 0 ? 'rgba(124,58,237,0.9)' : 'rgba(239,68,68,0.9)',
+                    color: '#fff',
+                    fontSize: '11px',
+                    borderRadius: '4px',
+                    fontWeight: 500
+                  }}>
+                    {p.stock > 0 ? '现货' : '售空'}
                   </div>
                 </div>
-                <div className="product-card-body">
-                  <div className="product-card-name">{p.name}</div>
-                  <div className="product-card-desc">{p.description || p.desc || '点击查看详情'}</div>
-                  <div className="product-card-bottom">
-                    <div className="product-card-price">
-                      <small>¥</small>{p.price}
-                      {p.original_price && p.original_price > p.price && (
-                        <span style={{
-                          fontSize: '12px',
-                          color: 'var(--text-muted)',
-                          textDecoration: 'line-through',
-                          marginLeft: '8px',
-                          fontWeight: 400
-                        }}>¥{p.original_price}</span>
-                      )}
+                <div style={{padding: '10px 12px'}}>
+                  <div style={{fontSize: '14px', fontWeight: 600, marginBottom: '4px', color: '#1f2937', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{p.name}</div>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <div style={{fontSize: '16px', fontWeight: 700, color: '#7c3aed'}}>
+                      <span style={{fontSize: '12px'}}>¥</span>{p.price}
                     </div>
-                    <button className="btn btn-primary btn-sm" onClick={(e) => {
+                    <button className="btn btn-primary btn-sm" style={{padding: '4px 10px', fontSize: '12px'}} onClick={(e) => {
                       e.stopPropagation();
                       goProduct(p.id);
                     }}>
-                      立即购买
+                      购买
                     </button>
                   </div>
                 </div>
@@ -251,13 +222,16 @@ export default function Home() {
         )}
       </div>
 
-      {/* 页脚 */}
-      <footer className="footer">
-        <div style={{marginBottom: '8px'}}>
-          {settings.site_name || 'Nova Key'} © {new Date().getFullYear()}
-          {settings.icp && <span style={{marginLeft: '16px'}}>{settings.icp}</span>}
-        </div>
-        {settings.footer && <div style={{fontSize: '12px'}}>{settings.footer}</div>}
+      {/* 精简页脚 */}
+      <footer style={{
+        textAlign: 'center',
+        padding: '16px 20px',
+        fontSize: '12px',
+        color: '#9ca3af',
+        borderTop: '1px solid #f3f4f6'
+      }}>
+        {settings.site_name || 'Nova Key'} © {new Date().getFullYear()}
+        {settings.icp && <span style={{marginLeft: '12px'}}>{settings.icp}</span>}
       </footer>
     </div>
   );

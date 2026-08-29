@@ -110,7 +110,7 @@ export default function ProductDetail() {
 
   return (
     <div>
-      {/* 导航栏 */}
+      {/* 精简导航 */}
       <nav className="nav">
         <div className="nav-inner">
           <div className="nav-logo" onClick={() => router.push('/')} style={{cursor:'pointer'}}>
@@ -118,92 +118,95 @@ export default function ProductDetail() {
             <span>Nova Key</span>
           </div>
           <div className="nav-right">
-            <button className="btn btn-secondary btn-sm" onClick={() => router.push('/')}>← 返回首页</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => router.push('/')}>← 返回</button>
           </div>
         </div>
       </nav>
 
-      <div className="container">
-        <div className="card" style={{overflow: 'hidden', marginBottom: '24px'}}>
+      <div className="container" style={{paddingTop: '12px', paddingBottom: '12px'}}>
+        {/* 商品主区域 - 紧凑 */}
+        <div style={{
+          background: '#fff',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          marginBottom: '12px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
+        }}>
           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0'}}>
-            {/* 商品图片 */}
+            {/* 商品图片 - 去掉重复状态标签 */}
             <div style={{
-              background: 'var(--bg-hover)',
-              minHeight: '400px',
+              background: '#f9fafb',
+              minHeight: '300px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative'
+              justifyContent: 'center'
             }}>
               {product.image ? (
-                <img src={product.image} alt={product.name} style={{maxWidth: '100%', maxHeight: '400px', objectFit: 'contain'}} />
+                <img src={product.image} alt={product.name} style={{maxWidth: '100%', maxHeight: '300px', objectFit: 'contain'}} />
               ) : (
-                <div style={{fontSize: '120px'}}>🎁</div>
+                <div style={{fontSize: '80px'}}>🎁</div>
               )}
-              <div style={{
-                position: 'absolute',
-                top: '16px',
-                left: '16px',
-                padding: '6px 14px',
-                background: product.stock > 0 ? 'var(--success)' : 'var(--danger)',
-                color: '#fff',
-                borderRadius: '9999px',
-                fontSize: '13px',
-                fontWeight: 600
-              }}>
-                {product.stock > 0 ? '现货充足' : '已售空'}
-              </div>
             </div>
 
-            {/* 商品信息 */}
-            <div style={{padding: '32px'}}>
-              <h1 style={{fontSize: '24px', fontWeight: 700, marginBottom: '12px', color: 'var(--text)'}}>
+            {/* 商品信息 - 紧凑，减少留白 */}
+            <div style={{padding: '20px'}}>
+              <h1 style={{fontSize: '18px', fontWeight: 700, marginBottom: '8px', color: '#1f2937'}}>
                 {product.name}
               </h1>
+
               {product.category && (
-                <div style={{marginBottom: '16px'}}>
-                  <span className="badge badge-primary">{product.category}</span>
+                <div style={{marginBottom: '12px'}}>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '2px 8px',
+                    background: '#ede9fe',
+                    color: '#7c3aed',
+                    fontSize: '12px',
+                    borderRadius: '4px',
+                    fontWeight: 500
+                  }}>{product.category}</span>
                 </div>
               )}
+
+              {/* 价格 - 缩小，不再傻大 */}
               <div style={{
-                background: 'linear-gradient(135deg, #fef2f2, #fff1f2)',
-                borderRadius: '12px',
-                padding: '20px',
-                marginBottom: '24px'
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: '8px',
+                marginBottom: '12px'
               }}>
-                <div style={{fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '4px'}}>价格</div>
-                <div style={{display: 'flex', alignItems: 'baseline', gap: '12px'}}>
-                  <span style={{fontSize: '36px', fontWeight: 800, color: 'var(--danger)'}}>
-                    ¥{product.price}
+                <span style={{fontSize: '24px', fontWeight: 700, color: '#dc2626'}}>
+                  <span style={{fontSize: '14px'}}>¥</span>{product.price}
+                </span>
+                {product.original_price && product.original_price > product.price && (
+                  <span style={{fontSize: '13px', color: '#9ca3af', textDecoration: 'line-through'}}>
+                    ¥{product.original_price}
                   </span>
-                  {product.original_price && product.original_price > product.price && (
-                    <span style={{fontSize: '16px', color: 'var(--text-muted)', textDecoration: 'line-through'}}>
-                      ¥{product.original_price}
-                    </span>
-                  )}
-                </div>
+                )}
               </div>
 
-              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px'}}>
-                <div style={{padding: '12px', background: 'var(--bg)', borderRadius: '8px'}}>
-                  <div style={{fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px'}}>库存</div>
-                  <div style={{fontSize: '18px', fontWeight: 600}}>{product.stock} 件</div>
-                </div>
-                <div style={{padding: '12px', background: 'var(--bg)', borderRadius: '8px'}}>
-                  <div style={{fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px'}}>销量</div>
-                  <div style={{fontSize: '18px', fontWeight: 600}}>{product.sales || 0} 件</div>
-                </div>
+              {/* 库存销量 - 一行，缩小 */}
+              <div style={{
+                display: 'flex',
+                gap: '16px',
+                marginBottom: '12px',
+                fontSize: '13px',
+                color: '#6b7280'
+              }}>
+                <span>库存：<span style={{fontWeight: 600, color: product.stock > 0 ? '#059669' : '#dc2626'}}>{product.stock} 件</span></span>
+                <span>销量：<span style={{fontWeight: 600, color: '#1f2937'}}>{product.sales || 0} 件</span></span>
               </div>
 
+              {/* 描述 - 短描述不占大块 */}
               {product.description && (
-                <p style={{fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: 1.8}}>
+                <p style={{fontSize: '13px', color: '#6b7280', marginBottom: '16px', lineHeight: 1.6}}>
                   {product.description}
                 </p>
               )}
 
               <button
-                className="btn btn-primary btn-lg"
-                style={{width: '100%', fontSize: '16px'}}
+                className="btn btn-primary"
+                style={{width: '100%', fontSize: '15px', padding: '10px'}}
                 disabled={product.stock <= 0}
                 onClick={() => setShowBuy(true)}
               >
@@ -213,19 +216,18 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* 商品详情 */}
-        <div className="card">
-          <div className="card-header">
-            <div className="card-title">商品详情</div>
+        {/* 商品详情 - 有内容才显示 */}
+        {product.detail && (
+          <div style={{
+            background: '#fff',
+            borderRadius: '12px',
+            padding: '16px 20px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
+          }}>
+            <div style={{fontSize: '15px', fontWeight: 600, marginBottom: '12px', color: '#1f2937'}}>商品详情</div>
+            <div style={{lineHeight: 1.8, fontSize: '14px', color: '#4b5563'}} dangerouslySetInnerHTML={{__html: product.detail}} />
           </div>
-          <div className="card-body" style={{lineHeight: 1.8, fontSize: '15px'}}>
-            {product.detail ? (
-              <div dangerouslySetInnerHTML={{__html: product.detail}} />
-            ) : (
-              <p style={{color: 'var(--text-muted)'}}>暂无详细描述</p>
-            )}
-          </div>
-        </div>
+        )}
       </div>
 
       {/* 购买弹窗 */}
@@ -240,20 +242,19 @@ export default function ProductDetail() {
               {!order ? (
                 <>
                   <div style={{
-                    padding: '16px',
-                    background: 'var(--bg)',
+                    padding: '12px',
+                    background: '#f9fafb',
                     borderRadius: '8px',
-                    marginBottom: '20px'
+                    marginBottom: '16px'
                   }}>
-                    <div style={{fontWeight: 600, marginBottom: '8px'}}>{product.name}</div>
-                    <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'var(--text-secondary)'}}>
+                    <div style={{fontWeight: 600, marginBottom: '6px', fontSize: '14px'}}>{product.name}</div>
+                    <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#6b7280'}}>
                       <span>单价：¥{product.price}</span>
                       <span>库存：{product.stock}</span>
                     </div>
                   </div>
-
                   <div className="form-group">
-                    <label className="form-label">联系方式（QQ/邮箱/手机号，仅数字字母，不少于5位）</label>
+                    <label className="form-label">联系方式（仅数字字母，不少于5位）</label>
                     <input
                       type="text"
                       className="form-input"
@@ -262,71 +263,68 @@ export default function ProductDetail() {
                       onChange={(e) => setContact(e.target.value)}
                     />
                   </div>
-
                   <div className="form-group">
                     <label className="form-label">购买数量</label>
                     <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
                       <button className="btn btn-secondary btn-sm" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
-                      <span style={{fontSize: '18px', fontWeight: 600, minWidth: '40px', textAlign: 'center'}}>{quantity}</span>
+                      <span style={{fontSize: '16px', fontWeight: 600, minWidth: '40px', textAlign: 'center'}}>{quantity}</span>
                       <button className="btn btn-secondary btn-sm" onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}>+</button>
                     </div>
                   </div>
-
                   <div className="form-group">
                     <label className="form-label">支付方式</label>
-                    <div style={{display: 'flex', gap: '12px'}}>
+                    <div style={{display: 'flex', gap: '10px'}}>
                       <div
                         style={{
                           flex: 1,
-                          padding: '12px',
+                          padding: '10px',
                           border: '2px solid',
-                          borderColor: payMethod === 'alipay' ? 'var(--primary)' : 'var(--border)',
+                          borderColor: payMethod === 'alipay' ? '#7c3aed' : '#e5e7eb',
                           borderRadius: '8px',
                           cursor: 'pointer',
                           textAlign: 'center',
-                          background: payMethod === 'alipay' ? 'var(--primary-light)' : 'transparent'
+                          background: payMethod === 'alipay' ? '#f5f3ff' : 'transparent'
                         }}
                         onClick={() => setPayMethod('alipay')}
                       >
-                        <div style={{fontSize: '24px'}}>💙</div>
-                        <div style={{fontSize: '13px', marginTop: '4px'}}>支付宝</div>
+                        <div style={{fontSize: '20px'}}>💙</div>
+                        <div style={{fontSize: '12px', marginTop: '4px'}}>支付宝</div>
                       </div>
                       <div
                         style={{
                           flex: 1,
-                          padding: '12px',
+                          padding: '10px',
                           border: '2px solid',
-                          borderColor: payMethod === 'wechat' ? 'var(--primary)' : 'var(--border)',
+                          borderColor: payMethod === 'wechat' ? '#7c3aed' : '#e5e7eb',
                           borderRadius: '8px',
                           cursor: 'pointer',
                           textAlign: 'center',
-                          background: payMethod === 'wechat' ? 'var(--primary-light)' : 'transparent'
+                          background: payMethod === 'wechat' ? '#f5f3ff' : 'transparent'
                         }}
                         onClick={() => setPayMethod('wechat')}
                       >
-                        <div style={{fontSize: '24px'}}>💚</div>
-                        <div style={{fontSize: '13px', marginTop: '4px'}}>微信支付</div>
+                        <div style={{fontSize: '20px'}}>💚</div>
+                        <div style={{fontSize: '12px', marginTop: '4px'}}>微信支付</div>
                       </div>
                     </div>
                   </div>
-
                   <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    padding: '16px',
-                    background: 'var(--bg)',
+                    padding: '12px',
+                    background: '#f9fafb',
                     borderRadius: '8px',
-                    marginTop: '20px'
+                    marginTop: '16px'
                   }}>
-                    <span style={{fontSize: '14px', color: 'var(--text-secondary)'}}>合计</span>
-                    <span style={{fontSize: '24px', fontWeight: 700, color: 'var(--danger)'}}>¥{(product.price * quantity).toFixed(2)}</span>
+                    <span style={{fontSize: '14px', color: '#6b7280'}}>合计</span>
+                    <span style={{fontSize: '20px', fontWeight: 700, color: '#dc2626'}}>¥{(product.price * quantity).toFixed(2)}</span>
                   </div>
                 </>
               ) : (
                 <div style={{textAlign: 'center'}}>
                   <div style={{fontSize: '48px', marginBottom: '16px'}}>✅</div>
                   <h3 style={{fontSize: '20px', fontWeight: 700, marginBottom: '8px'}}>支付成功</h3>
-                  <p style={{fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px'}}>
+                  <p style={{fontSize: '14px', color: '#6b7280', marginBottom: '20px'}}>
                     订单号：{order.order_no || order.id}
                   </p>
                   {order.cards && order.cards.length > 0 && (
@@ -334,8 +332,8 @@ export default function ProductDetail() {
                       <div style={{fontSize: '14px', fontWeight: 600, marginBottom: '12px'}}>您的卡密：</div>
                       {order.cards.map((card, i) => (
                         <div key={i} style={{
-                          padding: '12px',
-                          background: 'var(--bg)',
+                          padding: '10px',
+                          background: '#f9fafb',
                           borderRadius: '8px',
                           marginBottom: '8px',
                           display: 'flex',
@@ -349,8 +347,8 @@ export default function ProductDetail() {
                     </div>
                   )}
                   {(!order.cards || order.cards.length === 0) && (
-                    <div style={{padding: '16px', background: 'var(--bg)', borderRadius: '8px', marginBottom: '20px'}}>
-                      <p style={{fontSize: '14px', color: 'var(--text-secondary)'}}>卡密将在支付确认后自动发放，请在订单查询中查看</p>
+                    <div style={{padding: '16px', background: '#f9fafb', borderRadius: '8px', marginBottom: '20px'}}>
+                      <p style={{fontSize: '14px', color: '#6b7280'}}>卡密将在支付确认后自动发放，请在订单查询中查看</p>
                     </div>
                   )}
                 </div>
