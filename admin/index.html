@@ -6,150 +6,183 @@
     <title>管理后台 - 自动发卡商城</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        .admin-container { max-width: 900px; }
+        .admin-container { max-width: 1000px; }
+        .admin-page-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+        }
+        .admin-page-header h2 { font-size: 20px; font-weight: 700; }
+        .logout-btn {
+            background: none; border: none; color: #8c8c8c; cursor: pointer;
+            font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: all 0.2s;
+        }
+        .logout-btn:hover { background: #fff2f0; color: #ff4d4f; }
+
+        /* 登录页 */
         .login-box {
-            background: #fff;
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 400px;
-            margin: 60px auto;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-            text-align: center;
+            background: #fff; border: 1px solid #f0f0f0; border-radius: 14px;
+            padding: 36px; max-width: 380px; margin: 60px auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center;
         }
-        .login-box h2 { margin-bottom: 24px; }
+        .login-box h2 { margin-bottom: 6px; font-size: 20px; }
+        .login-box .login-sub { font-size: 13px; color: #8c8c8c; margin-bottom: 24px; }
         .form-group { margin-bottom: 16px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 14px; color: #666; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #595959; font-weight: 500; }
         .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
+            width: 100%; padding: 10px 12px; border: 1px solid #e8e8e8;
+            border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;
+            background: #fff; color: #1f1f1f;
         }
-        .form-group input:focus, .form-group textarea:focus {
-            border-color: #667eea;
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: #1677ff; box-shadow: 0 0 0 2px rgba(22,119,255,0.1);
         }
-        .form-group textarea { min-height: 120px; resize: vertical; font-family: monospace; }
+        .form-group textarea { min-height: 100px; resize: vertical; font-family: monospace; font-size: 13px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .hint { font-size: 12px; color: #8c8c8c; margin-top: 6px; }
+
+        /* Tab 导航 */
         .tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 24px;
-            border-bottom: 2px solid #eee;
+            display: flex; gap: 2px; margin-bottom: 20px;
+            background: #fff; border: 1px solid #f0f0f0; border-radius: 10px; padding: 4px;
+            overflow-x: auto;
         }
         .tab {
-            padding: 12px 20px;
-            cursor: pointer;
-            font-size: 15px;
-            color: #666;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-            transition: all 0.2s;
+            padding: 10px 18px; cursor: pointer; font-size: 14px; color: #595959;
+            border-radius: 7px; transition: all 0.2s; white-space: nowrap; font-weight: 500;
         }
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-            font-weight: 600;
-        }
+        .tab:hover { background: #f5f7fa; color: #1677ff; }
+        .tab.active { background: #1677ff; color: #fff; font-weight: 600; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+
+        /* 卡片 */
         .admin-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            background: #fff; border: 1px solid #f0f0f0; border-radius: 12px;
+            padding: 20px; margin-bottom: 16px;
         }
-        .admin-card h3 { margin-bottom: 16px; font-size: 18px; }
+        .admin-card h3 { margin-bottom: 16px; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .admin-card h3::before { content:''; width:3px; height:14px; background:#1677ff; border-radius:2px; }
+
+        /* 统计卡片 */
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+        .stat-card {
+            background: #fff; border: 1px solid #f0f0f0; border-radius: 12px;
+            padding: 18px; text-align: center;
+        }
+        .stat-value { font-size: 26px; font-weight: 700; color: #1677ff; }
+        .stat-value.green { color: #52c41a; }
+        .stat-value.orange { color: #faad14; }
+        .stat-value.red { color: #ff4d4f; }
+        .stat-label { font-size: 12px; color: #8c8c8c; margin-top: 4px; }
+
+        /* 商品列表 */
         .product-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 0; border-bottom: 1px solid #f5f5f5;
         }
         .product-row:last-child { border-bottom: none; }
         .product-info { flex: 1; }
-        .product-info .name { font-weight: 600; font-size: 15px; }
-        .product-info .meta { font-size: 13px; color: #999; margin-top: 4px; }
-        .product-price { font-size: 18px; font-weight: 700; color: #e74c3c; }
-        .order-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        .order-table th, .order-table td {
-            padding: 10px 8px;
-            text-align: left;
-            border-bottom: 1px solid #f0f0f0;
+        .product-info .name { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        .product-info .meta { font-size: 12px; color: #8c8c8c; margin-top: 4px; }
+        .product-price { font-size: 18px; font-weight: 700; color: #ff4d4f; margin-right: 16px; }
+        .product-actions { display: flex; gap: 6px; }
+        .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            font-size: 11px; font-weight: 600;
         }
-        .order-table th { background: #f9f9f9; font-weight: 600; color: #666; }
+        .badge-active { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
+        .badge-inactive { background: #f5f5f5; color: #8c8c8c; border: 1px solid #e8e8e8; }
+
+        /* 表格 */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table th, .data-table td {
+            padding: 10px 8px; text-align: left; border-bottom: 1px solid #f5f5f5;
+        }
+        .data-table th { background: #fafafa; font-weight: 600; color: #595959; font-size: 12px; }
+        .data-table tr:hover td { background: #fafafa; }
+        .table-wrap { overflow-x: auto; }
+
         .status-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            font-size: 11px; font-weight: 600;
         }
-        .status-pending { background: #fff7e6; color: #fa8c16; }
+        .status-pending { background: #fffbe6; color: #faad14; }
         .status-paid { background: #f6ffed; color: #52c41a; }
-        .status-failed { background: #fff1f0; color: #f5222d; }
-        .logout-btn {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 8px 12px;
+        .status-failed { background: #fff2f0; color: #ff4d4f; }
+
+        /* 卡密列表 */
+        .card-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid #f5f5f5; font-size: 13px;
         }
-        .logout-btn:hover { color: #e74c3c; }
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+        .card-row:last-child { border-bottom: none; }
+        .card-content-text {
+            font-family: monospace; flex: 1; margin-right: 12px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 400px;
         }
-        .hint { font-size: 13px; color: #999; margin-top: 8px; }
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
+        .card-meta { font-size: 11px; color: #8c8c8c; margin-right: 12px; white-space: nowrap; }
+
+        /* 编辑弹窗 */
+        .edit-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center;
+            z-index: 1000; backdrop-filter: blur(2px);
         }
-        .stat-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        .edit-modal-content {
+            background: #fff; border-radius: 14px; padding: 24px;
+            max-width: 480px; width: 90%; max-height: 85vh; overflow-y: auto;
+            position: relative; box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         }
-        .stat-value { font-size: 28px; font-weight: 700; color: #667eea; }
-        .stat-label { font-size: 13px; color: #999; margin-top: 4px; }
+        .edit-modal-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;
+        }
+        .edit-modal-header h3 { font-size: 17px; font-weight: 600; }
+        .edit-modal-close { font-size: 22px; cursor: pointer; color: #8c8c8c; line-height: 1; }
+        .edit-modal-close:hover { color: #1f1f1f; }
+
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
+        .filter-bar select { padding: 7px 10px; border: 1px solid #e8e8e8; border-radius: 6px; font-size: 13px; outline: none; }
+
+        @media (max-width: 768px) {
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .product-row { flex-wrap: wrap; gap: 8px; }
+            .product-actions { width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <h1 class="logo">管理后台</h1>
-            <p class="subtitle">自动发卡商城 · 管理控制台</p>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="/" class="navbar-brand">
+                <div class="logo-icon">卡</div>
+                <span>管理后台</span>
+            </a>
+            <div class="navbar-links">
+                <a class="navbar-link" href="/">返回商城</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="container admin-container">
+    <main class="container admin-container" style="padding-top:24px;">
         <!-- 登录页 -->
         <div id="login-page">
             <div class="login-box">
                 <h2>管理员登录</h2>
+                <p class="login-sub">请输入管理密码以继续</p>
                 <div class="form-group">
                     <label>管理密码</label>
                     <input type="password" id="login-password" placeholder="请输入管理密码">
                 </div>
-                <button class="btn btn-primary" onclick="doLogin()" style="width:100%;">登录</button>
-                <p class="hint">密码在 Vercel 环境变量 ADMIN_PASSWORD 中设置</p>
+                <button class="btn btn-primary" onclick="doLogin()" style="width:100%;">登 录</button>
+                <p class="hint" style="text-align:center;margin-top:14px;">密码在 Vercel 环境变量 ADMIN_PASSWORD 中设置</p>
             </div>
         </div>
 
         <!-- 管理面板 -->
         <div id="admin-page" style="display:none;">
-            <div class="admin-header">
-                <h2 style="font-size:20px;">控制台</h2>
+            <div class="admin-page-header">
+                <h2>控制台</h2>
                 <button class="logout-btn" onclick="doLogout()">退出登录</button>
             </div>
 
@@ -160,11 +193,15 @@
                     <div class="stat-label">总订单数</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="stat-paid-orders">-</div>
+                    <div class="stat-value green" id="stat-paid-orders">-</div>
                     <div class="stat-label">已支付订单</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="stat-total-amount">-</div>
+                    <div class="stat-value orange" id="stat-pending-orders">-</div>
+                    <div class="stat-label">待支付订单</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value red" id="stat-total-amount">-</div>
                     <div class="stat-label">总营收(元)</div>
                 </div>
             </div>
@@ -172,62 +209,114 @@
             <!-- Tab 导航 -->
             <div class="tabs">
                 <div class="tab active" onclick="switchTab('products')">商品管理</div>
-                <div class="tab" onclick="switchTab('cards')">卡密导入</div>
-                <div class="tab" onclick="switchTab('orders')">订单列表</div>
+                <div class="tab" onclick="switchTab('cards')">卡密管理</div>
+                <div class="tab" onclick="switchTab('orders')">订单管理</div>
+                <div class="tab" onclick="switchTab('settings')">网站设置</div>
             </div>
 
-            <!-- 商品管理 -->
+            <!-- ========== 商品管理 ========== -->
             <div id="tab-products" class="tab-content active">
                 <div class="admin-card">
                     <h3>添加商品</h3>
-                    <div class="form-group">
-                        <label>商品名称</label>
-                        <input type="text" id="new-product-name" placeholder="例如：XX会员月卡">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>商品名称</label>
+                            <input type="text" id="new-product-name" placeholder="例如：XX会员月卡">
+                        </div>
+                        <div class="form-group">
+                            <label>价格（元）</label>
+                            <input type="number" id="new-product-price" step="0.01" min="0.01" placeholder="例如：29.90">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>排序（数字越小越靠前）</label>
+                            <input type="number" id="new-product-sort" value="0" min="0">
+                        </div>
+                        <div class="form-group" style="display:flex;align-items:flex-end;">
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                <input type="checkbox" id="new-product-active" checked style="width:auto;">
+                                立即上架
+                            </label>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>商品描述</label>
-                        <textarea id="new-product-desc" placeholder="商品描述（可选）"></textarea>
+                        <textarea id="new-product-desc" placeholder="商品描述（可选）" style="min-height:70px;font-family:inherit;"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>价格（元）</label>
-                        <input type="number" id="new-product-price" step="0.01" min="0.01" placeholder="例如：29.90">
-                    </div>
-                    <button class="btn btn-primary" onclick="addProduct()">添加商品</button>
+                    <button class="btn btn-primary" onclick="addProduct()" style="width:auto;padding:10px 28px;">添加商品</button>
                 </div>
 
                 <div class="admin-card">
                     <h3>商品列表</h3>
-                    <div id="product-list-admin"></div>
+                    <div id="product-list-admin">
+                        <div class="empty-state"><p>加载中...</p></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 卡密导入 -->
+            <!-- ========== 卡密管理 ========== -->
             <div id="tab-cards" class="tab-content">
                 <div class="admin-card">
                     <h3>批量导入卡密</h3>
-                    <div class="form-group">
-                        <label>选择商品</label>
-                        <select id="card-product-select"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>卡密类型（可选）</label>
-                        <input type="text" id="card-type" placeholder="例如：卡号密码 / 激活码 / default" value="default">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>选择商品</label>
+                            <select id="card-product-select"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>卡密类型（可选）</label>
+                            <input type="text" id="card-type" placeholder="例如：激活码 / 卡号密码" value="default">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>卡密内容（每行一条）</label>
                         <textarea id="card-content" placeholder="XXXX-XXXX-XXXX-XXXX&#10;YYYY-YYYY-YYYY-YYYY&#10;ZZZZ-ZZZZ-ZZZZ-ZZZZ"></textarea>
                     </div>
-                    <button class="btn btn-primary" onclick="importCards()">导入卡密</button>
-                    <p class="hint">单次最多导入500条，导入后可在商品列表查看库存</p>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn btn-primary" onclick="importCards()" style="width:auto;padding:10px 28px;">导入卡密</button>
+                        <button class="btn btn-secondary" onclick="clearCardInput()" style="width:auto;padding:10px 20px;">清空输入</button>
+                    </div>
+                    <p class="hint">单次最多导入500条，导入后可在下方查看卡密库存</p>
+                </div>
+
+                <div class="admin-card">
+                    <h3>卡密库存与管理</h3>
+                    <div class="filter-bar">
+                        <select id="card-manage-product" onchange="loadCardManageList()">
+                            <option value="">选择商品查看卡密</option>
+                        </select>
+                        <select id="card-manage-status" onchange="loadCardManageList()">
+                            <option value="">全部状态</option>
+                            <option value="available">未使用</option>
+                            <option value="used">已使用</option>
+                        </select>
+                        <span id="card-stats-info" style="font-size:13px;color:#8c8c8c;"></span>
+                    </div>
+                    <div id="card-manage-list">
+                        <div class="empty-state"><p>请先选择商品</p></div>
+                    </div>
+                    <div id="card-clear-btn-wrap" style="margin-top:12px;display:none;">
+                        <button class="btn btn-danger btn-sm" onclick="clearAvailableCards()">清空该商品所有未使用卡密</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- 订单列表 -->
+            <!-- ========== 订单管理 ========== -->
             <div id="tab-orders" class="tab-content">
                 <div class="admin-card">
-                    <h3>最近订单</h3>
-                    <div style="overflow-x:auto;">
-                        <table class="order-table">
+                    <h3>订单列表</h3>
+                    <div class="filter-bar">
+                        <select id="order-filter-status" onchange="loadOrders()">
+                            <option value="">全部状态</option>
+                            <option value="pending">待支付</option>
+                            <option value="paid">已支付</option>
+                            <option value="failed">已失败</option>
+                        </select>
+                        <span style="font-size:13px;color:#8c8c8c;">最多显示最近200条</span>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>订单号</th>
@@ -236,6 +325,7 @@
                                     <th>金额</th>
                                     <th>状态</th>
                                     <th>创建时间</th>
+                                    <th>操作</th>
                                 </tr>
                             </thead>
                             <tbody id="order-table-body"></tbody>
@@ -243,256 +333,664 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ========== 网站设置 ========== -->
+            <div id="tab-settings" class="tab-content">
+                <div class="admin-card">
+                    <h3>基本信息</h3>
+                    <div class="form-group">
+                        <label>网站名称</label>
+                        <input type="text" id="setting-site-name" placeholder="例如：自动发卡商城">
+                    </div>
+                    <div class="form-group">
+                        <label>网站副标题</label>
+                        <input type="text" id="setting-site-subtitle" placeholder="例如：24小时自动发货 · 扫码即购">
+                    </div>
+                    <div class="form-group">
+                        <label>网站描述（SEO）</label>
+                        <textarea id="setting-site-description" placeholder="网站描述" style="min-height:60px;font-family:inherit;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>首页公告（支持换行，留空则不显示）</label>
+                        <textarea id="setting-announcement" placeholder="欢迎光临！本站24小时自动发货..." style="min-height:70px;font-family:inherit;"></textarea>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h3>联系方式</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>QQ号</label>
+                            <input type="text" id="setting-contact-qq" placeholder="例如：123456789">
+                        </div>
+                        <div class="form-group">
+                            <label>微信号</label>
+                            <input type="text" id="setting-contact-wechat" placeholder="例如：weixin123">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱</label>
+                        <input type="text" id="setting-contact-email" placeholder="例如：admin@example.com">
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h3>页脚与其他</h3>
+                    <div class="form-group">
+                        <label>页脚文字</label>
+                        <input type="text" id="setting-footer-text" placeholder="例如：© 2026 自动发卡商城">
+                    </div>
+                    <div class="form-group">
+                        <label>ICP备案号（可选）</label>
+                        <input type="text" id="setting-icp-number" placeholder="例如：冀ICP备XXXXXXXX号">
+                    </div>
+                    <div class="form-group">
+                        <label>支付页面提示文字</label>
+                        <input type="text" id="setting-payment-tip" placeholder="例如：请使用支付宝扫码支付，支付成功后将自动跳转">
+                    </div>
+                    <div class="form-group">
+                        <label>库存预警阈值（低于此数量显示"库存紧张"）</label>
+                        <input type="number" id="setting-stock-warning" value="5" min="0">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveSettings()" style="width:auto;padding:10px 32px;">保存所有设置</button>
+            </div>
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 自动发卡商城 · 管理后台</p>
+    <!-- 编辑商品弹窗 -->
+    <div id="edit-product-modal" class="edit-modal" style="display:none;">
+        <div class="edit-modal-content">
+            <div class="edit-modal-header">
+                <h3>编辑商品</h3>
+                <span class="edit-modal-close" onclick="closeEditProductModal()">&times;</span>
+            </div>
+            <input type="hidden" id="edit-product-id">
+            <div class="form-group">
+                <label>商品名称</label>
+                <input type="text" id="edit-product-name">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>价格（元）</label>
+                    <input type="number" id="edit-product-price" step="0.01" min="0.01">
+                </div>
+                <div class="form-group">
+                    <label>排序</label>
+                    <input type="number" id="edit-product-sort" min="0">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>商品描述</label>
+                <textarea id="edit-product-desc" style="min-height:70px;font-family:inherit;"></textarea>
+            </div>
+            <div class="form-group">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                    <input type="checkbox" id="edit-product-active" style="width:auto;">
+                    上架销售
+                </label>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:8px;">
+                <button class="btn btn-primary" onclick="saveEditProduct()" style="flex:1;">保存修改</button>
+                <button class="btn btn-secondary" onclick="closeEditProductModal()" style="flex:1;">取消</button>
+            </div>
         </div>
-    </footer>
+    </div>
+
+    <!-- 订单备注弹窗 -->
+    <div id="remark-modal" class="edit-modal" style="display:none;">
+        <div class="edit-modal-content" style="max-width:400px;">
+            <div class="edit-modal-header">
+                <h3>订单备注</h3>
+                <span class="edit-modal-close" onclick="closeRemarkModal()">&times;</span>
+            </div>
+            <input type="hidden" id="remark-order-id">
+            <div class="form-group">
+                <label>备注内容</label>
+                <textarea id="remark-content" placeholder="输入备注信息..." style="min-height:100px;"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn-primary" onclick="saveRemark()" style="flex:1;">保存</button>
+                <button class="btn btn-secondary" onclick="closeRemarkModal()" style="flex:1;">取消</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        const API_BASE = window.location.hostname === 'localhost'
-            ? 'http://localhost:3000/api'
-            : '/api';
+    // ============================================
+    // 管理后台逻辑
+    // ============================================
+    const API_BASE = window.location.hostname === 'localhost'
+        ? 'http://localhost:3000/api'
+        : '/api';
 
-        let adminToken = localStorage.getItem('admin_token');
+    let adminToken = localStorage.getItem('admin_token');
+    let allProducts = [];
 
-        // 初始化
-        if (adminToken) {
-            showAdminPage();
-        }
+    // 初始化
+    if (adminToken) {
+        showAdminPage();
+    }
 
-        // 登录
-        async function doLogin() {
-            const password = document.getElementById('login-password').value;
-            if (!password) { alert('请输入密码'); return; }
-
-            try {
-                const res = await fetch(`${API_BASE}/admin-login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password })
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    adminToken = data.token;
-                    localStorage.setItem('admin_token', adminToken);
-                    showAdminPage();
-                } else {
-                    alert(data.message || '登录失败');
-                }
-            } catch (err) {
-                alert('网络错误');
+    // ========== 登录 ==========
+    async function doLogin() {
+        const password = document.getElementById('login-password').value;
+        if (!password) { showToast('请输入密码', 'warning'); return; }
+        try {
+            const res = await fetch(`${API_BASE}/admin-login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                adminToken = data.token;
+                localStorage.setItem('admin_token', adminToken);
+                showAdminPage();
+                showToast('登录成功', 'success');
+            } else {
+                showToast(data.message || '登录失败', 'error');
             }
+        } catch (err) {
+            showToast('网络错误', 'error');
         }
+    }
 
-        // 退出
-        function doLogout() {
-            localStorage.removeItem('admin_token');
-            adminToken = null;
-            document.getElementById('login-page').style.display = 'block';
-            document.getElementById('admin-page').style.display = 'none';
+    function doLogout() {
+        localStorage.removeItem('admin_token');
+        adminToken = null;
+        document.getElementById('login-page').style.display = 'block';
+        document.getElementById('admin-page').style.display = 'none';
+    }
+
+    function showAdminPage() {
+        document.getElementById('login-page').style.display = 'none';
+        document.getElementById('admin-page').style.display = 'block';
+        loadProducts();
+        loadOrders();
+        loadSettings();
+    }
+
+    // ========== Tab 切换 ==========
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('tab-' + name).classList.add('active');
+        if (name === 'orders') loadOrders();
+        if (name === 'products') loadProducts();
+        if (name === 'cards') { loadProductSelect(); loadCardManageProductSelect(); }
+    }
+
+    // ========== 鉴权请求 ==========
+    async function authFetch(url, options = {}) {
+        options.headers = { ...options.headers, 'Authorization': `Bearer ${adminToken}` };
+        const res = await fetch(url, options);
+        if (res.status === 401) {
+            doLogout();
+            showToast('登录已过期，请重新登录', 'warning');
+            throw new Error('Unauthorized');
         }
+        return res.json();
+    }
 
-        // 显示管理页
-        function showAdminPage() {
-            document.getElementById('login-page').style.display = 'none';
-            document.getElementById('admin-page').style.display = 'block';
-            loadProducts();
-            loadOrders();
-        }
-
-        // 切换Tab
-        function switchTab(name) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById('tab-' + name).classList.add('active');
-
-            if (name === 'orders') loadOrders();
-            if (name === 'products') loadProducts();
-            if (name === 'cards') loadProductSelect();
-        }
-
-        // 鉴权请求
-        async function authFetch(url, options = {}) {
-            options.headers = {
-                ...options.headers,
-                'Authorization': `Bearer ${adminToken}`
-            };
-            const res = await fetch(url, options);
-            if (res.status === 401) {
-                doLogout();
-                alert('登录已过期，请重新登录');
-                throw new Error('Unauthorized');
+    // ========== 商品管理 ==========
+    async function loadProducts() {
+        try {
+            const data = await authFetch(`${API_BASE}/admin-products`);
+            if (data.success) {
+                allProducts = data.products;
+                renderProducts(data.products);
+                renderProductSelect(data.products);
             }
-            return res.json();
-        }
+        } catch (err) { console.error(err); }
+    }
 
-        // 加载商品
-        async function loadProducts() {
-            try {
-                const data = await authFetch(`${API_BASE}/admin-products`);
-                if (data.success) {
-                    renderProducts(data.products);
-                    renderProductSelect(data.products);
-                }
-            } catch (err) {
-                console.error(err);
-            }
+    function renderProducts(products) {
+        const container = document.getElementById('product-list-admin');
+        if (products.length === 0) {
+            container.innerHTML = '<div class="empty-state"><div class="icon">📦</div><p>暂无商品，点击上方添加</p></div>';
+            return;
         }
-
-        // 渲染商品列表
-        function renderProducts(products) {
-            const container = document.getElementById('product-list-admin');
-            if (products.length === 0) {
-                container.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">暂无商品</p>';
-                return;
-            }
-            container.innerHTML = products.map(p => `
-                <div class="product-row">
-                    <div class="product-info">
-                        <div class="name">${escapeHtml(p.name)}</div>
-                        <div class="meta">${escapeHtml(p.description || '无描述')} · 库存：${p.stock} 件</div>
+        container.innerHTML = products.map(p => `
+            <div class="product-row">
+                <div class="product-info">
+                    <div class="name">
+                        ${escapeHtml(p.name)}
+                        <span class="badge ${p.is_active ? 'badge-active' : 'badge-inactive'}">${p.is_active ? '已上架' : '已下架'}</span>
                     </div>
-                    <div class="product-price">¥${p.price.toFixed(2)}</div>
+                    <div class="meta">${escapeHtml(p.description || '无描述')} · 库存：${p.stock} 件 · 排序：${p.sort_order || 0}</div>
                 </div>
-            `).join('');
+                <div class="product-price">¥${Number(p.price).toFixed(2)}</div>
+                <div class="product-actions">
+                    <button class="btn btn-secondary btn-sm" onclick='openEditProduct(${JSON.stringify(p).replace(/'/g, "&#39;")})'>编辑</button>
+                    <button class="btn btn-secondary btn-sm" onclick="toggleProductStatus('${p.id}', ${p.is_active})">${p.is_active ? '下架' : '上架'}</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}', '${escapeHtml(p.name)}')">删除</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderProductSelect(products) {
+        const select = document.getElementById('card-product-select');
+        select.innerHTML = products.map(p =>
+            `<option value="${p.id}">${escapeHtml(p.name)} (库存:${p.stock})</option>`
+        ).join('');
+    }
+
+    async function addProduct() {
+        const name = document.getElementById('new-product-name').value.trim();
+        const description = document.getElementById('new-product-desc').value.trim();
+        const price = document.getElementById('new-product-price').value;
+        const sortOrder = document.getElementById('new-product-sort').value || 0;
+        const isActive = document.getElementById('new-product-active').checked;
+        if (!name) { showToast('请输入商品名称', 'warning'); return; }
+        if (!price || parseFloat(price) <= 0) { showToast('请输入有效价格', 'warning'); return; }
+        try {
+            const data = await authFetch(`${API_BASE}/admin-products`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, description, price: parseFloat(price), sort_order: parseInt(sortOrder), is_active: isActive })
+            });
+            if (data.success) {
+                showToast('商品添加成功', 'success');
+                document.getElementById('new-product-name').value = '';
+                document.getElementById('new-product-desc').value = '';
+                document.getElementById('new-product-price').value = '';
+                document.getElementById('new-product-sort').value = '0';
+                loadProducts();
+            } else {
+                showToast(data.message || '添加失败', 'error');
+            }
+        } catch (err) { console.error(err); }
+    }
+
+    // 编辑商品
+    function openEditProduct(product) {
+        document.getElementById('edit-product-id').value = product.id;
+        document.getElementById('edit-product-name').value = product.name;
+        document.getElementById('edit-product-price').value = product.price;
+        document.getElementById('edit-product-sort').value = product.sort_order || 0;
+        document.getElementById('edit-product-desc').value = product.description || '';
+        document.getElementById('edit-product-active').checked = product.is_active !== false;
+        document.getElementById('edit-product-modal').style.display = 'flex';
+    }
+
+    function closeEditProductModal() {
+        document.getElementById('edit-product-modal').style.display = 'none';
+    }
+
+    async function saveEditProduct() {
+        const id = document.getElementById('edit-product-id').value;
+        const name = document.getElementById('edit-product-name').value.trim();
+        const price = document.getElementById('edit-product-price').value;
+        const sortOrder = document.getElementById('edit-product-sort').value;
+        const description = document.getElementById('edit-product-desc').value.trim();
+        const isActive = document.getElementById('edit-product-active').checked;
+        if (!name) { showToast('商品名称不能为空', 'warning'); return; }
+        try {
+            const data = await authFetch(`${API_BASE}/admin-products?id=${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, price: parseFloat(price), sort_order: parseInt(sortOrder), description, is_active: isActive })
+            });
+            if (data.success) {
+                showToast('商品已更新', 'success');
+                closeEditProductModal();
+                loadProducts();
+            } else {
+                showToast(data.message || '更新失败', 'error');
+            }
+        } catch (err) { console.error(err); }
+    }
+
+    async function toggleProductStatus(id, currentActive) {
+        try {
+            const data = await authFetch(`${API_BASE}/admin-products?id=${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ is_active: !currentActive })
+            });
+            if (data.success) {
+                showToast(currentActive ? '商品已下架' : '商品已上架', 'success');
+                loadProducts();
+            }
+        } catch (err) { console.error(err); }
+    }
+
+    async function deleteProduct(id, name) {
+        if (!confirm(`确定删除商品"${name}"吗？关联的所有卡密也会被删除，此操作不可恢复！`)) return;
+        try {
+            const data = await authFetch(`${API_BASE}/admin-products?id=${id}`, { method: 'DELETE' });
+            if (data.success) {
+                showToast('商品已删除', 'success');
+                loadProducts();
+            } else {
+                showToast(data.message || '删除失败', 'error');
+            }
+        } catch (err) { console.error(err); }
+    }
+
+    // ========== 卡密管理 ==========
+    function loadProductSelect() { loadProducts(); }
+
+    function clearCardInput() {
+        document.getElementById('card-content').value = '';
+        document.getElementById('card-type').value = 'default';
+    }
+
+    async function importCards() {
+        const productId = document.getElementById('card-product-select').value;
+        const cardType = document.getElementById('card-type').value.trim() || 'default';
+        const rawText = document.getElementById('card-content').value.trim();
+        if (!productId) { showToast('请选择商品', 'warning'); return; }
+        if (!rawText) { showToast('请输入卡密内容', 'warning'); return; }
+        try {
+            const data = await authFetch(`${API_BASE}/admin-cards`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, cardType, rawText })
+            });
+            if (data.success) {
+                showToast(data.message || '导入成功', 'success');
+                document.getElementById('card-content').value = '';
+                loadProducts();
+                loadCardManageProductSelect();
+            } else {
+                showToast(data.message || '导入失败', 'error');
+            }
+        } catch (err) { console.error(err); }
+    }
+
+    // 卡密管理列表
+    function loadCardManageProductSelect() {
+        const select = document.getElementById('card-manage-product');
+        select.innerHTML = '<option value="">选择商品查看卡密</option>' +
+            allProducts.map(p => `<option value="${p.id}">${escapeHtml(p.name)} (库存:${p.stock})</option>`).join('');
+    }
+
+    async function loadCardManageList() {
+        const productId = document.getElementById('card-manage-product').value;
+        const status = document.getElementById('card-manage-status').value;
+        const container = document.getElementById('card-manage-list');
+        const clearBtnWrap = document.getElementById('card-clear-btn-wrap');
+        const statsInfo = document.getElementById('card-stats-info');
+        if (!productId) {
+            container.innerHTML = '<div class="empty-state"><p>请先选择商品</p></div>';
+            clearBtnWrap.style.display = 'none';
+            statsInfo.textContent = '';
+            return;
         }
-
-        // 渲染商品下拉选择
-        function renderProductSelect(products) {
-            const select = document.getElementById('card-product-select');
-            select.innerHTML = products.map(p =>
-                `<option value="${p.id}">${escapeHtml(p.name)} (库存:${p.stock})</option>`
-            ).join('');
-        }
-
-        function loadProductSelect() {
-            loadProducts();
-        }
-
-        // 添加商品
-        async function addProduct() {
-            const name = document.getElementById('new-product-name').value.trim();
-            const description = document.getElementById('new-product-desc').value.trim();
-            const price = document.getElementById('new-product-price').value;
-
-            if (!name) { alert('请输入商品名称'); return; }
-            if (!price || parseFloat(price) <= 0) { alert('请输入有效价格'); return; }
-
-            try {
-                const data = await authFetch(`${API_BASE}/admin-products`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, description, price: parseFloat(price) })
-                });
-
-                if (data.success) {
-                    alert('商品添加成功');
-                    document.getElementById('new-product-name').value = '';
-                    document.getElementById('new-product-desc').value = '';
-                    document.getElementById('new-product-price').value = '';
-                    loadProducts();
-                } else {
-                    alert(data.message || '添加失败');
+        container.innerHTML = '<div class="empty-state"><p><span class="loading"></span> 加载中...</p></div>';
+        try {
+            let url = `${API_BASE}/admin-card-manage?productId=${productId}`;
+            if (status) url += `&status=${status}`;
+            const data = await authFetch(url);
+            if (data.success) {
+                statsInfo.textContent = `未使用：${data.stats.available} 条 · 已使用：${data.stats.used} 条`;
+                clearBtnWrap.style.display = data.stats.available > 0 ? 'block' : 'none';
+                if (data.cards.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>该商品暂无卡密</p></div>';
+                    return;
                 }
-            } catch (err) {
-                console.error(err);
+                container.innerHTML = data.cards.map(c => `
+                    <div class="card-row">
+                        <span class="card-content-text" title="${escapeHtml(c.card_content)}">${escapeHtml(c.card_content)}</span>
+                        <span class="card-meta">${c.card_type && c.card_type !== 'default' ? escapeHtml(c.card_type) : ''}</span>
+                        <span class="status-badge ${c.status === 'available' ? 'status-paid' : 'status-failed'}">${c.status === 'available' ? '未使用' : '已使用'}</span>
+                        ${c.status === 'available' ? `<button class="btn btn-danger btn-sm" style="margin-left:8px;" onclick="deleteCard('${c.id}')">删除</button>` : ''}
+                    </div>
+                `).join('');
             }
-        }
+        } catch (err) { console.error(err); }
+    }
 
-        // 导入卡密
-        async function importCards() {
-            const productId = document.getElementById('card-product-select').value;
-            const cardType = document.getElementById('card-type').value.trim() || 'default';
-            const rawText = document.getElementById('card-content').value.trim();
-
-            if (!productId) { alert('请选择商品'); return; }
-            if (!rawText) { alert('请输入卡密内容'); return; }
-
-            try {
-                const data = await authFetch(`${API_BASE}/admin-cards`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ productId, cardType, rawText })
-                });
-
-                if (data.success) {
-                    alert(data.message || '导入成功');
-                    document.getElementById('card-content').value = '';
-                    loadProducts();
-                } else {
-                    alert(data.message || '导入失败');
-                }
-            } catch (err) {
-                console.error(err);
+    async function deleteCard(cardId) {
+        if (!confirm('确定删除这条卡密吗？')) return;
+        try {
+            const data = await authFetch(`${API_BASE}/admin-card-manage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', cardId })
+            });
+            if (data.success) {
+                showToast('卡密已删除', 'success');
+                loadCardManageList();
+                loadProducts();
             }
-        }
+        } catch (err) { console.error(err); }
+    }
 
-        // 加载订单
-        async function loadOrders() {
-            try {
-                const data = await authFetch(`${API_BASE}/admin-orders?limit=100`);
-                if (data.success) {
-                    renderOrders(data.orders);
-                    renderStats(data.orders);
-                }
-            } catch (err) {
-                console.error(err);
+    async function clearAvailableCards() {
+        const productId = document.getElementById('card-manage-product').value;
+        if (!productId) return;
+        if (!confirm('确定清空该商品所有未使用卡密吗？此操作不可恢复！')) return;
+        try {
+            const data = await authFetch(`${API_BASE}/admin-card-manage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'clear_available', productId })
+            });
+            if (data.success) {
+                showToast(data.message, 'success');
+                loadCardManageList();
+                loadProducts();
             }
-        }
+        } catch (err) { console.error(err); }
+    }
 
-        // 渲染订单
-        function renderOrders(orders) {
-            const tbody = document.getElementById('order-table-body');
-            if (orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px;">暂无订单</td></tr>';
-                return;
+    // ========== 订单管理 ==========
+    async function loadOrders() {
+        try {
+            const status = document.getElementById('order-filter-status').value;
+            let url = `${API_BASE}/admin-orders?limit=200`;
+            if (status) url += `&status=${status}`;
+            const data = await authFetch(url);
+            if (data.success) {
+                renderOrders(data.orders);
+                renderStats(data.orders);
             }
-            tbody.innerHTML = orders.map(o => `
-                <tr>
-                    <td style="font-family:monospace;font-size:12px;">${o.order_no}</td>
-                    <td>${escapeHtml(o.product_name)}</td>
-                    <td>${o.quantity}</td>
-                    <td style="color:#e74c3c;font-weight:600;">¥${o.amount.toFixed(2)}</td>
-                    <td><span class="status-badge status-${o.status}">${statusText(o.status)}</span></td>
-                    <td style="font-size:12px;color:#999;">${formatDate(o.created_at)}</td>
-                </tr>
-            `).join('');
-        }
+        } catch (err) { console.error(err); }
+    }
 
-        // 统计
-        function renderStats(orders) {
-            const paid = orders.filter(o => o.status === 'paid');
-            const totalAmount = paid.reduce((sum, o) => sum + o.amount, 0);
-            document.getElementById('stat-total-orders').textContent = orders.length;
-            document.getElementById('stat-paid-orders').textContent = paid.length;
-            document.getElementById('stat-total-amount').textContent = totalAmount.toFixed(2);
+    function renderOrders(orders) {
+        const tbody = document.getElementById('order-table-body');
+        if (orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#8c8c8c;padding:24px;">暂无订单</td></tr>';
+            return;
         }
+        tbody.innerHTML = orders.map(o => `
+            <tr>
+                <td style="font-family:monospace;font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${o.order_no}">${o.order_no}</td>
+                <td>${escapeHtml(o.product_name)}</td>
+                <td>${o.quantity}</td>
+                <td style="color:#ff4d4f;font-weight:600;">¥${Number(o.amount).toFixed(2)}</td>
+                <td><span class="status-badge status-${o.status}">${statusText(o.status)}</span></td>
+                <td style="font-size:11px;color:#8c8c8c;white-space:nowrap;">${formatDate(o.created_at)}</td>
+                <td style="white-space:nowrap;">
+                    ${o.status === 'pending' ? `
+                        <button class="btn btn-primary btn-sm" onclick="markOrderPaid('${o.id}')">标记已付</button>
+                        <button class="btn btn-secondary btn-sm" onclick="markOrderFailed('${o.id}')">标记失败</button>
+                    ` : ''}
+                    <button class="btn btn-secondary btn-sm" onclick='openRemarkModal("${o.id}", ${JSON.stringify(o.remark || "").replace(/'/g, "&#39;")})'>备注</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteOrder('${o.id}', '${o.order_no}')">删除</button>
+                </td>
+            </tr>
+        `).join('');
+    }
 
-        function statusText(s) {
-            return { pending: '待支付', paid: '已支付', failed: '已失败' }[s] || s;
-        }
+    function renderStats(orders) {
+        const paid = orders.filter(o => o.status === 'paid');
+        const pending = orders.filter(o => o.status === 'pending');
+        const totalAmount = paid.reduce((sum, o) => sum + Number(o.amount), 0);
+        document.getElementById('stat-total-orders').textContent = orders.length;
+        document.getElementById('stat-paid-orders').textContent = paid.length;
+        document.getElementById('stat-pending-orders').textContent = pending.length;
+        document.getElementById('stat-total-amount').textContent = totalAmount.toFixed(2);
+    }
 
-        function formatDate(d) {
-            if (!d) return '-';
-            return new Date(d).toLocaleString('zh-CN');
-        }
+    async function markOrderPaid(orderId) {
+        if (!confirm('确定将此订单标记为已支付吗？系统将自动发放卡密。')) return;
+        try {
+            const data = await authFetch(`${API_BASE}/admin-order-manage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'mark_paid', orderId })
+            });
+            if (data.success) {
+                showToast('订单已标记为已支付并完成发卡', 'success');
+                loadOrders();
+            } else {
+                showToast(data.message || '操作失败', 'error');
+            }
+        } catch (err) { console.error(err); }
+    }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+    async function markOrderFailed(orderId) {
+        if (!confirm('确定将此订单标记为失败吗？')) return;
+        try {
+            const data = await authFetch(`${API_BASE}/admin-order-manage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'mark_failed', orderId })
+            });
+            if (data.success) {
+                showToast('订单已标记为失败', 'success');
+                loadOrders();
+            }
+        } catch (err) { console.error(err); }
+    }
 
-        // 回车登录
-        document.getElementById('login-password').addEventListener('keypress', e => {
-            if (e.key === 'Enter') doLogin();
-        });
+    async function deleteOrder(orderId, orderNo) {
+        if (!confirm(`确定删除订单 ${orderNo} 吗？此操作不可恢复！`)) return;
+        try {
+            const data = await authFetch(`${API_BASE}/admin-order-manage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', orderId })
+            });
+            if (data.success) {
+                showToast('订单已删除', 'success');
+                loadOrders();
+            }
+        } catch (err) { console.error(err); }
+    }
+
+    // 订单备注
+    function openRemarkModal(orderId, remark) {
+        document.getElementById('remark-order-id').value = orderId;
+        document.getElementById('remark-content').value = remark || '';
+        document.getElementById('remark-modal').style.display = 'flex';
+    }
+
+    function closeRemarkModal() {
+        document.getElementById('remark-modal').style.display = 'none';
+    }
+
+    async function saveRemark() {
+        const orderId = document.getElementById('remark-order-id').value;
+        const remark = document.getElementById('remark-content').value;
+        try {
+            const data = await authFetch(`${API_BASE}/admin-order-manage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'update_remark', orderId, remark })
+            });
+            if (data.success) {
+                showToast('备注已保存', 'success');
+                closeRemarkModal();
+            }
+        } catch (err) { console.error(err); }
+    }
+
+    // ========== 网站设置 ==========
+    async function loadSettings() {
+        try {
+            const res = await fetch(`${API_BASE}/settings`);
+            const data = await res.json();
+            if (data.success && data.settings) {
+                const s = data.settings;
+                document.getElementById('setting-site-name').value = s.site_name || '';
+                document.getElementById('setting-site-subtitle').value = s.site_subtitle || '';
+                document.getElementById('setting-site-description').value = s.site_description || '';
+                document.getElementById('setting-announcement').value = s.announcement || '';
+                document.getElementById('setting-contact-qq').value = s.contact_qq || '';
+                document.getElementById('setting-contact-wechat').value = s.contact_wechat || '';
+                document.getElementById('setting-contact-email').value = s.contact_email || '';
+                document.getElementById('setting-footer-text').value = s.footer_text || '';
+                document.getElementById('setting-icp-number').value = s.icp_number || '';
+                document.getElementById('setting-payment-tip').value = s.payment_tip || '';
+                document.getElementById('setting-stock-warning').value = s.stock_warning || '5';
+            }
+        } catch (err) { console.error('加载设置失败:', err); }
+    }
+
+    async function saveSettings() {
+        const settings = {
+            site_name: document.getElementById('setting-site-name').value,
+            site_subtitle: document.getElementById('setting-site-subtitle').value,
+            site_description: document.getElementById('setting-site-description').value,
+            announcement: document.getElementById('setting-announcement').value,
+            contact_qq: document.getElementById('setting-contact-qq').value,
+            contact_wechat: document.getElementById('setting-contact-wechat').value,
+            contact_email: document.getElementById('setting-contact-email').value,
+            footer_text: document.getElementById('setting-footer-text').value,
+            icp_number: document.getElementById('setting-icp-number').value,
+            payment_tip: document.getElementById('setting-payment-tip').value,
+            stock_warning: document.getElementById('setting-stock-warning').value
+        };
+        try {
+            const data = await authFetch(`${API_BASE}/settings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            });
+            if (data.success) {
+                showToast('设置已保存，刷新前台页面即可生效', 'success');
+            } else {
+                showToast(data.message || '保存失败', 'error');
+            }
+        } catch (err) { console.error(err); }
+    }
+
+    // ========== 工具函数 ==========
+    function statusText(s) {
+        return { pending: '待支付', paid: '已支付', failed: '已失败' }[s] || s;
+    }
+    function formatDate(d) {
+        if (!d) return '-';
+        return new Date(d).toLocaleString('zh-CN');
+    }
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Toast
+    function showToast(message, type = 'success') {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+
+    // 回车登录
+    document.getElementById('login-password').addEventListener('keypress', e => {
+        if (e.key === 'Enter') doLogin();
+    });
+
+    // 点击弹窗外部关闭
+    document.getElementById('edit-product-modal').addEventListener('click', e => {
+        if (e.target.id === 'edit-product-modal') closeEditProductModal();
+    });
+    document.getElementById('remark-modal').addEventListener('click', e => {
+        if (e.target.id === 'remark-modal') closeRemarkModal();
+    });
     </script>
 </body>
 </html>

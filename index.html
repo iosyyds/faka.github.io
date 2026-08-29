@@ -4,17 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>自动发卡商城</title>
+    <meta name="description" content="24小时自动发货，扫码即购，秒发卡密">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <h1 class="logo">自动发卡商城</h1>
-            <p class="subtitle">24小时自动发货 · 扫码即购 · 秒发卡密</p>
+    <!-- 顶部导航 -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="#" class="navbar-brand" onclick="backToHome();return false;">
+                <div class="logo-icon">卡</div>
+                <span id="nav-site-name">自动发卡商城</span>
+            </a>
+            <div class="navbar-links">
+                <button class="navbar-link" onclick="showQueryModal()">订单查询</button>
+                <a class="navbar-link" href="/admin">管理后台</a>
+            </div>
         </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <header class="hero">
+        <h1 id="hero-title">自动发卡商城</h1>
+        <p id="hero-subtitle">24小时自动发货 · 扫码即购 · 秒发卡密</p>
     </header>
 
     <main class="container">
+        <!-- 公告栏 -->
+        <div id="announcement-bar" class="announcement-bar" style="display:none;">
+            <span class="icon">📢</span>
+            <span class="text" id="announcement-text"></span>
+        </div>
+
         <!-- 商品列表 -->
         <section id="product-section" class="section">
             <h2 class="section-title">选择商品</h2>
@@ -23,49 +43,105 @@
             </div>
         </section>
 
-        <!-- 订单详情 -->
+        <!-- 订单/支付页面 -->
         <section id="order-section" class="section hidden">
-            <h2 class="section-title">订单信息</h2>
-            <div class="order-card">
-                <div class="order-info">
-                    <p><span>商品：</span><span id="order-product-name"></span></p>
-                    <p><span>数量：</span><span id="order-quantity"></span></p>
-                    <p><span>金额：</span><span class="price" id="order-amount"></span></p>
-                    <p><span>订单号：</span><span id="order-no"></span></p>
+            <div class="pay-card">
+                <div class="pay-card-title" id="order-product-name">商品名称</div>
+                <div class="pay-card-amount" id="order-amount">¥0.00</div>
+
+                <div class="pay-info-list">
+                    <div class="pay-info-item">
+                        <span class="label">购买数量</span>
+                        <span class="value" id="order-quantity">1</span>
+                    </div>
+                    <div class="pay-info-item">
+                        <span class="label">订单编号</span>
+                        <span class="value" id="order-no" style="font-family:monospace;font-size:12px;"></span>
+                    </div>
+                    <div class="pay-info-item">
+                        <span class="label">订单状态</span>
+                        <span class="value" id="order-status-text">等待支付</span>
+                    </div>
                 </div>
-                <div class="qr-container">
-                    <div id="qrcode" class="qrcode"></div>
-                    <p class="qr-tip">请使用支付宝扫码支付</p>
+
+                <!-- 支付方式选择 -->
+                <div class="pay-methods-title">选择支付方式</div>
+                <div class="pay-methods">
+                    <div class="pay-method active" data-method="alipay" onclick="selectPayMethod('alipay')">
+                        <div class="pay-method-icon alipay">支</div>
+                        <div class="pay-method-info">
+                            <div class="name">支付宝</div>
+                            <div class="desc">扫码完成付款</div>
+                        </div>
+                    </div>
+                    <div class="pay-method disabled" data-method="wechat" onclick="selectPayMethod('wechat')">
+                        <div class="pay-method-icon wechat">微</div>
+                        <div class="pay-method-info">
+                            <div class="name">微信支付</div>
+                            <div class="desc">暂未开通</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="order-actions">
+
+                <!-- 二维码区域 -->
+                <div class="qr-section">
+                    <div class="qr-wrapper">
+                        <div id="qrcode" class="qr-loading">
+                            <span class="loading"></span> 生成中...
+                        </div>
+                    </div>
+                    <p class="qr-tip" id="payment-tip">请使用支付宝扫码支付，支付成功后将自动跳转</p>
+                </div>
+
+                <div class="btn-group">
                     <button id="check-status-btn" class="btn btn-primary">我已完成支付</button>
                     <button id="back-btn" class="btn btn-secondary">返回商品列表</button>
                 </div>
             </div>
         </section>
 
-        <!-- 发卡结果 -->
+        <!-- 发卡结果页面 -->
         <section id="result-section" class="section hidden">
-            <h2 class="section-title">支付成功 · 卡密信息</h2>
             <div class="result-card">
                 <div class="result-success-icon">✓</div>
-                <p class="result-tip">请妥善保管以下卡密，关闭页面后无法再次查看</p>
+                <div class="result-title">支付成功 · 卡密已发放</div>
+                <p class="result-tip">请妥善保管以下卡密，关闭页面后无法再次查看，可通过订单号查询</p>
                 <div id="card-list" class="card-list">
                     <!-- 卡密由JS动态生成 -->
                 </div>
-                <button id="copy-all-btn" class="btn btn-primary">复制全部卡密</button>
-                <button id="back-home-btn" class="btn btn-secondary">返回首页</button>
+                <div class="btn-group">
+                    <button id="copy-all-btn" class="btn btn-primary">复制全部卡密</button>
+                    <button id="back-home-btn" class="btn btn-secondary">返回首页</button>
+                </div>
             </div>
         </section>
     </main>
 
+    <!-- 页脚 -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 自动发卡商城 ·  Powered by GitHub Pages + Vercel</p>
+            <div class="footer-contact" id="footer-contact">
+                <!-- 联系方式由JS动态生成 -->
+            </div>
+            <p id="footer-text">© 2026 自动发卡商城</p>
+            <p id="footer-icp" style="margin-top:4px;"></p>
         </div>
     </footer>
 
-    <!-- 支付弹窗 -->
+    <!-- 订单查询弹窗 -->
+    <div id="query-modal" class="modal hidden">
+        <div class="modal-content" style="max-width:480px;text-align:left;">
+            <span class="modal-close" onclick="closeQueryModal()">&times;</span>
+            <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">订单查询</h3>
+            <div class="query-input-group">
+                <input type="text" id="query-order-input" placeholder="请输入订单编号" style="flex:1;padding:10px 14px;border:1px solid #e8e8e8;border-radius:6px;font-size:14px;outline:none;">
+                <button class="btn btn-primary btn-sm" onclick="doQueryOrder()" style="flex:none;padding:10px 20px;">查询</button>
+            </div>
+            <div id="query-result" style="margin-top:16px;"></div>
+        </div>
+    </div>
+
+    <!-- 通用弹窗 -->
     <div id="modal" class="modal hidden">
         <div class="modal-content">
             <span id="modal-close" class="modal-close">&times;</span>
