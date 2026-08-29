@@ -44,7 +44,7 @@ export async function POST(req) {
     }
 
     const orderNo = generateOrderNo();
-    const order = await db.createOrder(orderNo, productId, product.name, quantity, amount, contactClean);
+    const order = await db.createOrder(orderNo, productId, product.name, quantity, amount, contactClean, userId);
 
     if (!process.env.ALIPAY_APP_ID || process.env.ALIPAY_APP_ID === 'placeholder' ||
         !process.env.ALIPAY_PRIVATE_KEY || process.env.ALIPAY_PRIVATE_KEY === 'placeholder' ||

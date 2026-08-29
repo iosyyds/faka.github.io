@@ -327,7 +327,7 @@ export default function Home() {
                   const inStock = p.stock > 0;
                   const tag = getTag(p);
                   return (
-                    <div key={p.id} className={`dc-product-item ${!inStock ? 'oos' : ''}`} onClick={() => inStock && openOrder(p.id)}>
+                    <div key={p.id} className={`dc-product-item ${!inStock ? 'oos' : ''}`} onClick={() => inStock && (window.location.href = `/product/${p.id}`)}>
                       <div className="dc-product-img">
                         <img src={getImg(p)} alt={p.name} />
                         <span className="dc-product-tag" style={{ background: tag.color }}>{tag.text}</span>
@@ -341,7 +341,7 @@ export default function Home() {
                             {p.original_price && p.original_price > p.price && <span className="dc-price-unit">/件</span>}
                             {p.original_price && p.original_price > p.price && <span className="dc-price-old">¥{Number(p.original_price).toFixed(2)}</span>}
                           </div>
-                          <button className="dc-buy-btn" disabled={!inStock} onClick={(e) => { e.stopPropagation(); inStock && openOrder(p.id); }}>立即购买</button>
+                          <button className="dc-buy-btn" disabled={!inStock} onClick={(e) => { e.stopPropagation(); inStock && (window.location.href = `/product/${p.id}`); }}>立即购买</button>
                         </div>
                       </div>
                     </div>
@@ -396,6 +396,28 @@ export default function Home() {
           <div className="dc-service-icon">🐕</div>
           <span className="dc-service-text">买家帮助</span>
         </div>
+      )}
+
+      {/* 底部导航栏（移动端） */}
+      {!showSuccess && (
+        <nav className="dc-bottom-nav">
+          <a href="/" className="dc-bottom-nav-item active">
+            <span className="dc-bottom-nav-icon">🏠</span>
+            <span className="dc-bottom-nav-text">首页</span>
+          </a>
+          <a href="/#category" className="dc-bottom-nav-item">
+            <span className="dc-bottom-nav-icon">📋</span>
+            <span className="dc-bottom-nav-text">分类</span>
+          </a>
+          <a href="/user" className="dc-bottom-nav-item">
+            <span className="dc-bottom-nav-icon">📄</span>
+            <span className="dc-bottom-nav-text">查单</span>
+          </a>
+          <a href="/user" className="dc-bottom-nav-item">
+            <span className="dc-bottom-nav-icon">👤</span>
+            <span className="dc-bottom-nav-text">我的</span>
+          </a>
+        </nav>
       )}
 
       {/* 下单弹窗 */}

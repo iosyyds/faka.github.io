@@ -18,10 +18,13 @@ CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     description TEXT DEFAULT '',
+    detail TEXT DEFAULT '',
+    images TEXT DEFAULT '',
     image VARCHAR(500) DEFAULT '',
     category VARCHAR(50) DEFAULT '全部',
     price DECIMAL(10, 2) NOT NULL CHECK (price > 0),
     original_price DECIMAL(10, 2) DEFAULT 0,
+    sales INTEGER DEFAULT 0,
     sort_order INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -53,11 +56,13 @@ CREATE INDEX IF NOT EXISTS idx_cards_order_id ON cards(order_id);
 CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_no VARCHAR(30) NOT NULL UNIQUE,
+    user_id INTEGER,
     product_id INTEGER NOT NULL REFERENCES products(id),
     product_name VARCHAR(200) NOT NULL,
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     amount DECIMAL(10, 2) NOT NULL CHECK (amount > 0),
     status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'failed')),
+    pay_method VARCHAR(20) DEFAULT 'alipay',
     alipay_trade_no VARCHAR(64),
     buyer_email VARCHAR(100),
     contact VARCHAR(100) DEFAULT '',
@@ -71,7 +76,24 @@ CREATE INDEX IF NOT EXISTS idx_orders_order_no ON orders(order_no);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
 
--- ========== 4. 网站设置表 ==========
+-- ========== 4. 用户表 ==========
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    nickname VARCHAR(50),
+    avatar VARCHAR(500) DEFAULT '',
+    balance DECIMAL(10, 2) DEFAULT 0.00,
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'disabled')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    last_login_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
+-- ========== 5. 网站设置表 ==========
 CREATE TABLE IF NOT EXISTS settings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     setting_key VARCHAR(100) NOT NULL UNIQUE,
@@ -101,6 +123,7 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 -- 不创建任何允许匿名访问的策略
 -- 所有数据访问通过 service_role key（后端服务）进行
