@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS orders (
     status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'failed')),
     alipay_trade_no VARCHAR(64),
     buyer_email VARCHAR(100),
+    contact VARCHAR(100) DEFAULT '',
     remark TEXT DEFAULT '',
     created_at TIMESTAMPTZ DEFAULT NOW(),
     paid_at TIMESTAMPTZ
@@ -99,6 +100,7 @@ ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
 -- ALTER TABLE products ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
 -- ALTER TABLE products ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
 -- ALTER TABLE orders ADD COLUMN IF NOT EXISTS buyer_email VARCHAR(100);
+-- ALTER TABLE orders ADD COLUMN IF NOT EXISTS contact VARCHAR(100) DEFAULT '';
 -- ALTER TABLE orders ADD COLUMN IF NOT EXISTS remark TEXT DEFAULT '';
 -- CREATE TABLE IF NOT EXISTS settings (...);  -- 见上方建表语句
 -- ============================================

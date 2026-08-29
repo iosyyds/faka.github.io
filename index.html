@@ -6,142 +6,243 @@
     <title>自动发卡商城</title>
     <meta name="description" content="24小时自动发货，扫码即购，秒发卡密">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        .panel {
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .panel-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1f1f1f;
+        }
+        .panel-title .icon { font-size: 18px; }
+        .product-list-v2 { display: flex; flex-direction: column; gap: 10px; }
+        .product-item-v2 {
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+        }
+        .product-item-v2:hover {
+            border-color: #1677ff;
+            background: #f0f7ff;
+        }
+        .product-item-v2.selected {
+            border-color: #1677ff;
+            background: #e6f4ff;
+            box-shadow: 0 0 0 2px rgba(22,119,255,0.15);
+        }
+        .product-item-v2 .p-info { flex: 1; }
+        .product-item-v2 .p-name { font-size: 15px; font-weight: 600; color: #1f1f1f; margin-bottom: 3px; }
+        .product-item-v2 .p-desc { font-size: 12px; color: #8c8c8c; }
+        .product-item-v2 .p-right { text-align: right; margin-left: 12px; }
+        .product-item-v2 .p-price { font-size: 18px; font-weight: 700; color: #ff4d4f; }
+        .product-item-v2 .p-stock { font-size: 11px; color: #8c8c8c; margin-top: 2px; }
+        .product-item-v2.sold-out { opacity: 0.5; cursor: not-allowed; }
+        .product-item-v2.sold-out:hover { border-color: #f0f0f0; background: #fafafa; }
+        .cashier-field { margin-bottom: 16px; }
+        .cashier-label { font-size: 13px; color: #595959; margin-bottom: 6px; font-weight: 500; }
+        .cashier-input {
+            width: 100%; padding: 10px 12px; border: 1px solid #e8e8e8;
+            border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;
+            background: #fafafa;
+        }
+        .cashier-input:focus { border-color: #1677ff; background: #fff; }
+        .selected-product-box {
+            background: #fafafa; border: 1px solid #f0f0f0; border-radius: 8px;
+            padding: 12px 14px; font-size: 14px; color: #1f1f1f; font-weight: 500;
+            min-height: 42px; display: flex; align-items: center;
+        }
+        .selected-product-box.empty { color: #bfbfbf; font-weight: 400; }
+        .pay-channels { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .pay-channel {
+            border: 2px solid #e8e8e8; border-radius: 10px; padding: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            cursor: pointer; transition: all 0.2s; font-size: 15px; font-weight: 600;
+            background: #fff; color: #1f1f1f;
+        }
+        .pay-channel:hover { border-color: #bae0ff; }
+        .pay-channel.active { border-color: #1677ff; background: #e6f4ff; color: #1677ff; }
+        .pay-channel.disabled { opacity: 0.45; cursor: not-allowed; }
+        .pay-channel .ch-icon { font-size: 18px; }
+        .pay-btn {
+            width: 100%; padding: 13px; border: none; border-radius: 10px;
+            font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+            background: #1677ff; color: #fff; margin-top: 8px;
+        }
+        .pay-btn:hover { background: #4096ff; }
+        .pay-btn:disabled { background: #d9d9d9; color: #bfbfbf; cursor: not-allowed; }
+        .cashier-footer {
+            text-align: center; margin-top: 20px; font-size: 11px; color: #bfbfbf; line-height: 1.8;
+        }
+        .pay-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+            z-index: 1000; backdrop-filter: blur(3px);
+        }
+        .pay-modal-box {
+            background: #fff; border-radius: 16px; padding: 28px; width: 90%; max-width: 400px;
+            text-align: center; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn { from { opacity:0; transform:scale(0.95);} to {opacity:1; transform:scale(1);} }
+        .pay-modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .pay-modal-amount { font-size: 30px; font-weight: 700; color: #ff4d4f; margin-bottom: 18px; }
+        .pay-modal-qr {
+            display: inline-block; padding: 14px; background: #fff;
+            border: 1px solid #f0f0f0; border-radius: 10px; margin-bottom: 14px;
+        }
+        .pay-modal-tip { font-size: 13px; color: #595959; margin-bottom: 16px; }
+        .pay-modal-order { font-size: 11px; color: #bfbfbf; font-family: monospace; margin-bottom: 14px; }
+        .pay-modal-actions { display: flex; gap: 10px; }
+        .pay-modal-close {
+            position: absolute; top: 14px; right: 16px; font-size: 22px;
+            color: #bfbfbf; cursor: pointer; line-height: 1;
+        }
+        .pay-modal-close:hover { color: #1f1f1f; }
+        .success-panel {
+            background: #fff; border: 1px solid #e8e8e8; border-radius: 14px;
+            padding: 32px; max-width: 560px; margin: 0 auto; text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .success-icon {
+            width: 56px; height: 56px; line-height: 56px; border-radius: 50%;
+            background: #52c41a; color: #fff; font-size: 28px; margin: 0 auto 14px;
+        }
+        .success-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+        .success-sub { font-size: 13px; color: #faad14; margin-bottom: 20px; }
+        @media (max-width: 860px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-    <!-- 顶部导航 -->
     <nav class="navbar">
         <div class="navbar-inner">
-            <a href="#" class="navbar-brand" onclick="backToHome();return false;">
-                <div class="logo-icon">卡</div>
-                <span id="nav-site-name">自动发卡商城</span>
-            </a>
+            <div class="navbar-brand">
+                <div class="logo-icon">🛒</div>
+                <div>
+                    <div id="nav-site-name" style="font-size:17px;font-weight:700;line-height:1.2;">自动发卡商城</div>
+                    <div id="nav-site-sub" style="font-size:11px;color:#8c8c8c;font-weight:400;">通用自动化安全发卡站</div>
+                </div>
+            </div>
             <div class="navbar-links">
-                <button class="navbar-link" onclick="showQueryModal()">订单查询</button>
-                <a class="navbar-link" href="/admin">管理后台</a>
+                <button class="navbar-link" onclick="showQueryModal()">📋 订单查询</button>
+                <a class="navbar-link" href="/admin">👑 管理后台</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero 区域 -->
-    <header class="hero">
-        <h1 id="hero-title">自动发卡商城</h1>
-        <p id="hero-subtitle">24小时自动发货 · 扫码即购 · 秒发卡密</p>
-    </header>
-
-    <main class="container">
-        <!-- 公告栏 -->
-        <div id="announcement-bar" class="announcement-bar" style="display:none;">
+    <main class="container" style="padding-top:24px;padding-bottom:40px;">
+        <div id="announcement-bar" class="announcement-bar" style="display:none;margin-bottom:20px;">
             <span class="icon">📢</span>
             <span class="text" id="announcement-text"></span>
         </div>
 
-        <!-- 商品列表 -->
-        <section id="product-section" class="section">
-            <h2 class="section-title">选择商品</h2>
-            <div id="product-list" class="product-grid">
-                <!-- 商品卡片由JS动态生成 -->
-            </div>
-        </section>
-
-        <!-- 订单/支付页面 -->
-        <section id="order-section" class="section hidden">
-            <div class="pay-card">
-                <div class="pay-card-title" id="order-product-name">商品名称</div>
-                <div class="pay-card-amount" id="order-amount">¥0.00</div>
-
-                <div class="pay-info-list">
-                    <div class="pay-info-item">
-                        <span class="label">购买数量</span>
-                        <span class="value" id="order-quantity">1</span>
-                    </div>
-                    <div class="pay-info-item">
-                        <span class="label">订单编号</span>
-                        <span class="value" id="order-no" style="font-family:monospace;font-size:12px;"></span>
-                    </div>
-                    <div class="pay-info-item">
-                        <span class="label">订单状态</span>
-                        <span class="value" id="order-status-text">等待支付</span>
+        <div id="main-page">
+            <div class="main-layout">
+                <div class="panel">
+                    <div class="panel-title"><span class="icon">📦</span> 可选商品规格清单</div>
+                    <div id="product-list" class="product-list-v2">
+                        <div class="empty-state"><p>加载中...</p></div>
                     </div>
                 </div>
 
-                <!-- 支付方式选择 -->
-                <div class="pay-methods-title">选择支付方式</div>
-                <div class="pay-methods">
-                    <div class="pay-method active" data-method="alipay" onclick="selectPayMethod('alipay')">
-                        <div class="pay-method-icon alipay">支</div>
-                        <div class="pay-method-info">
-                            <div class="name">支付宝</div>
-                            <div class="desc">扫码完成付款</div>
+                <div class="panel">
+                    <div class="panel-title"><span class="icon">💳</span> 安全自助收银台</div>
+                    <div class="cashier-field">
+                        <div class="cashier-label">当前选定商品</div>
+                        <div class="selected-product-box empty" id="selected-product-box">暂未选定商品</div>
+                    </div>
+                    <div class="cashier-field">
+                        <div class="cashier-label">联系方式 (邮箱/手机号/QQ，提取卡密凭证)</div>
+                        <input type="text" class="cashier-input" id="contact-input" placeholder="输入联系人，严禁乱码与空格">
+                    </div>
+                    <div class="cashier-field">
+                        <div class="cashier-label">选择支付通道</div>
+                        <div class="pay-channels">
+                            <div class="pay-channel active" data-method="alipay" onclick="selectPayMethod('alipay')">
+                                <span class="ch-icon">💙</span> 支付宝
+                            </div>
+                            <div class="pay-channel disabled" data-method="wechat" onclick="selectPayMethod('wechat')">
+                                <span class="ch-icon">💚</span> 微信支付
+                            </div>
                         </div>
                     </div>
-                    <div class="pay-method disabled" data-method="wechat" onclick="selectPayMethod('wechat')">
-                        <div class="pay-method-icon wechat">微</div>
-                        <div class="pay-method-info">
-                            <div class="name">微信支付</div>
-                            <div class="desc">暂未开通</div>
-                        </div>
+                    <button class="pay-btn" id="pay-btn" disabled onclick="doPay()">立即安全支付购买 (¥0.00)</button>
+                    <div class="cashier-footer">
+                        <div id="footer-text">© 2026 自动化零服务器成本发卡系统</div>
+                        <div>Power by Vercel + Supabase Serverless Database</div>
+                        <div id="footer-icp"></div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- 二维码区域 -->
-                <div class="qr-section">
-                    <div class="qr-wrapper">
-                        <div id="qrcode" class="qr-loading">
-                            <span class="loading"></span> 生成中...
-                        </div>
-                    </div>
-                    <p class="qr-tip" id="payment-tip">请使用支付宝扫码支付，支付成功后将自动跳转</p>
-                </div>
-
-                <div class="btn-group">
-                    <button id="check-status-btn" class="btn btn-primary">我已完成支付</button>
-                    <button id="back-btn" class="btn btn-secondary">返回商品列表</button>
+        <div id="success-page" style="display:none;">
+            <div class="success-panel">
+                <div class="success-icon">✓</div>
+                <div class="success-title">支付成功 · 卡密已发放</div>
+                <div class="success-sub">请妥善保管以下卡密，关闭页面后可通过订单号查询</div>
+                <div id="card-list" class="card-list" style="text-align:left;"></div>
+                <div class="btn-group" style="margin-top:20px;">
+                    <button class="btn btn-primary" onclick="copyAllCards()">复制全部卡密</button>
+                    <button class="btn btn-secondary" onclick="backToHome()">返回首页</button>
                 </div>
             </div>
-        </section>
-
-        <!-- 发卡结果页面 -->
-        <section id="result-section" class="section hidden">
-            <div class="result-card">
-                <div class="result-success-icon">✓</div>
-                <div class="result-title">支付成功 · 卡密已发放</div>
-                <p class="result-tip">请妥善保管以下卡密，关闭页面后无法再次查看，可通过订单号查询</p>
-                <div id="card-list" class="card-list">
-                    <!-- 卡密由JS动态生成 -->
-                </div>
-                <div class="btn-group">
-                    <button id="copy-all-btn" class="btn btn-primary">复制全部卡密</button>
-                    <button id="back-home-btn" class="btn btn-secondary">返回首页</button>
-                </div>
-            </div>
-        </section>
+        </div>
     </main>
 
-    <!-- 页脚 -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-contact" id="footer-contact">
-                <!-- 联系方式由JS动态生成 -->
+    <div id="pay-modal" class="pay-modal" style="display:none;">
+        <div class="pay-modal-box">
+            <span class="pay-modal-close" onclick="closePayModal()">&times;</span>
+            <div class="pay-modal-title" id="pay-modal-product">商品名称</div>
+            <div class="pay-modal-amount" id="pay-modal-amount">¥0.00</div>
+            <div class="pay-modal-qr">
+                <div id="qrcode" style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;">
+                    <span class="loading"></span>
+                </div>
             </div>
-            <p id="footer-text">© 2026 自动发卡商城</p>
-            <p id="footer-icp" style="margin-top:4px;"></p>
+            <div class="pay-modal-tip" id="payment-tip">请使用支付宝扫码支付，支付成功后将自动跳转</div>
+            <div class="pay-modal-order" id="pay-modal-order-no"></div>
+            <div class="pay-modal-actions">
+                <button class="btn btn-primary" onclick="checkOrderStatus()">我已完成支付</button>
+                <button class="btn btn-secondary" onclick="closePayModal()">取消支付</button>
+            </div>
         </div>
-    </footer>
+    </div>
 
-    <!-- 订单查询弹窗 -->
     <div id="query-modal" class="modal hidden">
         <div class="modal-content" style="max-width:480px;text-align:left;">
             <span class="modal-close" onclick="closeQueryModal()">&times;</span>
             <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">订单查询</h3>
             <div class="query-input-group">
-                <input type="text" id="query-order-input" placeholder="请输入订单编号" style="flex:1;padding:10px 14px;border:1px solid #e8e8e8;border-radius:6px;font-size:14px;outline:none;">
+                <input type="text" id="query-order-input" placeholder="请输入订单编号">
                 <button class="btn btn-primary btn-sm" onclick="doQueryOrder()" style="flex:none;padding:10px 20px;">查询</button>
             </div>
             <div id="query-result" style="margin-top:16px;"></div>
         </div>
     </div>
 
-    <!-- 通用弹窗 -->
     <div id="modal" class="modal hidden">
         <div class="modal-content">
             <span id="modal-close" class="modal-close">&times;</span>

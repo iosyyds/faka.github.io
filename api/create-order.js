@@ -31,7 +31,8 @@ module.exports = async (req, res) => {
 
     try {
         const body = await parseBody(req);
-        const { productId } = body;
+        const { productId, contact } = body;
+        const contactClean = (contact || '').trim().substring(0, 100);
 
         // 参数校验
         if (!productId) {
@@ -80,9 +81,10 @@ module.exports = async (req, res) => {
         const order = await db.createOrder(
             orderNo,
             productId,
-            product.name,  // 商品名从数据库取
+            product.name,
             quantity,
-            amount          // 金额服务端计算
+            amount,
+            contactClean
         );
 
         // 检查支付宝是否已配置
