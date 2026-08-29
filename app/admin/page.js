@@ -280,12 +280,12 @@ export default function AdminPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
       {/* 顶部导航 */}
-      <div style={{ background: '#fff', padding: '0 24px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+      <div style={{ background: '#fff', padding: '0 40px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
         <div style={{ fontSize: '18px', fontWeight: 600, color: '#1677ff' }}>发卡商城管理后台</div>
         <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#8c8c8c', cursor: 'pointer', fontSize: '14px' }}>退出登录</button>
       </div>
 
-      <div style={{ display: 'flex', maxWidth: '1400px', margin: '0 auto', padding: '20px' }}>
+      <div style={{ display: 'flex', maxWidth: '1400px', margin: '0 auto', padding: '20px 40px' }}>
         {/* 侧边栏 */}
         <div style={{ width: '200px', background: '#fff', borderRadius: '10px', padding: '12px', marginRight: '20px', height: 'fit-content' }}>
           {[
