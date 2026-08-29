@@ -376,6 +376,16 @@ export default function Home() {
         </div>
       )}
 
+      {/* 页脚 */}
+      <footer className="site-footer">
+        <div className="footer-content">
+          <div className="footer-text">{siteSettings.footer_text || `© ${new Date().getFullYear()} ${siteSettings.site_name || '自动发卡商城'}`}</div>
+          {siteSettings.icp_number && (
+            <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer" className="footer-icp">{siteSettings.icp_number}</a>
+          )}
+        </div>
+      </footer>
+
       {/* 下单弹窗 */}
       {showOrderModal && (
         <div className="pay-modal" onClick={(e) => e.target === e.currentTarget && setShowOrderModal(false)}>
