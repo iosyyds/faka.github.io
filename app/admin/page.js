@@ -357,7 +357,7 @@ export default function AdminPage() {
                       <td style={{ padding: '12px 8px', fontSize: '13px', color: '#ff4d4f' }}>¥{Number(p.price).toFixed(2)}</td>
                       <td style={{ padding: '12px 8px', fontSize: '13px' }}>{p.stock}</td>
                       <td style={{ padding: '12px 8px', fontSize: '13px' }}>
-                        <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: p.is_active ? '#f6ffed', color: '#52c41a' : '#fff2f0', color: '#ff4d4f' }}>
+                        <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: p.is_active ? '#f6ffed' : '#fff2f0', color: p.is_active ? '#52c41a' : '#ff4d4f' }}>
                           {p.is_active ? '上架中' : '已下架'}
                         </span>
                       </td>
@@ -421,7 +421,7 @@ export default function AdminPage() {
                           <td style={{ padding: '10px 8px', fontSize: '13px' }}>{c.id}</td>
                           <td style={{ padding: '10px 8px', fontSize: '13px', fontFamily: 'monospace', wordBreak: 'break-all' }}>{escapeHtml(c.card_content)}</td>
                           <td style={{ padding: '10px 8px', fontSize: '13px' }}>
-                            <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: c.status === 'available' ? '#f6ffed', color: '#52c41a' : '#fff2f0', color: '#ff4d4f' }}>
+                            <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: c.status === 'available' ? '#f6ffed' : '#fff2f0', color: c.status === 'available' ? '#52c41a' : '#ff4d4f' }}>
                               {c.status === 'available' ? '未使用' : '已使用'}
                             </span>
                           </td>
@@ -474,7 +474,7 @@ export default function AdminPage() {
                         <td style={{ padding: '10px 8px', fontSize: '13px' }}>{escapeHtml(o.product_name)}</td>
                         <td style={{ padding: '10px 8px', fontSize: '13px', color: '#ff4d4f' }}>¥{Number(o.amount).toFixed(2)}</td>
                         <td style={{ padding: '10px 8px', fontSize: '13px' }}>
-                          <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: o.status === 'paid' ? '#f6ffed', color: '#52c41a' : o.status === 'pending' ? '#fffbe6', color: '#faad14' : '#fff2f0', color: '#ff4d4f' }}>
+                          <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '12px', background: o.status === 'paid' ? '#f6ffed' : o.status === 'pending' ? '#fffbe6' : '#fff2f0', color: o.status === 'paid' ? '#52c41a' : o.status === 'pending' ? '#faad14' : '#ff4d4f' }}>
                             {o.status === 'paid' ? '已支付' : o.status === 'pending' ? '待支付' : '已失败'}
                           </span>
                         </td>
