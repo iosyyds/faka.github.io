@@ -90,7 +90,8 @@ INSERT INTO settings (setting_key, setting_value) VALUES
 ('footer_text', '© 2026 自动发卡商城 ·  Powered by Vercel + Supabase'),
 ('icp_number', ''),
 ('payment_tip', '请使用支付宝扫码支付，支付成功后将自动跳转'),
-('stock_warning', '5')
+('stock_warning', '5'),
+('admin_password', 'admin123')
 ON CONFLICT (setting_key) DO NOTHING;
 
 -- ========== 5. 行级安全（RLS）==========

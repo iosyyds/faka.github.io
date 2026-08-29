@@ -26,6 +26,7 @@ export default function AdminPage() {
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
+  const [changePwd, setChangePwd] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
 
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth > 768);
@@ -208,6 +209,36 @@ export default function AdminPage() {
     if (!confirm('确定删除该订单？')) return;
     const data = await apiCall('/admin-order-manage', { method: 'POST', body: JSON.stringify({ action: 'delete', orderId }) });
     if (data.success) { showToast('订单已删除'); loadDashboard(); }
+  };
+
+  const handleChangePassword = async () => {
+    if (!changePwd.oldPassword || !changePwd.newPassword || !changePwd.confirmPassword) {
+      showToast('请填写完整信息', 'warning');
+      return;
+    }
+    if (changePwd.newPassword.length < 6) {
+      showToast('新密码不少于6位', 'warning');
+      return;
+    }
+    if (changePwd.newPassword !== changePwd.confirmPassword) {
+      showToast('两次密码不一致', 'warning');
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await apiCall('/change-password', { method: 'POST', body: JSON.stringify(changePwd) });
+      if (data.success) {
+        showToast('密码修改成功，请重新登录');
+        setChangePwd({ oldPassword: '', newPassword: '', confirmPassword: '' });
+        setTimeout(() => handleLogout(), 1500);
+      } else {
+        showToast(data.message || '修改失败', 'error');
+      }
+    } catch (err) {
+      showToast('网络错误', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const saveSettings = async () => {
@@ -652,6 +683,46 @@ export default function AdminPage() {
               </div>
               <div style={{ marginTop: '24px', textAlign: isDesktop ? 'right' : 'center' }}>
                 <button onClick={saveSettings} disabled={loading} style={{ padding: '12px 32px', background: 'linear-gradient(135deg, #1677ff, #4096ff)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(22,119,255,0.25)' }}>{loading ? '保存中...' : '保存设置'}</button>
+              </div>
+            </div>
+
+            {/* 修改密码 */}
+            <div style={{ background: '#fff', borderRadius: '12px', padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', marginTop: '20px' }}>
+              <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 700 }}>修改密码</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1fr 1fr 1fr' : '1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>旧密码</label>
+                  <input
+                    type="password"
+                    value={changePwd.oldPassword}
+                    onChange={(e) => setChangePwd({ ...changePwd, oldPassword: e.target.value })}
+                    style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }}
+                    placeholder="请输入旧密码"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>新密码</label>
+                  <input
+                    type="password"
+                    value={changePwd.newPassword}
+                    onChange={(e) => setChangePwd({ ...changePwd, newPassword: e.target.value })}
+                    style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }}
+                    placeholder="不少于6位"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', color: '#595959', marginBottom: '8px', fontWeight: 500 }}>确认新密码</label>
+                  <input
+                    type="password"
+                    value={changePwd.confirmPassword}
+                    onChange={(e) => setChangePwd({ ...changePwd, confirmPassword: e.target.value })}
+                    style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #e8e8e8', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' }}
+                    placeholder="再次输入新密码"
+                  />
+                </div>
+              </div>
+              <div style={{ marginTop: '16px', textAlign: isDesktop ? 'right' : 'center' }}>
+                <button onClick={handleChangePassword} disabled={loading} style={{ padding: '10px 24px', background: '#fff2f0', color: '#ff4d4f', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>{loading ? '修改中...' : '修改密码'}</button>
               </div>
             </div>
           </div>
