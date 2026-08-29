@@ -278,7 +278,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+    <div className="admin-page" style={{ minHeight: '100vh', background: '#f0f2f5' }}>
       {/* 顶部导航 */}
       <div style={{ background: '#fff', padding: '0 40px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
         <div style={{ fontSize: '18px', fontWeight: 600, color: '#1677ff' }}>发卡商城管理后台</div>
