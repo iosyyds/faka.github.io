@@ -4,245 +4,649 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>自动发卡商城</title>
-    <meta name="description" content="24小时自动发货，扫码即购，秒发卡密">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1.6fr 1fr;
-            gap: 20px;
-            align-items: start;
-        }
-        .panel {
+        /* 店铺商城风格 */
+        .shop-nav {
             background: #fff;
-            border: 1px solid #e8e8e8;
-            border-radius: 14px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-bottom: 1px solid #f0f0f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .panel-title {
-            font-size: 17px;
+        .shop-nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        .shop-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 18px;
+            color: #1f1f1f;
+            text-decoration: none;
+        }
+        .shop-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #1677ff, #69b1ff);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .shop-nav-links {
+            display: flex;
+            gap: 28px;
+            flex: 1;
+        }
+        .shop-nav-link {
+            color: #595959;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+            padding: 6px 0;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+        }
+        .shop-nav-link:hover { color: #1677ff; }
+        .shop-nav-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .nav-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .nav-btn-primary {
+            background: #1677ff;
+            color: #fff;
+        }
+        .nav-btn-primary:hover { background: #4096ff; }
+        .nav-btn-outline {
+            background: #fff;
+            color: #595959;
+            border: 1px solid #d9d9d9;
+        }
+        .nav-btn-outline:hover { border-color: #1677ff; color: #1677ff; }
+
+        /* 店铺信息区 */
+        .shop-header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+        }
+        .shop-avatar-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+        .shop-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e6f4ff, #bae0ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .shop-status-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: #52c41a;
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: 2px solid #fff;
+        }
+        .shop-info { flex: 1; }
+        .shop-name-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .shop-name {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1f1f1f;
+        }
+        .shop-badge {
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .shop-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .shop-action-btn {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid #d9d9d9;
+            background: #fff;
+            color: #595959;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .shop-action-btn:hover { border-color: #1677ff; color: #1677ff; }
+        .shop-announcement {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #1f1f1f;
+            font-size: 14px;
+            color: #8c8c8c;
         }
-        .panel-title .icon { font-size: 18px; }
-        .product-list-v2 { display: flex; flex-direction: column; gap: 10px; }
-        .product-item-v2 {
+        .shop-announcement .icon { font-size: 16px; }
+
+        /* 商品区 */
+        .shop-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+        .product-panel {
+            background: #fff;
             border: 1px solid #f0f0f0;
-            border-radius: 10px;
-            padding: 14px 16px;
-            cursor: pointer;
-            transition: all 0.2s;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #fafafa;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f5f5f5;
         }
-        .product-item-v2:hover {
+        .panel-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f1f1f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-title .count { color: #8c8c8c; font-weight: 400; font-size: 14px; }
+        .search-box {
+            position: relative;
+        }
+        .search-box input {
+            width: 220px;
+            padding: 8px 12px 8px 34px;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-box input:focus { border-color: #1677ff; }
+        .search-box .icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #bfbfbf;
+            font-size: 14px;
+        }
+
+        /* 分类标签 */
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 16px 24px;
+            border-bottom: 1px solid #f5f5f5;
+            flex-wrap: wrap;
+        }
+        .category-tab {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #595959;
+            background: #f5f5f5;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .category-tab:hover { background: #e6f4ff; color: #1677ff; }
+        .category-tab.active {
+            background: #1677ff;
+            color: #fff;
+            font-weight: 600;
+        }
+        .category-tab .cat-count {
+            background: rgba(255,255,255,0.3);
+            padding: 0 6px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        .category-tab:not(.active) .cat-count {
+            background: #e8e8e8;
+            color: #8c8c8c;
+        }
+
+        /* 商品网格 */
+        .product-grid-v3 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding: 24px;
+        }
+        .product-card-v3 {
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 120px;
+        }
+        .product-card-v3:hover {
             border-color: #1677ff;
-            background: #f0f7ff;
+            box-shadow: 0 4px 12px rgba(22,119,255,0.1);
+            transform: translateY(-2px);
         }
-        .product-item-v2.selected {
+        .product-card-v3 .pc-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .product-card-v3 .pc-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f1f1f;
+            flex: 1;
+            margin-right: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+        .stock-tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .stock-tag.in-stock { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
+        .stock-tag.out-stock { background: #f5f5f5; color: #8c8c8c; border: 1px solid #e8e8e8; }
+        .product-card-v3 .pc-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        .product-card-v3 .pc-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1677ff;
+        }
+        .cart-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #e8e8e8;
+            background: #fff;
+            color: #bfbfbf;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .cart-btn:hover {
+            background: #1677ff;
             border-color: #1677ff;
-            background: #e6f4ff;
-            box-shadow: 0 0 0 2px rgba(22,119,255,0.15);
+            color: #fff;
         }
-        .product-item-v2 .p-info { flex: 1; }
-        .product-item-v2 .p-name { font-size: 15px; font-weight: 600; color: #1f1f1f; margin-bottom: 3px; }
-        .product-item-v2 .p-desc { font-size: 12px; color: #8c8c8c; }
-        .product-item-v2 .p-right { text-align: right; margin-left: 12px; }
-        .product-item-v2 .p-price { font-size: 18px; font-weight: 700; color: #ff4d4f; }
-        .product-item-v2 .p-stock { font-size: 11px; color: #8c8c8c; margin-top: 2px; }
-        .product-item-v2.sold-out { opacity: 0.5; cursor: not-allowed; }
-        .product-item-v2.sold-out:hover { border-color: #f0f0f0; background: #fafafa; }
-        .cashier-field { margin-bottom: 16px; }
-        .cashier-label { font-size: 13px; color: #595959; margin-bottom: 6px; font-weight: 500; }
-        .cashier-input {
-            width: 100%; padding: 10px 12px; border: 1px solid #e8e8e8;
-            border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;
-            background: #fafafa;
+        .cart-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
         }
-        .cashier-input:focus { border-color: #1677ff; background: #fff; }
-        .selected-product-box {
-            background: #fafafa; border: 1px solid #f0f0f0; border-radius: 8px;
-            padding: 12px 14px; font-size: 14px; color: #1f1f1f; font-weight: 500;
-            min-height: 42px; display: flex; align-items: center;
+        .cart-btn:disabled:hover {
+            background: #fff;
+            border-color: #e8e8e8;
+            color: #bfbfbf;
         }
-        .selected-product-box.empty { color: #bfbfbf; font-weight: 400; }
-        .pay-channels { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .pay-channel {
-            border: 2px solid #e8e8e8; border-radius: 10px; padding: 12px;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            cursor: pointer; transition: all 0.2s; font-size: 15px; font-weight: 600;
-            background: #fff; color: #1f1f1f;
-        }
-        .pay-channel:hover { border-color: #bae0ff; }
-        .pay-channel.active { border-color: #1677ff; background: #e6f4ff; color: #1677ff; }
-        .pay-channel.disabled { opacity: 0.45; cursor: not-allowed; }
-        .pay-channel .ch-icon { font-size: 18px; }
-        .pay-btn {
-            width: 100%; padding: 13px; border: none; border-radius: 10px;
-            font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s;
-            background: #1677ff; color: #fff; margin-top: 8px;
-        }
-        .pay-btn:hover { background: #4096ff; }
-        .pay-btn:disabled { background: #d9d9d9; color: #bfbfbf; cursor: not-allowed; }
-        .cashier-footer {
-            text-align: center; margin-top: 20px; font-size: 11px; color: #bfbfbf; line-height: 1.8;
-        }
+
+        /* 支付弹窗 */
         .pay-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
-            z-index: 1000; backdrop-filter: blur(3px);
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(3px);
         }
         .pay-modal-box {
-            background: #fff; border-radius: 16px; padding: 28px; width: 90%; max-width: 400px;
-            text-align: center; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px;
+            width: 90%;
+            max-width: 420px;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
             animation: modalIn 0.25s ease;
         }
         @keyframes modalIn { from { opacity:0; transform:scale(0.95);} to {opacity:1; transform:scale(1);} }
-        .pay-modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-        .pay-modal-amount { font-size: 30px; font-weight: 700; color: #ff4d4f; margin-bottom: 18px; }
-        .pay-modal-qr {
-            display: inline-block; padding: 14px; background: #fff;
-            border: 1px solid #f0f0f0; border-radius: 10px; margin-bottom: 14px;
-        }
-        .pay-modal-tip { font-size: 13px; color: #595959; margin-bottom: 16px; }
-        .pay-modal-order { font-size: 11px; color: #bfbfbf; font-family: monospace; margin-bottom: 14px; }
-        .pay-modal-actions { display: flex; gap: 10px; }
         .pay-modal-close {
-            position: absolute; top: 14px; right: 16px; font-size: 22px;
-            color: #bfbfbf; cursor: pointer; line-height: 1;
+            position: absolute;
+            top: 14px; right: 16px;
+            font-size: 22px;
+            color: #bfbfbf;
+            cursor: pointer;
+            line-height: 1;
         }
         .pay-modal-close:hover { color: #1f1f1f; }
-        .success-panel {
-            background: #fff; border: 1px solid #e8e8e8; border-radius: 14px;
-            padding: 32px; max-width: 560px; margin: 0 auto; text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        .pay-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .pay-modal-amount {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ff4d4f;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .pay-form-group { margin-bottom: 14px; }
+        .pay-form-label {
+            font-size: 13px;
+            color: #595959;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .pay-form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .pay-form-input:focus { border-color: #1677ff; }
+        .pay-channels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .pay-channel {
+            border: 2px solid #e8e8e8;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+            font-weight: 600;
+            background: #fff;
+        }
+        .pay-channel.active {
+            border-color: #1677ff;
+            background: #e6f4ff;
+            color: #1677ff;
+        }
+        .pay-channel.disabled { opacity: 0.45; cursor: not-allowed; }
+        .pay-submit {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #1677ff;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .pay-submit:hover { background: #4096ff; }
+        .pay-submit:disabled { background: #d9d9d9; cursor: not-allowed; }
+
+        /* 二维码支付弹窗 */
+        .qr-modal-box {
+            text-align: center;
+        }
+        .qr-wrapper {
+            display: inline-block;
+            padding: 14px;
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            margin-bottom: 14px;
+        }
+        .qr-tip {
+            font-size: 13px;
+            color: #595959;
+            margin-bottom: 14px;
+        }
+        .qr-order-no {
+            font-size: 11px;
+            color: #bfbfbf;
+            font-family: monospace;
+            margin-bottom: 14px;
+        }
+
+        /* 成功页面 */
+        .success-wrap {
+            max-width: 560px;
+            margin: 40px auto;
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            border-radius: 14px;
+            padding: 32px;
+            text-align: center;
         }
         .success-icon {
-            width: 56px; height: 56px; line-height: 56px; border-radius: 50%;
-            background: #52c41a; color: #fff; font-size: 28px; margin: 0 auto 14px;
+            width: 56px; height: 56px;
+            line-height: 56px;
+            border-radius: 50%;
+            background: #52c41a;
+            color: #fff;
+            font-size: 28px;
+            margin: 0 auto 14px;
         }
-        .success-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-        .success-sub { font-size: 13px; color: #faad14; margin-bottom: 20px; }
-        @media (max-width: 860px) {
-            .main-layout { grid-template-columns: 1fr; }
+
+        @media (max-width: 900px) {
+            .product-grid-v3 { grid-template-columns: repeat(2, 1fr); }
+            .shop-nav-links { display: none; }
+            .shop-header { flex-direction: column; align-items: center; text-align: center; }
+            .shop-name-row { justify-content: center; }
+            .shop-actions { justify-content: center; }
+        }
+        @media (max-width: 500px) {
+            .product-grid-v3 { grid-template-columns: 1fr; }
+            .search-box input { width: 160px; }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-inner">
-            <div class="navbar-brand">
-                <div class="logo-icon">🛒</div>
-                <div>
-                    <div id="nav-site-name" style="font-size:17px;font-weight:700;line-height:1.2;">自动发卡商城</div>
-                    <div id="nav-site-sub" style="font-size:11px;color:#8c8c8c;font-weight:400;">通用自动化安全发卡站</div>
-                </div>
+    <!-- 顶部导航 -->
+    <nav class="shop-nav">
+        <div class="shop-nav-inner">
+            <a href="#" class="shop-logo" onclick="backToHome();return false;">
+                <div class="shop-logo-icon">E</div>
+                <span id="nav-site-name">自动发卡商城</span>
+            </a>
+            <div class="shop-nav-links">
+                <button class="shop-nav-link" onclick="backToHome()">网站首页</button>
+                <button class="shop-nav-link" onclick="showQueryModal()">订单查询</button>
             </div>
-            <div class="navbar-links">
-                <button class="navbar-link" onclick="showQueryModal()">📋 订单查询</button>
-                <a class="navbar-link" href="/admin">👑 管理后台</a>
+            <div class="shop-nav-right">
+                <button class="nav-btn nav-btn-primary" onclick="showQueryModal()">🔍 订单查询</button>
+                <a href="/admin" class="nav-btn nav-btn-outline">👑 管理后台</a>
             </div>
         </div>
     </nav>
 
-    <main class="container" style="padding-top:24px;padding-bottom:40px;">
-        <div id="announcement-bar" class="announcement-bar" style="display:none;margin-bottom:20px;">
-            <span class="icon">📢</span>
-            <span class="text" id="announcement-text"></span>
-        </div>
-
-        <div id="main-page">
-            <div class="main-layout">
-                <div class="panel">
-                    <div class="panel-title"><span class="icon">📦</span> 可选商品规格清单</div>
-                    <div id="product-list" class="product-list-v2">
-                        <div class="empty-state"><p>加载中...</p></div>
-                    </div>
+    <!-- 主页面 -->
+    <div id="main-page">
+        <!-- 店铺信息 -->
+        <div class="shop-header">
+            <div class="shop-avatar-wrap">
+                <div class="shop-avatar">🛒</div>
+                <div class="shop-status-badge">营业中</div>
+            </div>
+            <div class="shop-info">
+                <div class="shop-name-row">
+                    <span class="shop-name" id="shop-name">自动发卡商城</span>
+                    <span class="shop-badge">自动发货</span>
                 </div>
-
-                <div class="panel">
-                    <div class="panel-title"><span class="icon">💳</span> 安全自助收银台</div>
-                    <div class="cashier-field">
-                        <div class="cashier-label">当前选定商品</div>
-                        <div class="selected-product-box empty" id="selected-product-box">暂未选定商品</div>
-                    </div>
-                    <div class="cashier-field">
-                        <div class="cashier-label">联系方式 (邮箱/手机号/QQ，提取卡密凭证)</div>
-                        <input type="text" class="cashier-input" id="contact-input" placeholder="输入联系人，严禁乱码与空格">
-                    </div>
-                    <div class="cashier-field">
-                        <div class="cashier-label">选择支付通道</div>
-                        <div class="pay-channels">
-                            <div class="pay-channel active" data-method="alipay" onclick="selectPayMethod('alipay')">
-                                <span class="ch-icon">💙</span> 支付宝
-                            </div>
-                            <div class="pay-channel disabled" data-method="wechat" onclick="selectPayMethod('wechat')">
-                                <span class="ch-icon">💚</span> 微信支付
-                            </div>
-                        </div>
-                    </div>
-                    <button class="pay-btn" id="pay-btn" disabled onclick="doPay()">立即安全支付购买 (¥0.00)</button>
-                    <div class="cashier-footer">
-                        <div id="footer-text">© 2026 自动化零服务器成本发卡系统</div>
-                        <div>Power by Vercel + Supabase Serverless Database</div>
-                        <div id="footer-icp"></div>
-                    </div>
+                <div class="shop-actions">
+                    <button class="shop-action-btn" onclick="showContact()">💬 联系卖家</button>
+                    <button class="shop-action-btn" onclick="shareShop()">🔗 分享店铺</button>
+                </div>
+                <div class="shop-announcement">
+                    <span class="icon">🔔</span>
+                    <span id="shop-announcement-text">欢迎光临，本站24小时自动发货</span>
                 </div>
             </div>
         </div>
 
-        <div id="success-page" style="display:none;">
-            <div class="success-panel">
-                <div class="success-icon">✓</div>
-                <div class="success-title">支付成功 · 卡密已发放</div>
-                <div class="success-sub">请妥善保管以下卡密，关闭页面后可通过订单号查询</div>
-                <div id="card-list" class="card-list" style="text-align:left;"></div>
-                <div class="btn-group" style="margin-top:20px;">
-                    <button class="btn btn-primary" onclick="copyAllCards()">复制全部卡密</button>
-                    <button class="btn btn-secondary" onclick="backToHome()">返回首页</button>
+        <!-- 商品区 -->
+        <div class="shop-main">
+            <div class="product-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        🛍️ 全部商品 <span class="count" id="product-count">0</span>
+                    </div>
+                    <div class="search-box">
+                        <span class="icon">🔍</span>
+                        <input type="text" id="search-input" placeholder="搜索商品" oninput="filterProducts()">
+                    </div>
+                </div>
+                <div class="category-tabs" id="category-tabs">
+                    <!-- 分类标签动态生成 -->
+                </div>
+                <div class="product-grid-v3" id="product-grid">
+                    <div class="empty-state" style="grid-column:1/-1;"><p>加载中...</p></div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <div id="pay-modal" class="pay-modal" style="display:none;">
+    <!-- 成功页面 -->
+    <div id="success-page" style="display:none;">
+        <div class="success-wrap">
+            <div class="success-icon">✓</div>
+            <div style="font-size:20px;font-weight:700;margin-bottom:6px;">支付成功 · 卡密已发放</div>
+            <div style="font-size:13px;color:#faad14;margin-bottom:20px;">请妥善保管以下卡密，关闭页面后可通过订单号查询</div>
+            <div id="card-list" class="card-list" style="text-align:left;"></div>
+            <div class="btn-group" style="margin-top:20px;">
+                <button class="btn btn-primary" onclick="copyAllCards()">复制全部卡密</button>
+                <button class="btn btn-secondary" onclick="backToHome()">返回首页</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 下单弹窗 -->
+    <div id="order-modal" class="pay-modal" style="display:none;">
         <div class="pay-modal-box">
-            <span class="pay-modal-close" onclick="closePayModal()">&times;</span>
-            <div class="pay-modal-title" id="pay-modal-product">商品名称</div>
-            <div class="pay-modal-amount" id="pay-modal-amount">¥0.00</div>
-            <div class="pay-modal-qr">
+            <span class="pay-modal-close" onclick="closeOrderModal()">&times;</span>
+            <div class="pay-modal-title" id="order-modal-product">商品名称</div>
+            <div class="pay-modal-amount" id="order-modal-amount">¥0.00</div>
+            <div class="pay-form-group">
+                <div class="pay-form-label">联系方式 (邮箱/手机号/QQ，提取卡密凭证)</div>
+                <input type="text" class="pay-form-input" id="order-contact" placeholder="输入联系人，严禁乱码与空格">
+            </div>
+            <div class="pay-form-group">
+                <div class="pay-form-label">选择支付通道</div>
+                <div class="pay-channels">
+                    <div class="pay-channel active" data-method="alipay" onclick="selectPayMethod('alipay')">
+                        💙 支付宝
+                    </div>
+                    <div class="pay-channel disabled" data-method="wechat" onclick="selectPayMethod('wechat')">
+                        💚 微信支付
+                    </div>
+                </div>
+            </div>
+            <button class="pay-submit" id="order-submit-btn" onclick="submitOrder()">立即安全支付购买</button>
+        </div>
+    </div>
+
+    <!-- 二维码支付弹窗 -->
+    <div id="qr-modal" class="pay-modal" style="display:none;">
+        <div class="pay-modal-box qr-modal-box">
+            <span class="pay-modal-close" onclick="closeQrModal()">&times;</span>
+            <div class="pay-modal-title" id="qr-modal-product">商品名称</div>
+            <div class="pay-modal-amount" id="qr-modal-amount">¥0.00</div>
+            <div class="qr-wrapper">
                 <div id="qrcode" style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;">
                     <span class="loading"></span>
                 </div>
             </div>
-            <div class="pay-modal-tip" id="payment-tip">请使用支付宝扫码支付，支付成功后将自动跳转</div>
-            <div class="pay-modal-order" id="pay-modal-order-no"></div>
-            <div class="pay-modal-actions">
-                <button class="btn btn-primary" onclick="checkOrderStatus()">我已完成支付</button>
-                <button class="btn btn-secondary" onclick="closePayModal()">取消支付</button>
+            <div class="qr-tip" id="payment-tip">请使用支付宝扫码支付，支付成功后将自动跳转</div>
+            <div class="qr-order-no" id="qr-order-no"></div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn-primary" style="flex:1;" onclick="checkOrderStatus()">我已完成支付</button>
+                <button class="btn btn-secondary" style="flex:1;" onclick="closeQrModal()">取消支付</button>
             </div>
         </div>
     </div>
 
-    <div id="query-modal" class="modal hidden">
-        <div class="modal-content" style="max-width:480px;text-align:left;">
-            <span class="modal-close" onclick="closeQueryModal()">&times;</span>
-            <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">订单查询</h3>
-            <div class="query-input-group">
-                <input type="text" id="query-order-input" placeholder="请输入订单编号">
-                <button class="btn btn-primary btn-sm" onclick="doQueryOrder()" style="flex:none;padding:10px 20px;">查询</button>
+    <!-- 订单查询弹窗 -->
+    <div id="query-modal" class="pay-modal" style="display:none;">
+        <div class="pay-modal-box" style="max-width:480px;text-align:left;">
+            <span class="pay-modal-close" onclick="closeQueryModal()">&times;</span>
+            <div class="pay-modal-title" style="text-align:left;margin-bottom:16px;">订单查询</div>
+            <div style="display:flex;gap:10px;margin-bottom:16px;">
+                <input type="text" class="pay-form-input" id="query-order-input" placeholder="请输入订单编号" style="flex:1;">
+                <button class="btn btn-primary" style="flex:none;padding:10px 24px;" onclick="doQueryOrder()">查询</button>
             </div>
-            <div id="query-result" style="margin-top:16px;"></div>
+            <div id="query-result"></div>
         </div>
     </div>
 
+    <!-- 通用弹窗 -->
     <div id="modal" class="modal hidden">
         <div class="modal-content">
             <span id="modal-close" class="modal-close">&times;</span>

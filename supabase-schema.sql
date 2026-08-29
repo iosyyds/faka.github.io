@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(200) NOT NULL,
     description TEXT DEFAULT '',
+    category VARCHAR(50) DEFAULT '全部',
     price DECIMAL(10, 2) NOT NULL CHECK (price > 0),
     sort_order INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT true,

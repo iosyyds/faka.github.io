@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
         // POST：添加商品
         if (req.method === 'POST') {
             const body = await parseBody(req);
-            const { name, description, price, sort_order } = body;
+            const { name, description, price, sort_order, category } = body;
             if (!name || !name.trim()) {
                 return error(res, '商品名称不能为空');
             }
@@ -48,7 +48,8 @@ module.exports = async (req, res) => {
                 name.trim(),
                 (description || '').trim(),
                 priceNum,
-                parseInt(sort_order, 10) || 0
+                parseInt(sort_order, 10) || 0,
+                (category || '全部').trim()
             );
             return success(res, { product });
         }
@@ -69,6 +70,7 @@ module.exports = async (req, res) => {
                 updates.price = priceNum;
             }
             if (body.sort_order !== undefined) updates.sort_order = parseInt(body.sort_order, 10) || 0;
+            if (body.category !== undefined) updates.category = body.category || '全部';
             if (body.is_active !== undefined) updates.is_active = body.is_active;
             if (Object.keys(updates).length === 0) {
                 return error(res, '没有需要更新的字段');

@@ -1,5 +1,5 @@
 // ============================================
-// 自动发卡商城 - 前台交互逻辑（左右两栏版）
+// 自动发卡商城 - 店铺商城风格
 // ============================================
 
 const API_BASE = window.location.hostname === 'localhost'
@@ -9,9 +9,10 @@ const API_BASE = window.location.hostname === 'localhost'
 let currentOrder = null;
 let pollTimer = null;
 let siteSettings = {};
-let selectedProduct = null;
 let allProducts = [];
+let currentCategory = '全部';
 let currentPayMethod = 'alipay';
+let selectedProduct = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSiteSettings();
@@ -24,7 +25,9 @@ function bindEvents() {
     document.getElementById('query-order-input').addEventListener('keypress', e => {
         if (e.key === 'Enter') doQueryOrder();
     });
-    document.getElementById('contact-input').addEventListener('input', updatePayBtn);
+    document.getElementById('order-contact').addEventListener('keypress', e => {
+        if (e.key === 'Enter') submitOrder();
+    });
 }
 
 // ========== 网站设置 ==========
@@ -46,139 +49,156 @@ function applySettings() {
     if (s.site_name) {
         document.title = s.site_name;
         document.getElementById('nav-site-name').textContent = s.site_name;
-    }
-    if (s.site_subtitle) {
-        document.getElementById('nav-site-sub').textContent = s.site_subtitle;
+        document.getElementById('shop-name').textContent = s.site_name;
     }
     if (s.announcement && s.announcement.trim()) {
-        document.getElementById('announcement-bar').style.display = 'flex';
-        document.getElementById('announcement-text').textContent = s.announcement;
+        document.getElementById('shop-announcement-text').textContent = s.announcement;
     }
     if (s.payment_tip) {
         document.getElementById('payment-tip').textContent = s.payment_tip;
-    }
-    if (s.footer_text) {
-        document.getElementById('footer-text').textContent = s.footer_text;
-    }
-    if (s.icp_number) {
-        document.getElementById('footer-icp').textContent = s.icp_number;
     }
 }
 
 // ========== 商品列表 ==========
 async function loadProducts() {
-    const container = document.getElementById('product-list');
+    const grid = document.getElementById('product-grid');
     try {
         const res = await fetch(`${API_BASE}/products`);
         const data = await res.json();
         if (data.success && data.products.length > 0) {
             allProducts = data.products;
-            renderProducts(data.products);
+            document.getElementById('product-count').textContent = data.products.length;
+            renderCategories();
+            renderProducts();
         } else {
-            container.innerHTML = `
-                <div class="empty-state" style="padding:40px 20px;">
-                    <div class="icon" style="font-size:36px;opacity:0.4;">📦</div>
-                    <p style="margin-top:10px;color:#8c8c8c;">暂无商品规格上架，请进入后台添加</p>
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column:1/-1;padding:40px;">
+                    <div class="icon" style="font-size:40px;opacity:0.4;">📦</div>
+                    <p style="margin-top:10px;color:#8c8c8c;">暂无商品，请进入后台添加</p>
                 </div>`;
+            document.getElementById('product-count').textContent = '0';
         }
     } catch (err) {
         console.error('加载商品失败:', err);
-        container.innerHTML = `
-            <div class="empty-state" style="padding:40px 20px;">
-                <div class="icon" style="font-size:36px;opacity:0.4;">⚠️</div>
-                <p style="margin-top:10px;color:#ff4d4f;">商品加载失败，请检查后端服务</p>
+        grid.innerHTML = `
+            <div class="empty-state" style="grid-column:1/-1;padding:40px;">
+                <div class="icon" style="font-size:40px;opacity:0.4;">⚠️</div>
+                <p style="margin-top:10px;color:#ff4d4f;">商品加载失败</p>
             </div>`;
     }
 }
 
-function renderProducts(products) {
-    const container = document.getElementById('product-list');
-    const warningStock = parseInt(siteSettings.stock_warning || '5', 10);
-    container.innerHTML = products.map(p => {
-        const soldOut = p.stock <= 0;
+function renderCategories() {
+    const categories = {};
+    allProducts.forEach(p => {
+        const cat = p.category || '全部';
+        categories[cat] = (categories[cat] || 0) + 1;
+    });
+    const tabs = document.getElementById('category-tabs');
+    let html = `<button class="category-tab ${currentCategory === '全部' ? 'active' : ''}" onclick="switchCategory('全部')">全部 <span class="cat-count">${allProducts.length}</span></button>`;
+    for (const [cat, count] of Object.entries(categories)) {
+        if (cat !== '全部') {
+            html += `<button class="category-tab ${currentCategory === cat ? 'active' : ''}" onclick="switchCategory('${escapeHtml(cat)}')">${escapeHtml(cat)} <span class="cat-count">${count}</span></button>`;
+        }
+    }
+    tabs.innerHTML = html;
+}
+
+function switchCategory(cat) {
+    currentCategory = cat;
+    renderCategories();
+    renderProducts();
+}
+
+function filterProducts() {
+    renderProducts();
+}
+
+function renderProducts() {
+    const grid = document.getElementById('product-grid');
+    const search = document.getElementById('search-input').value.toLowerCase().trim();
+    let filtered = allProducts;
+    if (currentCategory !== '全部') {
+        filtered = filtered.filter(p => (p.category || '全部') === currentCategory);
+    }
+    if (search) {
+        filtered = filtered.filter(p =>
+            p.name.toLowerCase().includes(search) ||
+            (p.description || '').toLowerCase().includes(search)
+        );
+    }
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state" style="grid-column:1/-1;padding:40px;">
+                <div class="icon" style="font-size:40px;opacity:0.4;">🔍</div>
+                <p style="margin-top:10px;color:#8c8c8c;">没有找到相关商品</p>
+            </div>`;
+        return;
+    }
+    grid.innerHTML = filtered.map(p => {
+        const inStock = p.stock > 0;
         return `
-        <div class="product-item-v2 ${soldOut ? 'sold-out' : ''}" data-id="${p.id}" onclick="${soldOut ? '' : `selectProduct('${p.id}')`}">
-            <div class="p-info">
-                <div class="p-name">${escapeHtml(p.name)}</div>
-                <div class="p-desc">${escapeHtml(p.description || '暂无描述')}</div>
+        <div class="product-card-v3" onclick="${inStock ? `openOrderModal('${p.id}')` : ''}">
+            <div class="pc-top">
+                <div class="pc-name" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
+                <span class="stock-tag ${inStock ? 'in-stock' : 'out-stock'}">${inStock ? '有货' : '缺货'}</span>
             </div>
-            <div class="p-right">
-                <div class="p-price">¥${Number(p.price).toFixed(2)}</div>
-                <div class="p-stock">${soldOut ? '已售罄' : `库存 ${p.stock} 件${p.stock <= warningStock ? ' · 紧张' : ''}`}</div>
+            <div class="pc-bottom">
+                <span class="pc-price">¥${Number(p.price).toFixed(2)}</span>
+                <button class="cart-btn" ${inStock ? '' : 'disabled'} onclick="event.stopPropagation();openOrderModal('${p.id}')" title="立即购买">🛒</button>
             </div>
         </div>`;
     }).join('');
 }
 
-// ========== 选择商品 ==========
-function selectProduct(productId) {
+// ========== 下单弹窗 ==========
+function openOrderModal(productId) {
     selectedProduct = allProducts.find(p => p.id === productId);
-    if (!selectedProduct) return;
-
-    document.querySelectorAll('.product-item-v2').forEach(el => {
-        el.classList.toggle('selected', el.dataset.id === productId);
-    });
-
-    const box = document.getElementById('selected-product-box');
-    box.classList.remove('empty');
-    box.innerHTML = `${escapeHtml(selectedProduct.name)} <span style="color:#ff4d4f;margin-left:8px;">¥${Number(selectedProduct.price).toFixed(2)}</span>`;
-
-    updatePayBtn();
+    if (!selectedProduct || selectedProduct.stock <= 0) return;
+    document.getElementById('order-modal-product').textContent = selectedProduct.name;
+    document.getElementById('order-modal-amount').textContent = `¥${Number(selectedProduct.price).toFixed(2)}`;
+    document.getElementById('order-contact').value = '';
+    document.getElementById('order-modal').style.display = 'flex';
+    setTimeout(() => document.getElementById('order-contact').focus(), 100);
 }
 
-function updatePayBtn() {
-    const btn = document.getElementById('pay-btn');
-    if (selectedProduct) {
-        btn.disabled = false;
-        btn.textContent = `立即安全支付购买 (¥${Number(selectedProduct.price).toFixed(2)})`;
-    } else {
-        btn.disabled = true;
-        btn.textContent = '立即安全支付购买 (¥0.00)';
-    }
+function closeOrderModal() {
+    document.getElementById('order-modal').style.display = 'none';
+    selectedProduct = null;
 }
 
-// ========== 支付方式 ==========
 function selectPayMethod(method) {
     if (method === 'wechat') {
         showToast('微信支付暂未开通，请使用支付宝', 'warning');
         return;
     }
     currentPayMethod = method;
-    document.querySelectorAll('.pay-channel').forEach(el => {
+    document.querySelectorAll('#order-modal .pay-channel').forEach(el => {
         el.classList.toggle('active', el.dataset.method === method);
     });
 }
 
-// ========== 发起支付 ==========
-async function doPay() {
-    if (!selectedProduct) {
-        showToast('请先选择商品', 'warning');
-        return;
-    }
-    const contact = document.getElementById('contact-input').value.trim();
+async function submitOrder() {
+    if (!selectedProduct) return;
+    const contact = document.getElementById('order-contact').value.trim();
     if (!contact) {
         showToast('请输入联系方式', 'warning');
         return;
     }
-
-    const btn = document.getElementById('pay-btn');
+    const btn = document.getElementById('order-submit-btn');
     btn.disabled = true;
     btn.textContent = '创建订单中...';
-
     try {
         const res = await fetch(`${API_BASE}/create-order`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                productId: selectedProduct.id,
-                quantity: 1,
-                contact: contact
-            })
+            body: JSON.stringify({ productId: selectedProduct.id, quantity: 1, contact })
         });
         const data = await res.json();
         if (data.success) {
             currentOrder = data.order;
-            showPayModal(data.order, data.qrCode);
+            closeOrderModal();
+            showQrModal(data.order, data.qrCode);
             startPolling();
         } else {
             showToast(data.message || '创建订单失败', 'error');
@@ -187,15 +207,16 @@ async function doPay() {
         console.error('创建订单失败:', err);
         showToast('网络错误，请稍后重试', 'error');
     } finally {
-        updatePayBtn();
+        btn.disabled = false;
+        btn.textContent = '立即安全支付购买';
     }
 }
 
-function showPayModal(order, qrCodeUrl) {
-    document.getElementById('pay-modal-product').textContent = order.product_name;
-    document.getElementById('pay-modal-amount').textContent = `¥${Number(order.amount).toFixed(2)}`;
-    document.getElementById('pay-modal-order-no').textContent = `订单号：${order.order_no}`;
-
+// ========== 二维码支付 ==========
+function showQrModal(order, qrCodeUrl) {
+    document.getElementById('qr-modal-product').textContent = order.product_name;
+    document.getElementById('qr-modal-amount').textContent = `¥${Number(order.amount).toFixed(2)}`;
+    document.getElementById('qr-order-no').textContent = `订单号：${order.order_no}`;
     const qrContainer = document.getElementById('qrcode');
     qrContainer.innerHTML = '';
     new QRCode(qrContainer, {
@@ -204,14 +225,13 @@ function showPayModal(order, qrCodeUrl) {
         height: 200,
         correctLevel: QRCode.CorrectLevel.H
     });
-
-    document.getElementById('pay-modal').style.display = 'flex';
+    document.getElementById('qr-modal').style.display = 'flex';
 }
 
-function closePayModal() {
+function closeQrModal() {
     stopPolling();
     currentOrder = null;
-    document.getElementById('pay-modal').style.display = 'none';
+    document.getElementById('qr-modal').style.display = 'none';
 }
 
 // ========== 订单状态轮询 ==========
@@ -234,7 +254,7 @@ async function checkOrderStatus() {
         const data = await res.json();
         if (data.success && data.order.status === 'paid') {
             stopPolling();
-            closePayModal();
+            closeQrModal();
             showSuccessPage(data.order);
         }
     } catch (err) {
@@ -247,7 +267,6 @@ function showSuccessPage(order) {
     document.getElementById('main-page').style.display = 'none';
     document.getElementById('success-page').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
     const cardList = document.getElementById('card-list');
     if (order.cards && order.cards.length > 0) {
         cardList.innerHTML = order.cards.map((card, idx) => `
@@ -275,9 +294,7 @@ function copySingleCard(btn) {
 function copyAllCards() {
     const cards = document.querySelectorAll('.card-item-value');
     const text = Array.from(cards).map((el, i) => `卡密${i + 1}：${el.textContent}`).join('\n');
-    copyToClipboard(text).then(() => {
-        showToast('卡密已复制到剪贴板', 'success');
-    });
+    copyToClipboard(text).then(() => showToast('卡密已复制到剪贴板', 'success'));
 }
 
 async function copyToClipboard(text) {
@@ -299,25 +316,22 @@ function backToHome() {
     selectedProduct = null;
     document.getElementById('success-page').style.display = 'none';
     document.getElementById('main-page').style.display = 'block';
-    document.getElementById('selected-product-box').classList.add('empty');
-    document.getElementById('selected-product-box').textContent = '暂未选定商品';
-    document.getElementById('contact-input').value = '';
-    document.querySelectorAll('.product-item-v2').forEach(el => el.classList.remove('selected'));
-    updatePayBtn();
+    currentCategory = '全部';
+    document.getElementById('search-input').value = '';
     loadProducts();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ========== 订单查询 ==========
 function showQueryModal() {
-    document.getElementById('query-modal').classList.remove('hidden');
+    document.getElementById('query-modal').style.display = 'flex';
     document.getElementById('query-order-input').value = '';
     document.getElementById('query-result').innerHTML = '';
     setTimeout(() => document.getElementById('query-order-input').focus(), 100);
 }
 
 function closeQueryModal() {
-    document.getElementById('query-modal').classList.add('hidden');
+    document.getElementById('query-modal').style.display = 'none';
 }
 
 async function doQueryOrder() {
@@ -366,6 +380,25 @@ async function doQueryOrder() {
     } catch (err) {
         resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:#ff4d4f;font-size:14px;">网络错误，请稍后重试</div>';
     }
+}
+
+// ========== 其他功能 ==========
+function showContact() {
+    const s = siteSettings;
+    const contacts = [];
+    if (s.contact_qq) contacts.push(`QQ：${s.contact_qq}`);
+    if (s.contact_wechat) contacts.push(`微信：${s.contact_wechat}`);
+    if (s.contact_email) contacts.push(`邮箱：${s.contact_email}`);
+    if (contacts.length === 0) {
+        showToast('卖家暂未设置联系方式', 'warning');
+    } else {
+        showModal(contacts.join('\n'));
+    }
+}
+
+function shareShop() {
+    const url = window.location.href;
+    copyToClipboard(url).then(() => showToast('店铺链接已复制', 'success'));
 }
 
 // ========== 工具函数 ==========

@@ -228,9 +228,13 @@
                             <input type="number" id="new-product-price" step="0.01" min="0.01" placeholder="例如：29.90">
                         </div>
                     </div>
-                    <div class="form-row">
+                    <div class="form-row" style="grid-template-columns:1fr 1fr 1fr;">
                         <div class="form-group">
-                            <label>排序（数字越小越靠前）</label>
+                            <label>商品分类</label>
+                            <input type="text" id="new-product-category" placeholder="例如：会员/充值" value="全部">
+                        </div>
+                        <div class="form-group">
+                            <label>排序（越小越靠前）</label>
                             <input type="number" id="new-product-sort" value="0" min="0">
                         </div>
                         <div class="form-group" style="display:flex;align-items:flex-end;">
@@ -412,10 +416,14 @@
                 <label>商品名称</label>
                 <input type="text" id="edit-product-name">
             </div>
-            <div class="form-row">
+            <div class="form-row" style="grid-template-columns:1fr 1fr 1fr;">
                 <div class="form-group">
                     <label>价格（元）</label>
                     <input type="number" id="edit-product-price" step="0.01" min="0.01">
+                </div>
+                <div class="form-group">
+                    <label>分类</label>
+                    <input type="text" id="edit-product-category">
                 </div>
                 <div class="form-group">
                     <label>排序</label>
@@ -561,7 +569,7 @@
                         ${escapeHtml(p.name)}
                         <span class="badge ${p.is_active ? 'badge-active' : 'badge-inactive'}">${p.is_active ? '已上架' : '已下架'}</span>
                     </div>
-                    <div class="meta">${escapeHtml(p.description || '无描述')} · 库存：${p.stock} 件 · 排序：${p.sort_order || 0}</div>
+                    <div class="meta">${escapeHtml(p.description || '无描述')} · 分类：${escapeHtml(p.category || '全部')} · 库存：${p.stock} 件 · 排序：${p.sort_order || 0}</div>
                 </div>
                 <div class="product-price">¥${Number(p.price).toFixed(2)}</div>
                 <div class="product-actions">
@@ -585,6 +593,7 @@
         const description = document.getElementById('new-product-desc').value.trim();
         const price = document.getElementById('new-product-price').value;
         const sortOrder = document.getElementById('new-product-sort').value || 0;
+        const category = document.getElementById('new-product-category').value.trim() || '全部';
         const isActive = document.getElementById('new-product-active').checked;
         if (!name) { showToast('请输入商品名称', 'warning'); return; }
         if (!price || parseFloat(price) <= 0) { showToast('请输入有效价格', 'warning'); return; }
@@ -592,7 +601,7 @@
             const data = await authFetch(`${API_BASE}/admin-products`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, description, price: parseFloat(price), sort_order: parseInt(sortOrder), is_active: isActive })
+                body: JSON.stringify({ name, description, price: parseFloat(price), sort_order: parseInt(sortOrder), category, is_active: isActive })
             });
             if (data.success) {
                 showToast('商品添加成功', 'success');
@@ -600,6 +609,7 @@
                 document.getElementById('new-product-desc').value = '';
                 document.getElementById('new-product-price').value = '';
                 document.getElementById('new-product-sort').value = '0';
+                document.getElementById('new-product-category').value = '全部';
                 loadProducts();
             } else {
                 showToast(data.message || '添加失败', 'error');
@@ -613,6 +623,7 @@
         document.getElementById('edit-product-name').value = product.name;
         document.getElementById('edit-product-price').value = product.price;
         document.getElementById('edit-product-sort').value = product.sort_order || 0;
+        document.getElementById('edit-product-category').value = product.category || '全部';
         document.getElementById('edit-product-desc').value = product.description || '';
         document.getElementById('edit-product-active').checked = product.is_active !== false;
         document.getElementById('edit-product-modal').style.display = 'flex';
@@ -627,6 +638,7 @@
         const name = document.getElementById('edit-product-name').value.trim();
         const price = document.getElementById('edit-product-price').value;
         const sortOrder = document.getElementById('edit-product-sort').value;
+        const category = document.getElementById('edit-product-category').value.trim() || '全部';
         const description = document.getElementById('edit-product-desc').value.trim();
         const isActive = document.getElementById('edit-product-active').checked;
         if (!name) { showToast('商品名称不能为空', 'warning'); return; }
@@ -634,7 +646,7 @@
             const data = await authFetch(`${API_BASE}/admin-products?id=${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, price: parseFloat(price), sort_order: parseInt(sortOrder), description, is_active: isActive })
+                body: JSON.stringify({ name, price: parseFloat(price), sort_order: parseInt(sortOrder), category, description, is_active: isActive })
             });
             if (data.success) {
                 showToast('商品已更新', 'success');
