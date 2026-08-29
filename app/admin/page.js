@@ -261,7 +261,7 @@ export default function AdminPage() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f7fa', paddingBottom: '70px' }}>
+    <div style={{ minHeight: '100vh', background: '#f5f7fa', paddingBottom: '100px' }}>
       {/* 顶部导航 */}
       <div style={{ background: '#fff', padding: '0 16px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ fontSize: '17px', fontWeight: 700, color: '#1677ff' }}>{tabs.find(t => t.key === activeTab)?.label}</div>
@@ -488,16 +488,18 @@ export default function AdminPage() {
         )}
       </div>
 
-      {/* 底部导航 */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#fff', display: 'flex', borderTop: '1px solid #f0f0f0', boxShadow: '0 -2px 8px rgba(0,0,0,0.04)', zIndex: 100, paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      {/* 底部导航 - 浮动胶囊式 */}
+      <div style={{ position: 'fixed', bottom: '16px', left: '50%', transform: 'translateX(-50%)', background: '#fff', display: 'flex', borderRadius: '28px', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', zIndex: 100, padding: '6px 8px', paddingBottom: 'calc(6px + env(safe-area-inset-bottom))', gap: '4px' }}>
         {tabs.map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{ flex: 1, padding: '8px 0 10px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', padding: '6px 14px', borderRadius: '20px', transition: 'all 0.2s' }}
           >
-            <span style={{ fontSize: '20px', opacity: activeTab === tab.key ? 1 : 0.5 }}>{tab.icon}</span>
-            <span style={{ fontSize: '11px', color: activeTab === tab.key ? '#1677ff' : '#8c8c8c', fontWeight: activeTab === tab.key ? 600 : 400 }}>{tab.label}</span>
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: activeTab === tab.key ? '#e6f4ff' : 'transparent', transition: 'all 0.2s' }}>
+              <span style={{ fontSize: '20px', opacity: activeTab === tab.key ? 1 : 0.6 }}>{tab.icon}</span>
+            </div>
+            <span style={{ fontSize: '10px', color: activeTab === tab.key ? '#1677ff' : '#8c8c8c', fontWeight: activeTab === tab.key ? 600 : 400 }}>{tab.label}</span>
           </button>
         ))}
       </div>
