@@ -48,14 +48,12 @@ function applySettings() {
     const s = siteSettings;
     if (s.site_name) {
         document.title = s.site_name;
-        document.getElementById('nav-site-name').textContent = s.site_name;
-        document.getElementById('shop-name').textContent = s.site_name;
-    }
-    if (s.announcement && s.announcement.trim()) {
-        document.getElementById('shop-announcement-text').textContent = s.announcement;
+        const navName = document.getElementById('nav-site-name');
+        if (navName) navName.textContent = s.site_name;
     }
     if (s.payment_tip) {
-        document.getElementById('payment-tip').textContent = s.payment_tip;
+        const tip = document.getElementById('payment-tip');
+        if (tip) tip.textContent = s.payment_tip;
     }
 }
 

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>自动发卡商城</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
@@ -88,6 +88,17 @@
         }
         .nav-btn-outline:hover { border-color: #1677ff; color: #1677ff; }
         .mobile-only { display: none; }
+        .nav-login {
+            color: #595959;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 8px 16px;
+            transition: color 0.2s;
+        }
+        .nav-login:hover {
+            color: #1677ff;
+        }
 
         /* 店铺信息区 */
         .shop-header {
@@ -179,7 +190,7 @@
         .shop-main {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 24px 60px;
+            padding: 24px 24px 60px;
         }
         .product-panel {
             background: #fff;
@@ -598,36 +609,13 @@
                 <button class="shop-nav-link" onclick="showQueryModal()">订单查询</button>
             </div>
             <div class="shop-nav-right">
-                <button class="nav-btn nav-btn-primary mobile-only" onclick="showQueryModal()">🔍 订单查询</button>
-                <a href="/admin" class="nav-btn nav-btn-outline">👑 管理后台</a>
+                <a href="/admin" class="nav-login">登录</a>
             </div>
         </div>
     </nav>
 
     <!-- 主页面 -->
     <div id="main-page">
-        <!-- 店铺信息 -->
-        <div class="shop-header">
-            <div class="shop-avatar-wrap">
-                <div class="shop-avatar">🛒</div>
-                <div class="shop-status-badge">营业中</div>
-            </div>
-            <div class="shop-info">
-                <div class="shop-name-row">
-                    <span class="shop-name" id="shop-name">自动发卡商城</span>
-                    <span class="shop-badge">自动发货</span>
-                </div>
-                <div class="shop-actions">
-                    <button class="shop-action-btn" onclick="showContact()">💬 联系卖家</button>
-                    <button class="shop-action-btn" onclick="shareShop()">🔗 分享店铺</button>
-                </div>
-                <div class="shop-announcement">
-                    <span class="icon">🔔</span>
-                    <span id="shop-announcement-text">欢迎光临，本站24小时自动发货</span>
-                </div>
-            </div>
-        </div>
-
         <!-- 商品区 -->
         <div class="shop-main">
             <div class="product-panel">
