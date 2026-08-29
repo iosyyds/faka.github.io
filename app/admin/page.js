@@ -261,14 +261,30 @@ export default function AdminPage() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f7fa', paddingBottom: '100px' }}>
-      {/* 顶部导航 */}
-      <div style={{ background: '#fff', padding: '0 16px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', position: 'sticky', top: 0, zIndex: 100 }}>
+    <div className="admin-page" style={{ minHeight: '100vh', background: '#f5f7fa', paddingBottom: '100px' }}>
+      {/* PC端左侧边栏 */}
+      <div className="admin-sidebar">
+        <div className="admin-sidebar-logo">🎫 发卡管理</div>
+        {tabs.map(tab => (
+          <div
+            key={tab.key}
+            className={`admin-sidebar-item ${activeTab === tab.key ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab.key)}
+          >
+            <span className="admin-sidebar-icon">{tab.icon}</span>
+            <span>{tab.label}</span>
+          </div>
+        ))}
+        <div className="admin-sidebar-logout" onClick={handleLogout}>退出登录</div>
+      </div>
+
+      {/* 顶部导航 - 仅移动端显示 */}
+      <div className="admin-topbar" style={{ background: '#fff', padding: '0 16px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ fontSize: '17px', fontWeight: 700, color: '#1677ff' }}>{tabs.find(t => t.key === activeTab)?.label}</div>
         <button onClick={handleLogout} style={{ background: '#fff2f0', border: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '13px', padding: '6px 12px', borderRadius: '8px', fontWeight: 500 }}>退出</button>
       </div>
 
-      <div style={{ padding: '16px' }}>
+      <div className="admin-content" style={{ padding: '16px' }}>
         {/* 概览页 */}
         {activeTab === 'dashboard' && (
           <div>
@@ -488,8 +504,8 @@ export default function AdminPage() {
         )}
       </div>
 
-      {/* 底部导航 - 浮动胶囊式 */}
-      <div style={{ position: 'fixed', bottom: '16px', left: '50%', transform: 'translateX(-50%)', background: '#fff', display: 'flex', borderRadius: '28px', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', zIndex: 100, padding: '6px 8px', paddingBottom: 'calc(6px + env(safe-area-inset-bottom))', gap: '4px' }}>
+      {/* 底部导航 - 浮动胶囊式（仅移动端） */}
+      <div className="admin-bottom-nav" style={{ position: 'fixed', bottom: '16px', left: '50%', transform: 'translateX(-50%)', background: '#fff', display: 'flex', borderRadius: '28px', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', zIndex: 100, padding: '6px 8px', paddingBottom: 'calc(6px + env(safe-area-inset-bottom))', gap: '4px' }}>
         {tabs.map(tab => (
           <button
             key={tab.key}
