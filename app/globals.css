@@ -73,6 +73,13 @@ body {
     gap: 10px;
     font-size: 18px;
     font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
     color: var(--text-primary);
     text-decoration: none;
 }
@@ -88,6 +95,13 @@ body {
     color: #fff;
     font-size: 16px;
     font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
 }
 
 .navbar-links {
@@ -124,6 +138,13 @@ body {
 .hero h1 {
     font-size: 28px;
     font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
     color: var(--text-primary);
     margin-bottom: 8px;
 }
@@ -232,6 +253,13 @@ main {
 .product-price {
     font-size: 24px;
     font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
     color: var(--danger);
     margin-bottom: 4px;
 }
@@ -290,6 +318,13 @@ main {
     text-align: center;
     font-size: 20px;
     font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
     color: var(--text-primary);
     margin-bottom: 4px;
 }
@@ -298,6 +333,13 @@ main {
     text-align: center;
     font-size: 28px;
     font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
     color: var(--danger);
     margin-bottom: 24px;
 }
@@ -328,6 +370,13 @@ main {
 .pay-info-item .value.price {
     color: var(--danger);
     font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
 }
 
 /* 支付方式选择 */
@@ -527,6 +576,13 @@ main {
 .result-title {
     font-size: 20px;
     font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
     color: var(--text-primary);
     margin-bottom: 6px;
 }
@@ -794,6 +850,13 @@ main {
             gap: 10px;
             font-size: 20px;
             font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
             color: #1f1f1f;
             text-decoration: none;
             white-space: nowrap;
@@ -810,6 +873,13 @@ main {
             color: #fff;
             font-size: 18px;
             font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
         }
         .shop-nav-links {
             display: flex;
@@ -916,6 +986,13 @@ main {
         .shop-name {
             font-size: 26px;
             font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
             color: #1f1f1f;
         }
         .shop-badge {
@@ -977,6 +1054,13 @@ main {
         .panel-title {
             font-size: 16px;
             font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
             color: #1f1f1f;
             display: flex;
             align-items: center;
@@ -1102,6 +1186,13 @@ main {
         .product-card-v3 .pc-price {
             font-size: 20px;
             font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
             color: #1677ff;
         }
         .cart-btn {
@@ -1167,12 +1258,26 @@ main {
         .pay-modal-title {
             font-size: 18px;
             font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
             text-align: center;
             margin-bottom: 4px;
         }
         .pay-modal-amount {
             font-size: 32px;
             font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
             color: #ff4d4f;
             text-align: center;
             margin-bottom: 20px;
@@ -1229,6 +1334,13 @@ main {
             color: #fff;
             font-size: 16px;
             font-weight: 700;
+        }
+        .shop-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
             cursor: pointer;
             transition: background 0.2s;
         }
@@ -1372,3 +1484,104 @@ main {
                 display: none;
             }
         }
+
+/* ===== 移动端适配修复 ===== */
+@media (max-width: 768px) {
+    .shop-nav-inner {
+        padding: 0 12px !important;
+        height: 56px !important;
+        gap: 8px !important;
+        justify-content: space-between !important;
+    }
+    .shop-logo {
+        font-size: 15px !important;
+        gap: 6px !important;
+        flex-shrink: 0;
+    }
+    .shop-logo-icon, .shop-logo-img {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 14px !important;
+    }
+    .shop-nav-links {
+        display: none !important;
+    }
+    .shop-nav-right {
+        margin-left: auto !important;
+        gap: 2px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    .nav-login {
+        padding: 6px 8px !important;
+        font-size: 13px !important;
+        white-space: nowrap;
+    }
+    .shop-main {
+        padding: 12px !important;
+    }
+    .product-panel {
+        padding: 16px !important;
+    }
+    .panel-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+    .search-box {
+        width: 100% !important;
+    }
+    .category-tabs {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+    .category-tab {
+        font-size: 13px !important;
+        padding: 6px 12px !important;
+    }
+    .product-grid-v3 {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    .pay-modal-box {
+        width: 92% !important;
+        max-width: 360px !important;
+        padding: 20px !important;
+        margin: 10px !important;
+    }
+    .pay-modal-title {
+        font-size: 16px !important;
+    }
+    .pay-modal-amount {
+        font-size: 28px !important;
+    }
+    .qr-wrapper {
+        width: 180px !important;
+        height: 180px !important;
+    }
+    .success-wrap {
+        padding: 20px !important;
+    }
+    .card-list {
+        max-height: 50vh !important;
+    }
+    .btn-group {
+        flex-direction: column !important;
+    }
+    .btn-group .btn {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .shop-logo span {
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .nav-login {
+        padding: 6px 6px !important;
+        font-size: 12px !important;
+    }
+}

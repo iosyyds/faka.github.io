@@ -502,6 +502,7 @@ export default function AdminPage() {
               <h3 style={{ margin: '0 0 16px 0', fontSize: '16px' }}>网站设置</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 {[
+                  { key: 'site_logo', label: '网站Logo (图片URL)' },
                   { key: 'site_name', label: '网站名称' },
                   { key: 'site_subtitle', label: '网站副标题' },
                   { key: 'site_description', label: '网站描述' },

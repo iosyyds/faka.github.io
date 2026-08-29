@@ -243,15 +243,18 @@ export default function Home() {
       <nav className="shop-nav">
         <div className="shop-nav-inner">
           <a href="#" className="shop-logo" onClick={(e) => { e.preventDefault(); backToHome(); }}>
-            <div className="shop-logo-icon">E</div>
+            {siteSettings.site_logo ? (
+              <img src={siteSettings.site_logo} alt="logo" className="shop-logo-img" />
+            ) : (
+              <div className="shop-logo-icon">{(siteSettings.site_name || 'E').charAt(0)}</div>
+            )}
             <span>{siteSettings.site_name || '自动发卡商城'}</span>
           </a>
           <div className="shop-nav-links">
             <button className="shop-nav-link" onClick={backToHome}>网站首页</button>
-            <button className="shop-nav-link" onClick={() => setShowQueryModal(true)}>订单查询</button>
           </div>
           <div className="shop-nav-right">
-            <button className="nav-login mobile-only" onClick={() => setShowQueryModal(true)}>订单查询</button>
+            <button className="nav-login" onClick={() => setShowQueryModal(true)}>订单查询</button>
             <a href="/admin" className="nav-login">登录</a>
           </div>
         </div>
