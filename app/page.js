@@ -137,174 +137,147 @@ export default function Home() {
 
   if (!mounted) {
     return (
-      <div className="page-loading-container">
-        <div className="page-loading-content">
-          {/* Logo区域 */}
-          <div className="page-loading-logo">
-            <div className="page-loading-logo-icon">甜</div>
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #f8fafc 0%, #eff6ff 50%, #f8fafc 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}>
+        <div style={{
+          position: 'absolute',
+          width: '300px',
+          height: '300px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, rgba(37,99,235,0.08), rgba(96,165,250,0.05))',
+          top: '-100px',
+          right: '-100px',
+          animation: 'loadingFloat 6s ease-in-out infinite'
+        }}></div>
+        <div style={{
+          position: 'absolute',
+          width: '200px',
+          height: '200px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, rgba(37,99,235,0.06), rgba(96,165,250,0.04))',
+          bottom: '-50px',
+          left: '-50px',
+          animation: 'loadingFloat 6s ease-in-out 2s infinite'
+        }}></div>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          zIndex: 10,
+          animation: 'loadingFadeIn 0.6s ease-out'
+        }}>
+          <div style={{
+            width: '72px',
+            height: '72px',
+            background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+            borderRadius: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            fontSize: '32px',
+            fontWeight: 800,
+            marginBottom: '20px',
+            boxShadow: '0 8px 24px rgba(37,99,235,0.3)',
+            animation: 'loadingPulse 2s ease-in-out infinite'
+          }}>甜</div>
+          <div style={{
+            fontSize: '24px',
+            fontWeight: 800,
+            color: '#111827',
+            marginBottom: '6px',
+            letterSpacing: '-0.5px'
+          }}>甜甜发卡</div>
+          <div style={{
+            fontSize: '13px',
+            color: '#64748b',
+            marginBottom: '32px'
+          }}>24小时自动发卡平台</div>
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            marginBottom: '24px'
+          }}>
+            <span style={{
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              background: '#2563eb',
+              animation: 'loadingDotBounce 1.4s ease-in-out 0s infinite'
+            }}></span>
+            <span style={{
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              background: '#2563eb',
+              animation: 'loadingDotBounce 1.4s ease-in-out 0.2s infinite'
+            }}></span>
+            <span style={{
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              background: '#2563eb',
+              animation: 'loadingDotBounce 1.4s ease-in-out 0.4s infinite'
+            }}></span>
           </div>
-          
-          {/* 品牌名称 */}
-          <div className="page-loading-brand">甜甜发卡</div>
-          <div className="page-loading-subtitle">24小时自动发卡平台</div>
-          
-          {/* 加载动画 - 三个圆点跳动 */}
-          <div className="page-loading-dots">
-            <span className="loading-dot dot-1"></span>
-            <span className="loading-dot dot-2"></span>
-            <span className="loading-dot dot-3"></span>
+          <div style={{
+            width: '200px',
+            height: '4px',
+            background: '#e2e8f0',
+            borderRadius: '4px',
+            overflow: 'hidden',
+            marginBottom: '16px'
+          }}>
+            <div style={{
+              height: '100%',
+              width: '50%',
+              background: 'linear-gradient(90deg, #2563eb, #60a5fa)',
+              borderRadius: '4px',
+              animation: 'loadingProgress 1.5s ease-in-out infinite'
+            }}></div>
           </div>
-          
-          {/* 加载进度条 */}
-          <div className="page-loading-progress">
-            <div className="page-loading-progress-bar"></div>
-          </div>
-          
-          {/* 加载文字 */}
-          <div className="page-loading-text">正在加载精彩内容...</div>
+          <div style={{
+            fontSize: '13px',
+            color: '#94a3b8',
+            fontWeight: 500
+          }}>正在加载精彩内容...</div>
         </div>
-        
-        {/* 背景装饰 */}
-        <div className="loading-bg-circle circle-1"></div>
-        <div className="loading-bg-circle circle-2"></div>
-        <div className="loading-bg-circle circle-3"></div>
-        
-        <style jsx>{`
-          .page-loading-container {
-            minHeight: 100vh;
-            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 50%, #f8fafc 100%);
-            display: flex;
-            flexDirection: column;
-            alignItems: center;
-            justifyContent: center;
-            position: relative;
-            overflow: hidden;
-          }
-          .page-loading-content {
-            display: flex;
-            flexDirection: column;
-            alignItems: center;
-            zIndex: 10;
-            animation: fadeInUp 0.6s ease-out;
-          }
-          .page-loading-logo {
-            marginBottom: 20px;
-            animation: pulse 2s ease-in-out infinite;
-          }
-          .page-loading-logo-icon {
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            borderRadius: 20px;
-            display: flex;
-            alignItems: center;
-            justifyContent: center;
-            color: #fff;
-            fontSize: 32px;
-            fontWeight: 800;
-            boxShadow: 0 8px 24px rgba(37,99,235,0.3);
-          }
-          .page-loading-brand {
-            fontSize: 24px;
-            fontWeight: 800;
-            background: linear-gradient(135deg, #111827 0%, #374151 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            marginBottom: 6px;
-            letterSpacing: -0.5px;
-          }
-          .page-loading-subtitle {
-            fontSize: 13px;
-            color: #64748b;
-            marginBottom: 32px;
-          }
-          .page-loading-dots {
-            display: flex;
-            gap: 8px;
-            marginBottom: 24px;
-          }
-          .loading-dot {
-            width: 10px;
-            height: 10px;
-            borderRadius: 50%;
-            background: #2563eb;
-            animation: dotBounce 1.4s ease-in-out infinite;
-          }
-          .dot-1 { animationDelay: 0s; }
-          .dot-2 { animationDelay: 0.2s; }
-          .dot-3 { animationDelay: 0.4s; }
-          .page-loading-progress {
-            width: 200px;
-            height: 4px;
-            background: #e2e8f0;
-            borderRadius: 4px;
-            overflow: hidden;
-            marginBottom: 16px;
-          }
-          .page-loading-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #2563eb, #60a5fa, #2563eb);
-            backgroundSize: 200% 100%;
-            borderRadius: 4px;
-            animation: progressMove 1.5s ease-in-out infinite;
-          }
-          .page-loading-text {
-            fontSize: 13px;
-            color: #94a3b8;
-            fontWeight: 500;
-          }
-          .loading-bg-circle {
-            position: absolute;
-            borderRadius: 50%;
-            background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(96,165,250,0.05));
-            animation: float 6s ease-in-out infinite;
-          }
-          .circle-1 {
-            width: 300px;
-            height: 300px;
-            top: -100px;
-            right: -100px;
-            animationDelay: 0s;
-          }
-          .circle-2 {
-            width: 200px;
-            height: 200px;
-            bottom: -50px;
-            left: -50px;
-            animationDelay: 2s;
-          }
-          .circle-3 {
-            width: 150px;
-            height: 150px;
-            top: 40%;
-            left: 10%;
-            animationDelay: 4s;
-          }
-          @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-          }
-          @keyframes dotBounce {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
-          }
-          @keyframes progressMove {
-            0% { backgroundPosition: 200% 0; }
-            100% { backgroundPosition: -200% 0; }
-          }
-          @keyframes float {
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes loadingFloat {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(5deg); }
           }
-        `}</style>
+          @keyframes loadingFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes loadingPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+          }
+          @keyframes loadingDotBounce {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+          }
+          @keyframes loadingProgress {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+          }
+        `}}></style>
       </div>
     );
   }
+
+
 
   return (
     <div style={{minHeight: '100vh', background: '#f8fafc'}}>

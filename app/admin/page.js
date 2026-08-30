@@ -309,60 +309,123 @@ export default function Admin() {
       alignItems: 'center',
       justifyContent: 'center',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       <div style={{
-        width: '64px',
-        height: '64px',
-        background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-        borderRadius: '16px',
+        position: 'absolute',
+        width: '250px',
+        height: '250px',
+        borderRadius: '50%',
+        background: 'linear-gradient(135deg, rgba(37,99,235,0.08), rgba(96,165,250,0.05))',
+        top: '-80px',
+        right: '-80px',
+        animation: 'adminLoadingFloat 6s ease-in-out infinite'
+      }}></div>
+      <div style={{
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        color: '#fff',
-        fontSize: '28px',
-        fontWeight: 800,
-        marginBottom: '20px',
-        boxShadow: '0 8px 24px rgba(37,99,235,0.3)',
-        animation: 'adminLoadingPulse 2s ease-in-out infinite'
-      }}>甜</div>
-      <div style={{fontSize: '20px', fontWeight: 800, color: '#111827', marginBottom: '6px'}}>甜甜发卡</div>
-      <div style={{fontSize: '13px', color: '#64748b', marginBottom: '24px'}}>后台管理系统</div>
-      <div style={{display: 'flex', gap: '8px', marginBottom: '16px'}}>
-        {[0, 1, 2].map(i => (
-          <span key={i} style={{
+        zIndex: 10,
+        animation: 'adminLoadingFadeIn 0.6s ease-out'
+      }}>
+        <div style={{
+          width: '64px',
+          height: '64px',
+          background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+          borderRadius: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: '28px',
+          fontWeight: 800,
+          marginBottom: '20px',
+          boxShadow: '0 8px 24px rgba(37,99,235,0.3)',
+          animation: 'adminLoadingPulse 2s ease-in-out infinite'
+        }}>甜</div>
+        <div style={{
+          fontSize: '20px',
+          fontWeight: 800,
+          color: '#111827',
+          marginBottom: '6px'
+        }}>甜甜发卡</div>
+        <div style={{
+          fontSize: '13px',
+          color: '#64748b',
+          marginBottom: '24px'
+        }}>后台管理系统</div>
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '16px'
+        }}>
+          <span style={{
             width: '10px',
             height: '10px',
             borderRadius: '50%',
             background: '#2563eb',
-            animation: `adminDotBounce 1.4s ease-in-out ${i * 0.2}s infinite`
+            animation: 'adminLoadingDotBounce 1.4s ease-in-out 0s infinite'
           }}></span>
-        ))}
-      </div>
-      <div style={{width: '180px', height: '4px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden', marginBottom: '12px'}}>
+          <span style={{
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            background: '#2563eb',
+            animation: 'adminLoadingDotBounce 1.4s ease-in-out 0.2s infinite'
+          }}></span>
+          <span style={{
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            background: '#2563eb',
+            animation: 'adminLoadingDotBounce 1.4s ease-in-out 0.4s infinite'
+          }}></span>
+        </div>
         <div style={{
-          height: '100%',
-          background: 'linear-gradient(90deg, #2563eb, #60a5fa, #2563eb)',
-          backgroundSize: '200% 100%',
+          width: '180px',
+          height: '4px',
+          background: '#e2e8f0',
           borderRadius: '4px',
-          animation: 'adminProgressMove 1.5s ease-in-out infinite'
-        }}></div>
+          overflow: 'hidden',
+          marginBottom: '12px'
+        }}>
+          <div style={{
+            height: '100%',
+            width: '50%',
+            background: 'linear-gradient(90deg, #2563eb, #60a5fa)',
+            borderRadius: '4px',
+            animation: 'adminLoadingProgress 1.5s ease-in-out infinite'
+          }}></div>
+        </div>
+        <div style={{
+          fontSize: '13px',
+          color: '#94a3b8',
+          fontWeight: 500
+        }}>正在加载管理后台...</div>
       </div>
-      <div style={{fontSize: '13px', color: '#94a3b8', fontWeight: 500}}>正在加载管理后台...</div>
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes adminLoadingFloat {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        @keyframes adminLoadingFadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
         @keyframes adminLoadingPulse {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.05); }
         }
-        @keyframes adminDotBounce {
+        @keyframes adminLoadingDotBounce {
           0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
           40% { transform: scale(1); opacity: 1; }
         }
-        @keyframes adminProgressMove {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
+        @keyframes adminLoadingProgress {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(300%); }
         }
-      `}</style>
+      `}}></style>
     </div>
   );
 
