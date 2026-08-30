@@ -1801,11 +1801,10 @@ export default function Home() {
           color: #2563eb;
         }
         .footer-bottom-responsive {
-          padding-top: 16px;
-          border-top: 1px solid #f3f4f6;
+          padding-top: 12px;
           font-size: 12px;
           color: #9ca3af;
-          text-align: center;
+          text-align: left;
         }
 
         /* 手机端页脚适配 */
@@ -1823,6 +1822,9 @@ export default function Home() {
           }
           .footer-right-responsive {
             gap: 16px;
+          }
+          .footer-bottom-responsive {
+            text-align: center;
           }
           .top-banner-content-responsive {
             white-space: normal;

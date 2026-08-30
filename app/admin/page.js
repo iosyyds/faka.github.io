@@ -757,26 +757,36 @@ export default function Admin() {
                   </div>
                   {!collapsedSections.settingsEmail && (
                   <div className="collapsible-content">
-                <div style={{padding: '0', background: 'transparent', border: 'none', borderRadius: '0', marginBottom: '0'}}>
-                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', display: 'none'}}>
-                    📧 邮件自动发送配置
+                    <div style={{fontSize: '13px', color: '#6b7280', marginBottom: '16px', lineHeight: 1.6}}>
+                      支付成功后系统自动发送卡密到用户邮箱。配置后点击保存即可生效。
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">SMTP服务器地址</label>
+                      <input type="text" className="form-input" value={settings.smtp_host || ''} onChange={(e) => setSettings({...settings, smtp_host: e.target.value})} placeholder="如：smtp.qq.com" />
+                    </div>
+                    <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+                      <div className="form-group">
+                        <label className="form-label">端口</label>
+                        <input type="number" className="form-input" value={settings.smtp_port || ''} onChange={(e) => setSettings({...settings, smtp_port: e.target.value})} placeholder="465" />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">发件人名称</label>
+                        <input type="text" className="form-input" value={settings.smtp_from_name || ''} onChange={(e) => setSettings({...settings, smtp_from_name: e.target.value})} placeholder="甜甜发卡" />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">发件邮箱</label>
+                      <input type="email" className="form-input" value={settings.smtp_user || ''} onChange={(e) => setSettings({...settings, smtp_user: e.target.value})} placeholder="your@qq.com" />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">邮箱授权码/密码</label>
+                      <input type="password" className="form-input" value={settings.smtp_pass || ''} onChange={(e) => setSettings({...settings, smtp_pass: e.target.value})} placeholder="QQ邮箱使用授权码，非登录密码" />
+                    </div>
+                    <div style={{fontSize: '12px', color: '#9ca3af', lineHeight: 1.6, marginTop: '8px'}}>
+                      支持QQ邮箱、163邮箱、Gmail等SMTP服务。QQ邮箱需在设置中开启SMTP并获取授权码。端口465使用SSL，端口587使用TLS。
+                    </div>
                   </div>
-                  <div style={{fontSize: '13px', color: '#6b7280', marginBottom: '12px', lineHeight: 1.6}}>
-                    支付成功后系统自动发送卡密到用户邮箱。请在 Vercel 环境变量中配置以下参数：
-                  </div>
-                  <div style={{background: '#fff', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '12px', marginBottom: '12px', fontFamily: 'monospace', fontSize: '12px', color: '#374151', lineHeight: 1.8}}>
-                    <div><span style={{color: '#2563eb'}}>SMTP_HOST</span>=smtp.qq.com</div>
-                    <div><span style={{color: '#2563eb'}}>SMTP_PORT</span>=465</div>
-                    <div><span style={{color: '#2563eb'}}>SMTP_USER</span>=your@qq.com</div>
-                    <div><span style={{color: '#2563eb'}}>SMTP_PASS</span>=授权码</div>
-                    <div><span style={{color: '#2563eb'}}>SMTP_FROM</span>=your@qq.com</div>
-                  </div>
-                  <div style={{fontSize: '12px', color: '#9ca3af', lineHeight: 1.6}}>
-                    支持QQ邮箱、163邮箱、Gmail等SMTP服务。QQ邮箱需使用授权码而非登录密码。
-                  </div>
-                </div>
-                  </div>
-                )}
+                  )}
                 </div>
 
                 <button className="btn btn-primary" onClick={saveSettings}>💾 保存设置</button>
