@@ -39,7 +39,12 @@ export async function GET() {
       footer_link3_text: settings.footer_link3_text || '',
       footer_link3_url: settings.footer_link3_url || '',
       terms_content: settings.terms_content || '',
-      privacy_content: settings.privacy_content || ''
+      privacy_content: settings.privacy_content || '',
+      smtp_host: settings.smtp_host || '',
+      smtp_port: settings.smtp_port || '',
+      smtp_user: settings.smtp_user || '',
+      smtp_pass: settings.smtp_pass || '',
+      smtp_from_name: settings.smtp_from_name || ''
     };
     return NextResponse.json({ success: true, settings: publicSettings });
   } catch (err) {
@@ -63,7 +68,8 @@ export async function POST(req) {
       'notice', 'footer',
       'banner_title', 'banner_subtitle', 'banner_tag1', 'banner_tag2', 'banner_tag3', 'banner_image',
       'footer_desc', 'footer_link1_text', 'footer_link1_url', 'footer_link2_text', 'footer_link2_url', 'footer_link3_text', 'footer_link3_url',
-      'terms_content', 'privacy_content'
+      'terms_content', 'privacy_content',
+      'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_from_name'
     ];
     const updates = {};
     for (const key of allowedKeys) {
