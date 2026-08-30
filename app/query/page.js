@@ -10,6 +10,13 @@ export default function QueryOrder() {
   const router = useRouter();
   const [orderNo, setOrderNo] = useState('');
   const [email, setEmail] = useState('');
+  const [settings, setSettings] = useState({});
+  
+  useEffect(() => {
+    fetch('/api/settings').then(r => r.json()).then(d => {
+      if (d.success) setSettings(d.settings);
+    }).catch(() => {});
+  }, []);
   const [captcha, setCaptcha] = useState('');
   const [captchaCode, setCaptchaCode] = useState('');
   const [querying, setQuerying] = useState(false);
@@ -57,8 +64,12 @@ export default function QueryOrder() {
       <nav className="nav">
         <div className="nav-inner">
           <div className="nav-logo" onClick={() => router.push('/')} style={{cursor:'pointer'}}>
-            <div className="nav-logo-icon">N</div>
-            <span>订单查询</span>
+            {settings.site_logo ? (
+              <img src={settings.site_logo} alt="Logo" style={{width: '36px', height: '36px', borderRadius: '8px', objectFit: 'cover'}} />
+            ) : (
+              <div className="nav-logo-icon">{settings.logo_text || '甜'}</div>
+            )}
+            <span>{settings.site_name || '甜甜发卡'}</span>
           </div>
           <div className="nav-right">
             <button className="btn btn-secondary btn-sm" onClick={() => router.push('/')}>← 返回首页</button>
@@ -71,7 +82,7 @@ export default function QueryOrder() {
           <div className="card-body" style={{padding: '32px'}}>
             <div style={{textAlign: 'center', marginBottom: '24px'}}>
               <div style={{fontSize: '40px', marginBottom: '10px'}}>🔍</div>
-              <h1 style={{fontSize: '20px', fontWeight: 600, color: '#111827', marginBottom: '4px'}}>订单查询</h1>
+              <h1 style={{fontSize: '20px', fontWeight: 700, color: '#111827', marginBottom: '4px'}}>订单查询</h1>
               <p style={{fontSize: '14px', color: '#6b7280'}}>输入订单号和邮箱查询您的订单</p>
             </div>
 

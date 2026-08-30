@@ -524,17 +524,17 @@ export default function Home() {
                         onClick={() => setPayMethod('alipay')}
                       >
                         <span className="pay-icon-responsive" style={{
-                          background: 'linear-gradient(135deg, #1677ff 0%, #0052d9 100%)',
-                          fontSize: '15px',
-                          fontWeight: 700,
+                          background: '#1677ff',
+                          fontSize: '14px',
+                          fontWeight: 800,
                           fontFamily: 'Arial, sans-serif',
-                          boxShadow: '0 2px 8px rgba(22,119,255,0.4)',
-                          position: 'relative',
-                          overflow: 'hidden'
-                        }}>
-                          <span style={{position: 'relative', zIndex: 2}}>支</span>
-                          <span style={{position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', background: 'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)', transform: 'rotate(45deg)'}}></span>
-                        </span>
+                          color: '#fff',
+                          borderRadius: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 6px rgba(22,119,255,0.35)'
+                        }}>支</span>
                         <span className="pay-name-responsive">支付宝</span>
                         <span className="pay-check-responsive">{payMethod === 'alipay' && '✓'}</span>
                       </div>
@@ -1313,6 +1313,7 @@ export default function Home() {
           margin-bottom: 6px;
         }
         .modal-product-price-responsive {
+          color: #dc2626 !important;
           font-size: 20px;
           font-weight: 700;
           color: #dc2626;
@@ -2158,7 +2159,7 @@ export default function Home() {
         .product-card-price-responsive {
           font-size: 22px !important;
           font-weight: 800 !important;
-          color: #ef4444 !important;
+          color: #dc2626 !important;
           display: flex !important;
           align-items: baseline !important;
           line-height: 1 !important;
