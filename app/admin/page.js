@@ -302,16 +302,16 @@ export default function Admin() {
                 <div className="card-header"><div className="card-title">最近订单</div></div>
                 <div className="table-wrapper">
                   <table className="table">
-                    <thead><tr><th>订单号</th><th>商品</th><th>邮箱</th><th>金额</th><th>状态</th><th>时间</th></tr></thead>
+                    <thead><tr><th>订单号</th><th>商品</th><th className="hide-mobile">邮箱</th><th>金额</th><th>状态</th><th className="hide-mobile">时间</th></tr></thead>
                     <tbody>
                       {orders.slice(0, 8).map(o => (
                         <tr key={o.id}>
                           <td className="mono" style={{fontSize: '12px'}}>{o.order_no || o.id}</td>
                           <td>{o.product_name}</td>
-                          <td>{o.email || o.contact || '-'}</td>
+                          <td className="hide-mobile">{o.email || o.contact || '-'}</td>
                           <td className="price-primary">¥{o.amount || o.total}</td>
                           <td><span className={`badge ${o.status === 'paid' ? 'badge-success' : 'badge-warning'}`}>{o.status === 'paid' ? '已支付' : '待支付'}</span></td>
-                          <td style={{fontSize: '12px', color: '#9ca3af'}}>{o.created_at ? new Date(o.created_at).toLocaleString() : '-'}</td>
+                          <td className="hide-mobile" style={{fontSize: '12px', color: '#9ca3af'}}>{o.created_at ? new Date(o.created_at).toLocaleString() : '-'}</td>
                         </tr>
                       ))}
                       {orders.length === 0 && <tr><td colSpan="6"><div className="empty"><div className="empty-text">暂无订单</div></div></td></tr>}
@@ -330,13 +330,13 @@ export default function Admin() {
               </div>
               <div className="table-wrapper">
                 <table className="table">
-                  <thead><tr><th>ID</th><th>商品名称</th><th>分类</th><th>价格</th><th>库存</th><th>状态</th><th>操作</th></tr></thead>
+                  <thead><tr><th>ID</th><th>商品名称</th><th className="hide-mobile">分类</th><th>价格</th><th>库存</th><th>状态</th><th>操作</th></tr></thead>
                   <tbody>
                     {products.map(p => (
                       <tr key={p.id}>
                         <td>{p.id}</td>
                         <td style={{fontWeight: 500, color: '#111827'}}>{p.name}</td>
-                        <td>{p.category || '-'}</td>
+                        <td className="hide-mobile">{p.category || '-'}</td>
                         <td className="price-primary">¥{p.price}</td>
                         <td>{p.stock}</td>
                         <td><span className={`badge ${p.status === 'active' ? 'badge-success' : 'badge-secondary'}`}>{p.status === 'active' ? '上架' : '下架'}</span></td>
@@ -362,13 +362,13 @@ export default function Admin() {
               </div>
               <div className="table-wrapper">
                 <table className="table">
-                  <thead><tr><th>ID</th><th>商品名称</th><th>分类</th><th>价格</th><th>库存</th><th>操作</th></tr></thead>
+                  <thead><tr><th>ID</th><th>商品名称</th><th className="hide-mobile">分类</th><th>价格</th><th>库存</th><th>操作</th></tr></thead>
                   <tbody>
                     {products.map(p => (
                       <tr key={p.id}>
                         <td>{p.id}</td>
                         <td style={{color: '#111827', fontWeight: 500}}>{p.name}</td>
-                        <td>{p.category || '-'}</td>
+                        <td className="hide-mobile">{p.category || '-'}</td>
                         <td className="price-primary">¥{p.price}</td>
                         <td><span className={`badge ${p.stock > 10 ? 'badge-success' : p.stock > 0 ? 'badge-warning' : 'badge-danger'}`}>{p.stock} 件</span></td>
                         <td><button className="btn btn-primary btn-sm" onClick={() => { setCardProductId(p.id); setShowCardModal(true); }}>导入卡密</button></td>
@@ -385,16 +385,16 @@ export default function Admin() {
               <div className="card-header"><div className="card-title">订单列表（{orders.length}）</div></div>
               <div className="table-wrapper">
                 <table className="table">
-                  <thead><tr><th>订单号</th><th>商品</th><th>邮箱</th><th>金额</th><th>状态</th><th>时间</th><th>操作</th></tr></thead>
+                  <thead><tr><th>订单号</th><th>商品</th><th className="hide-mobile">邮箱</th><th>金额</th><th>状态</th><th className="hide-mobile">时间</th><th>操作</th></tr></thead>
                   <tbody>
                     {orders.map(o => (
                       <tr key={o.id}>
                         <td className="mono" style={{fontSize: '12px'}}>{o.order_no || o.id}</td>
                         <td>{o.product_name}</td>
-                        <td>{o.email || o.contact || '-'}</td>
+                        <td className="hide-mobile">{o.email || o.contact || '-'}</td>
                         <td className="price-primary">¥{o.amount || o.total}</td>
                         <td><span className={`badge ${o.status === 'paid' ? 'badge-success' : 'badge-warning'}`}>{o.status === 'paid' ? '已支付' : '待支付'}</span></td>
-                        <td style={{fontSize: '12px', color: '#9ca3af'}}>{o.created_at ? new Date(o.created_at).toLocaleString() : '-'}</td>
+                        <td className="hide-mobile" style={{fontSize: '12px', color: '#9ca3af'}}>{o.created_at ? new Date(o.created_at).toLocaleString() : '-'}</td>
                         <td>
                           {o.status !== 'paid' && <button className="btn btn-primary btn-sm" onClick={() => markPaid(o.id)}>标记已支付</button>}
                         </td>

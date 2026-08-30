@@ -694,6 +694,32 @@ html, body {
   .admin-main { margin-left: 0; }
   .admin-content { padding: 16px; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
+  
+  /* 手机端表格优化 */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+  .table {
+    min-width: 600px;
+    width: max-content;
+  }
+  .table th,
+  .table td {
+    padding: 10px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .table th {
+    font-size: 11px;
+    padding: 8px 12px;
+  }
+  /* 手机端隐藏次要列 */
+  .table .hide-mobile {
+    display: none;
+  }
 }
 
 /* 动画 */
