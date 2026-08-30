@@ -719,8 +719,6 @@ export default function Admin() {
               </div>
             </div>
           )}
-        </div>
-      </div>
 
       {showProductModal && (
         <div className="modal-overlay">

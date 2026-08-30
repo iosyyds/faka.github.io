@@ -1299,16 +1299,11 @@ export default function Home() {
           }
         }
 
-        /* 禁止拖动和放大 */
+        /* 优化移动端体验 */
         * {
-          -webkit-touch-callout: none;
-          -webkit-user-select: none;
-          user-select: none;
           -webkit-tap-highlight-color: transparent;
         }
         input, textarea {
-          -webkit-user-select: text;
-          user-select: text;
           font-size: 16px !important;
         }
         .modal-overlay-responsive {
