@@ -308,7 +308,7 @@ export default function Home() {
                         <span className="product-card-price-symbol-responsive">¥</span>
                         {Number(p.price).toFixed(2)}
                       </span>
-                      {p.original_price && Number(p.original_price) > 0 && Number(p.original_price) > Number(p.price) && (
+                      {p.original_price != null && p.original_price !== "" && Number(p.original_price) > 0 && Number(p.original_price) > Number(p.price) && (
                         <span className="product-card-original-price-responsive">¥{Number(p.original_price).toFixed(2)}</span>
                       )}
                     </div>
@@ -457,7 +457,7 @@ export default function Home() {
                           <span className="modal-product-price-symbol-responsive">¥</span>
                           {selectedProduct.price}
                         </span>
-                        {selectedProduct.original_price && Number(selectedProduct.original_price) > 0 && Number(selectedProduct.original_price) > Number(selectedProduct.price) && (
+                        {selectedProduct.original_price != null && selectedProduct.original_price !== "" && Number(selectedProduct.original_price) > 0 && Number(selectedProduct.original_price) > Number(selectedProduct.price) && (
                           <span className="modal-product-original-price-responsive">¥{Number(selectedProduct.original_price).toFixed(2)}</span>
                         )}
                       </div>
