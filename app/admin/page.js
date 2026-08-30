@@ -74,8 +74,19 @@ export default function Admin() {
       const setData = await setRes.json();
       const prods = prodData.products || prodData.data || [];
       const ords = orderData.orders || orderData.data || [];
+      const sets = setData.settings || setData.data || {};
       setProducts(prods); setOrders(ords);
-      setSettings(setData.settings || setData.data || {});
+      setSettings(sets);
+      // 同步favicon
+      if (sets.site_logo) {
+        let favicon = document.querySelector('link[rel="icon"]');
+        if (!favicon) {
+          favicon = document.createElement('link');
+          favicon.rel = 'icon';
+          document.head.appendChild(favicon);
+        }
+        favicon.href = sets.site_logo;
+      }
       const paid = ords.filter(o => o.status === 'paid' || o.status === 'completed');
       setStats({
         products: prods.length, orders: ords.length, paid: paid.length,
@@ -142,6 +153,14 @@ export default function Admin() {
       const data = await res.json();
       if (data.success) {
         setSettings({...settings, site_logo: data.logo_url});
+        // 立即更新favicon
+        let favicon = document.querySelector('link[rel="icon"]');
+        if (!favicon) {
+          favicon = document.createElement('link');
+          favicon.rel = 'icon';
+          document.head.appendChild(favicon);
+        }
+        favicon.href = data.logo_url;
         alert('Logo上传成功');
       } else {
         alert(data.message || '上传失败');
@@ -184,7 +203,7 @@ export default function Admin() {
         <div className="card animate-fade-in" style={{width: '100%', maxWidth: '400px'}}>
           <div className="card-body" style={{padding: '36px 32px'}}>
             <div style={{textAlign: 'center', marginBottom: '24px'}}>
-              <div style={{width: '56px', height: '56px', margin: '0 auto 14px', background: '#2563eb', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '24px', fontWeight: 700}}>N</div>
+              <div style={{width: '56px', height: '56px', margin: '0 auto 14px', background: '#2563eb', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '24px', fontWeight: 700}}>{settings.logo_text || '甜'}</div>
               <h1 style={{fontSize: '20px', fontWeight: 600, color: '#111827', marginBottom: '4px'}}>管理后台</h1>
               <p style={{fontSize: '13px', color: '#6b7280'}}>甜甜发卡管理系统</p>
             </div>
@@ -212,8 +231,8 @@ export default function Admin() {
     <div className="admin-layout">
       <div className="admin-sidebar">
         <div className="admin-sidebar-logo">
-          <div style={{width: '32px', height: '32px', background: '#2563eb', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '14px'}}>N</div>
-          Nova 后台
+          <div style={{width: '32px', height: '32px', background: '#2563eb', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '14px'}}>{settings.logo_text || '甜'}</div>
+          {settings.site_name || '甜甜发卡'} 后台
         </div>
         <div>
           {MENU.map((item) => (
@@ -438,6 +457,11 @@ export default function Admin() {
                 <div className="form-group">
                   <label className="form-label">网站名称</label>
                   <input type="text" className="form-input" value={settings.site_name || ''} onChange={(e) => setSettings({...settings, site_name: e.target.value})} />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Logo图标文字（无图片时显示）</label>
+                  <input type="text" className="form-input" maxLength={2} value={settings.logo_text || ''} onChange={(e) => setSettings({...settings, logo_text: e.target.value})} placeholder="如：甜、N、VIP" />
                 </div>
 
                 {/* 邮件配置 */}
