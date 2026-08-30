@@ -38,6 +38,8 @@ export default function Admin() {
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardProductId, setCardProductId] = useState('');
   const [cardContent, setCardContent] = useState('');
+  const [testEmail, setTestEmail] = useState('');
+  const [testingEmail, setTestingEmail] = useState(false);
 
   // 折叠面板状态
   const [collapsedSections, setCollapsedSections] = useState({
@@ -259,6 +261,31 @@ export default function Admin() {
       const data = await res.json();
       if (data.success) alert('保存成功'); else alert(data.error || '保存失败');
     } catch (e) { alert('保存失败'); }
+  };
+
+  const handleTestEmail = async () => {
+    if (!testEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testEmail)) {
+      alert('请输入有效的测试邮箱地址');
+      return;
+    }
+    setTestingEmail(true);
+    try {
+      const res = await fetch(`${API_BASE}/test-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` },
+        body: JSON.stringify({ test_email: testEmail })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('测试邮件已发送，请查收收件箱（可能在垃圾邮件中）');
+      } else {
+        alert(data.error || '发送失败，请检查SMTP配置');
+      }
+    } catch (e) {
+      alert('发送失败: ' + e.message);
+    } finally {
+      setTestingEmail(false);
+    }
   };
 
   const markPaid = async (id) => {
@@ -784,6 +811,32 @@ export default function Admin() {
                     </div>
                     <div style={{fontSize: '12px', color: '#9ca3af', lineHeight: 1.6, marginTop: '8px'}}>
                       支持QQ邮箱、163邮箱、Gmail等SMTP服务。QQ邮箱需在设置中开启SMTP并获取授权码。端口465使用SSL，端口587使用TLS。
+                    </div>
+                    
+                    {/* 测试发送 */}
+                    <div style={{marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #e5e7eb'}}>
+                      <div style={{fontSize: '13px', fontWeight: 600, color: '#111827', marginBottom: '10px'}}>🧪 测试邮件发送</div>
+                      <div style={{display: 'flex', gap: '8px'}}>
+                        <input 
+                          type="email" 
+                          className="form-input" 
+                          style={{flex: 1}}
+                          value={testEmail} 
+                          onChange={(e) => setTestEmail(e.target.value)} 
+                          placeholder="输入测试邮箱地址" 
+                        />
+                        <button 
+                          className="btn btn-secondary" 
+                          style={{flexShrink: 0, whiteSpace: 'nowrap'}}
+                          onClick={handleTestEmail}
+                          disabled={testingEmail}
+                        >
+                          {testingEmail ? '发送中...' : '发送测试'}
+                        </button>
+                      </div>
+                      <div style={{fontSize: '11px', color: '#9ca3af', marginTop: '6px'}}>
+                        配置完成后点击保存，再输入邮箱测试发送是否正常
+                      </div>
                     </div>
                   </div>
                   )}

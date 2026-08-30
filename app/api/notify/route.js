@@ -55,16 +55,32 @@ export async function POST(req) {
             const { sendCardEmail } = await import('@/lib/email');
             const email = order.remark ? order.remark.replace('联系方式: ', '') : '';
             if (email) {
+              // 从数据库获取SMTP配置
+              let smtpConfig = {};
+              try {
+                const settings = await db.getSettings();
+                smtpConfig = {
+                  host: settings.smtp_host,
+                  port: settings.smtp_port,
+                  user: settings.smtp_user,
+                  pass: settings.smtp_pass,
+                  from: settings.smtp_user,
+                  fromName: settings.smtp_from_name || settings.site_name || '甜甜发卡',
+                };
+              } catch (cfgErr) {
+                console.warn('获取SMTP配置失败，使用环境变量:', cfgErr.message);
+              }
+              
               await sendCardEmail({
                 to: email,
-                siteName: '甜甜发卡',
+                siteName: smtpConfig.fromName || '甜甜发卡',
                 orderNo: out_trade_no,
                 productName: order.product_name,
                 quantity: order.quantity,
                 amount: order.amount,
                 cards: cards,
                 email: email
-              });
+              }, smtpConfig);
               console.log('卡密邮件已发送:', out_trade_no, email);
             }
           } catch (emailErr) {
