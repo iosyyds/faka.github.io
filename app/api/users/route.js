@@ -4,7 +4,7 @@ import { getDB } from '@/lib/db';
 export async function GET() {
   try {
     const db = getDB();
-    const { data, error } = await db.supabase
+    const { data, error } = await db.client
       .from('users')
       .select('*')
       .order('created_at', { ascending: false });

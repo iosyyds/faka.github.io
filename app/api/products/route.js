@@ -10,10 +10,12 @@ export async function GET(req) {
       name: p.name,
       description: p.description,
       image: p.image || '',
+      tag: p.tag || '',
       category: p.category || '全部',
       price: p.price,
       original_price: p.original_price || 0,
-      stock: p.stock
+      stock: p.stock,
+      sales: p.sales || 0
     }));
     return NextResponse.json({ success: true, products: safeProducts });
   } catch (err) {

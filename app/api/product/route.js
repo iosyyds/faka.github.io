@@ -5,7 +5,7 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const db = getDB();
-    const { data, error } = await db.supabase
+    const { data, error } = await db.client
       .from('products')
       .insert({
         name: body.name,

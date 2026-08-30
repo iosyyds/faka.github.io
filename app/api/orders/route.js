@@ -6,7 +6,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const db = getDB();
-    let query = db.supabase
+    let query = db.client
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false })
@@ -17,7 +17,7 @@ export async function GET(request) {
 
     // 为每个订单查询卡密
     const ordersWithCards = await Promise.all(data.map(async (order) => {
-      const { data: cards } = await db.supabase
+      const { data: cards } = await db.client
         .from('cards')
         .select('card_content')
         .eq('order_id', order.id);

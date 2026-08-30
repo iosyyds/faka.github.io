@@ -14,7 +14,7 @@ export async function GET(req, { params }) {
     if (!product) {
       return NextResponse.json({ success: false, message: '商品不存在' }, { status: 404 });
     }
-    const cards = await db.getCardsByProductId(productId, 'unsold', 1000);
+    const cards = await db.getCardsByProductId(productId, 'available', 1000);
     const stock = cards.length;
     return NextResponse.json({
       success: true,
@@ -58,7 +58,7 @@ export async function PUT(request, { params }) {
     if (body.detail !== undefined) updates.detail = body.detail;
     if (body.sort !== undefined) updates.sort = parseInt(body.sort) || 0;
     if (body.status !== undefined) updates.status = body.status;
-    const { data, error } = await db.supabase
+    const { data, error } = await db.client
       .from('products')
       .update(updates)
       .eq('id', parseInt(id))
@@ -74,7 +74,7 @@ export async function DELETE(request, { params }) {
   try {
     const { id } = params;
     const db = getDB();
-    const { error } = await db.supabase
+    const { error } = await db.client
       .from('products')
       .delete()
       .eq('id', parseInt(id));
