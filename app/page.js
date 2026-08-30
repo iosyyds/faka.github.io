@@ -1674,6 +1674,58 @@ export default function Home() {
           border-right: none !important;
           background: #f9fafb !important;
         }
+
+        /* ===== 卡密列表居中修复 ===== */
+        .card-item-responsive {
+          padding: 12px !important;
+          background: #fff !important;
+          border: 1px solid #e5e7eb !important;
+          border-radius: 8px !important;
+          margin-bottom: 8px !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 10px !important;
+        }
+        .card-index-responsive {
+          width: 24px !important;
+          height: 24px !important;
+          background: #2563eb !important;
+          color: #fff !important;
+          border-radius: 50% !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 12px !important;
+          font-weight: 600 !important;
+          flex-shrink: 0 !important;
+          line-height: 1 !important;
+        }
+        .card-content-responsive {
+          font-size: 14px !important;
+          font-family: 'SF Mono', Monaco, monospace !important;
+          color: #1d4ed8 !important;
+          word-break: break-all !important;
+          flex: 1 !important;
+          line-height: 1.4 !important;
+          display: flex !important;
+          align-items: center !important;
+          min-height: 24px !important;
+        }
+        .card-copy-btn-responsive {
+          padding: 6px 12px !important;
+          font-size: 12px !important;
+          background: #fff !important;
+          border: 1px solid #d1d5db !important;
+          border-radius: 6px !important;
+          color: #4b5563 !important;
+          cursor: pointer !important;
+          flex-shrink: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          transition: all 0.2s ease-out !important;
+          line-height: 1 !important;
+          height: 32px !important;
+        }
       `}</style>
     </div>
   );
