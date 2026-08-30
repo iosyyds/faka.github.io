@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Icon from '@/components/Icon';
 import { useRouter } from 'next/navigation';
 
 const API_BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost'
@@ -7,11 +8,11 @@ const API_BASE = typeof window !== 'undefined' && window.location.hostname === '
   : '/api';
 
 const MENU = [
-  { key: 'dashboard', label: '数据概览', icon: '📊' },
-  { key: 'products', label: '商品管理', icon: '📦' },
-  { key: 'cards', label: '卡密管理', icon: '🔑' },
-  { key: 'orders', label: '订单管理', icon: '🧾' },
-  { key: 'settings', label: '系统设置', icon: '⚙️' },
+  { key: 'dashboard', label: '数据概览', icon: 'chart' },
+  { key: 'products', label: '商品管理', icon: 'box' },
+  { key: 'cards', label: '卡密管理', icon: 'key' },
+  { key: 'orders', label: '订单管理', icon: 'file' },
+  { key: 'settings', label: '系统设置', icon: 'settings' },
 ];
 
 export default function Admin() {
@@ -341,7 +342,7 @@ export default function Admin() {
         <div>
           {MENU.map((item) => (
             <div key={item.key} className={`admin-sidebar-item ${activeMenu === item.key ? 'active' : ''}`} onClick={() => setActiveMenu(item.key)}>
-              <span>{item.icon}</span>
+              <Icon name={item.icon} size={18} />
               <span>{item.label}</span>
             </div>
           ))}
@@ -362,13 +363,13 @@ export default function Admin() {
             <div>
               <div className="stats-grid">
                 {[
-                  {label: '商品总数', value: stats.products, icon: '📦', bg: '#eff6ff', color: '#2563eb'},
-                  {label: '订单总数', value: stats.orders, icon: '🧾', bg: '#f0fdf4', color: '#059669'},
-                  {label: '待处理', value: stats.pending, icon: '⏳', bg: '#fffbeb', color: '#d97706'},
-                  {label: '总收入', value: '¥' + stats.revenue, icon: '💰', bg: '#fef3c7', color: '#92400e'},
+                  {label: '商品总数', value: stats.products, icon: 'box', bg: '#eff6ff', color: '#2563eb'},
+                  {label: '订单总数', value: stats.orders, icon: 'file', bg: '#f0fdf4', color: '#059669'},
+                  {label: '待处理', value: stats.pending, icon: 'alert', bg: '#fffbeb', color: '#d97706'},
+                  {label: '总收入', value: '¥' + stats.revenue, icon: 'money', bg: '#fef3c7', color: '#92400e'},
                 ].map((s, i) => (
                   <div key={i} className="stat-card animate-fade-in" style={{animationDelay: `${i * 0.03}s`}}>
-                    <div className="stat-card-icon" style={{background: s.bg, color: s.color}}>{s.icon}</div>
+                    <div className="stat-card-icon" style={{background: s.bg, color: s.color}}><Icon name={s.icon} size={20} /></div>
                     <div className="stat-card-label">{s.label}</div>
                     <div className="stat-card-value">{s.value}</div>
                   </div>
@@ -490,7 +491,7 @@ export default function Admin() {
                 {/* 基础设置 - 折叠面板 */}
                 <div className="collapsible-section">
                   <div className="collapsible-header" onClick={() => toggleSection('settingsBasic')}>
-                    <div className="collapsible-title">🏠 基础设置</div>
+                    <div className="collapsible-title"><Icon name="home" size={16} style={{marginRight: '8px'}} /> 基础设置</div>
                     <span className={`collapsible-icon ${!collapsedSections.settingsBasic ? 'open' : ''}`}>▼</span>
                   </div>
                   {!collapsedSections.settingsBasic && (
@@ -514,7 +515,7 @@ export default function Admin() {
                       {settings.site_logo ? (
                         <img src={settings.site_logo} alt="Logo" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                       ) : (
-                        <span style={{fontSize: '24px', color: '#9ca3af'}}>🖼️</span>
+                        <Icon name="image" size={24} style={{color: '#9ca3af'}} />
                       )}
                     </div>
                     <div style={{flex: 1}}>
@@ -540,7 +541,7 @@ export default function Admin() {
                           marginBottom: '8px'
                         }}
                       >
-                        {uploadingLogo ? '上传中...' : '📤 上传Logo'}
+                        {uploadingLogo ? '上传中...' : (<><Icon name="upload" size={14} style={{marginRight: '6px'}} /> 上传Logo</>)}
                       </label>
                       <div style={{fontSize: '12px', color: '#9ca3af'}}>
                         支持PNG/JPG/GIF/WEBP/SVG，最大2MB
@@ -582,14 +583,14 @@ export default function Admin() {
                 {/* 横幅配置 - 折叠面板 */}
                 <div className="collapsible-section">
                   <div className="collapsible-header" onClick={() => toggleSection('settingsBanner')}>
-                    <div className="collapsible-title">🎨 首页横幅配置</div>
+                    <div className="collapsible-title"><Icon name="palette" size={16} style={{marginRight: '8px'}} /> 首页横幅配置</div>
                     <span className={`collapsible-icon ${!collapsedSections.settingsBanner ? 'open' : ''}`}>▼</span>
                   </div>
                   {!collapsedSections.settingsBanner && (
                   <div className="collapsible-content">
                 <div style={{padding: '0', background: 'transparent', border: 'none', borderRadius: '0', marginBottom: '0'}}>
                   <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', display: 'none'}}>
-                    🎨 首页横幅配置
+                    <Icon name="palette" size={16} style={{marginRight: '8px'}} /> 首页横幅配置
                   </div>
                   {/* 横幅右侧图片上传 */}
                   <div className="form-group" style={{marginBottom: '18px'}}>
@@ -636,7 +637,7 @@ export default function Admin() {
                             marginBottom: '8px'
                           }}
                         >
-                          {uploadingBannerImage ? '上传中...' : '📤 上传图片'}
+                          {uploadingBannerImage ? '上传中...' : (<><Icon name="upload" size={14} style={{marginRight: '6px'}} /> 上传图片</>)}
                         </label>
                         <div style={{fontSize: '12px', color: '#9ca3af'}}>
                           建议尺寸100x100，支持PNG/JPG/GIF/WEBP/SVG
@@ -691,14 +692,14 @@ export default function Admin() {
                 {/* 底部链接配置 - 折叠面板 */}
                 <div className="collapsible-section">
                   <div className="collapsible-header" onClick={() => toggleSection('settingsFooter')}>
-                    <div className="collapsible-title">🔗 底部链接配置</div>
+                    <div className="collapsible-title"><Icon name="link" size={16} style={{marginRight: '8px'}} /> 底部链接配置</div>
                     <span className={`collapsible-icon ${!collapsedSections.settingsFooter ? 'open' : ''}`}>▼</span>
                   </div>
                   {!collapsedSections.settingsFooter && (
                   <div className="collapsible-content">
                 <div style={{padding: '0', background: 'transparent', border: 'none', borderRadius: '0', marginBottom: '0'}}>
                   <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', display: 'none'}}>
-                    🔗 底部链接配置
+                    <Icon name="link" size={16} style={{marginRight: '8px'}} /> 底部链接配置
                   </div>
                   <div className="form-group">
                     <label className="form-label">底部描述文字</label>
@@ -742,14 +743,14 @@ export default function Admin() {
                 {/* 页面内容配置 - 折叠面板 */}
                 <div className="collapsible-section">
                   <div className="collapsible-header" onClick={() => toggleSection('settingsContent')}>
-                    <div className="collapsible-title">📄 页面内容配置</div>
+                    <div className="collapsible-title"><Icon name="doc" size={16} style={{marginRight: '8px'}} /> 页面内容配置</div>
                     <span className={`collapsible-icon ${!collapsedSections.settingsContent ? 'open' : ''}`}>▼</span>
                   </div>
                   {!collapsedSections.settingsContent && (
                   <div className="collapsible-content">
                 <div style={{padding: '0', background: 'transparent', border: 'none', borderRadius: '0', marginBottom: '0'}}>
                   <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', display: 'none'}}>
-                    📄 页面内容配置
+                    <Icon name="doc" size={16} style={{marginRight: '8px'}} /> 页面内容配置
                   </div>
                   <div className="form-group">
                     <label className="form-label">服务条款内容（支持HTML）</label>
@@ -779,7 +780,7 @@ export default function Admin() {
                 {/* 邮件配置 - 折叠面板 */}
                 <div className="collapsible-section">
                   <div className="collapsible-header" onClick={() => toggleSection('settingsEmail')}>
-                    <div className="collapsible-title">📧 邮件自动发送配置</div>
+                    <div className="collapsible-title"><Icon name="mail" size={16} style={{marginRight: '8px'}} /> 邮件自动发送配置</div>
                     <span className={`collapsible-icon ${!collapsedSections.settingsEmail ? 'open' : ''}`}>▼</span>
                   </div>
                   {!collapsedSections.settingsEmail && (
@@ -815,7 +816,7 @@ export default function Admin() {
                     
                     {/* 测试发送 */}
                     <div style={{marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #e5e7eb'}}>
-                      <div style={{fontSize: '13px', fontWeight: 600, color: '#111827', marginBottom: '10px'}}>🧪 测试邮件发送</div>
+                      <div style={{fontSize: '13px', fontWeight: 600, color: '#111827', marginBottom: '10px'}}><Icon name="test" size={14} style={{marginRight: '6px'}} /> 测试邮件发送</div>
                       <div style={{display: 'flex', gap: '8px'}}>
                         <input 
                           type="email" 
@@ -842,7 +843,7 @@ export default function Admin() {
                   )}
                 </div>
 
-                <button className="btn btn-primary" onClick={saveSettings}>💾 保存设置</button>
+                <button className="btn btn-primary" onClick={saveSettings}><Icon name="save" size={14} style={{marginRight: '6px'}} /> 保存设置</button>
               </div>
             </div>
           )}
@@ -882,7 +883,7 @@ export default function Admin() {
                     {productForm.image ? (
                       <img src={productForm.image} alt="商品图" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                     ) : (
-                      <span style={{fontSize: '24px', color: '#9ca3af'}}>🖼️</span>
+                      <Icon name="image" size={24} style={{color: '#9ca3af'}} />
                     )}
                   </div>
                   <div style={{flex: 1}}>
@@ -906,7 +907,7 @@ export default function Admin() {
                         marginBottom: '6px'
                       }}
                     >
-                      {uploadingImage ? '上传中...' : '📤 上传图片'}
+                      {uploadingImage ? '上传中...' : (<><Icon name="upload" size={14} style={{marginRight: '6px'}} /> 上传图片</>)}
                     </label>
                     <div style={{fontSize: '11px', color: '#9ca3af'}}>支持PNG/JPG，最大2MB</div>
                   </div>
@@ -962,7 +963,7 @@ export default function Admin() {
               className={`admin-mobile-nav-item ${activeMenu === item.key ? 'active' : ''}`} 
               onClick={() => setActiveMenu(item.key)}
             >
-              <span className="admin-mobile-nav-icon">{item.icon}</span>
+              <span className="admin-mobile-nav-icon"><Icon name={item.icon} size={20} /></span>
               <span className="admin-mobile-nav-label">{item.label}</span>
             </div>
           ))}

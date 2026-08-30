@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Icon from '@/components/Icon';
 import { useRouter } from 'next/navigation';
 
 const API_BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost'
@@ -181,7 +182,7 @@ export default function Home() {
 
             {/* 搜索框 - PC端显示 */}
             <div className="nav-search-responsive">
-              <span className="nav-search-icon-responsive">🔍</span>
+              <span className="nav-search-icon-responsive"><Icon name="search" size={16} /></span>
               <input
                 type="text"
                 placeholder="搜索商品..."
@@ -200,7 +201,7 @@ export default function Home() {
 
           {/* 搜索框 - 手机端显示（居中） */}
           <div className="nav-search-mobile-responsive">
-            <span className="nav-search-icon-responsive">🔍</span>
+            <span className="nav-search-icon-responsive"><Icon name="search" size={16} /></span>
             <input
               type="text"
               placeholder="搜索商品..."
@@ -276,12 +277,12 @@ export default function Home() {
         {/* 商品网格 - PC端多列，手机端两列 */}
         {loading ? (
           <div className="empty-responsive">
-            <div style={{fontSize: '32px', marginBottom: '12px'}}>⏳</div>
+            <div style={{marginBottom: '12px', color: '#9ca3af'}}><Icon name="refresh" size={32} /></div>
             加载中...
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="empty-card-responsive">
-            <div style={{fontSize: '48px', marginBottom: '12px', opacity: 0.5}}>📦</div>
+            <div style={{marginBottom: '12px', opacity: 0.5, color: '#9ca3af'}}><Icon name="box" size={48} /></div>
             <div style={{fontSize: '14px', color: '#6b7280'}}>暂无商品</div>
           </div>
         ) : (
@@ -421,7 +422,7 @@ export default function Home() {
                   </span>
                 ) : (
                   <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    <span>🛒</span> 确认订单
+                    <Icon name="cart" size={16} style={{marginRight: '6px'}} /> 确认订单
                   </span>
                 )}
               </div>
@@ -520,12 +521,12 @@ export default function Home() {
                   {/* 邮箱输入 */}
                   <div className="form-group-responsive">
                     <label className="form-label-responsive">
-                      <span style={{marginRight: '4px'}}>📧</span>
+                      <Icon name="mail" size={14} style={{marginRight: '4px'}} />
                       邮箱地址
                       <span style={{color: '#9ca3af', fontWeight: 400, marginLeft: '6px'}}>用于接收卡密</span>
                     </label>
                     <div className="input-wrapper-responsive">
-                      <span className="input-icon-responsive">✉️</span>
+                      <span className="input-icon-responsive"><Icon name="mail" size={16} /></span>
                       <input
                         type="email"
                         placeholder="请输入您的邮箱地址"
@@ -539,7 +540,7 @@ export default function Home() {
                   {/* 购买数量 */}
                   <div className="form-group-responsive">
                     <label className="form-label-responsive">
-                      <span style={{marginRight: '4px'}}>📦</span>
+                      <Icon name="box" size={14} style={{marginRight: '4px'}} />
                       购买数量
                     </label>
                     <div className="quantity-wrapper-responsive">
@@ -661,7 +662,7 @@ export default function Home() {
                   </div>
 
                   <div className="email-tip-responsive">
-                    <span>📧</span>
+                    <Icon name="mail" size={16} style={{marginRight: '6px'}} />
                     <span>卡密已发送至您的邮箱，也可在下方查看复制</span>
                   </div>
 
@@ -706,7 +707,7 @@ export default function Home() {
                     关闭
                   </button>
                   <button className="modal-query-btn-responsive" style={{flex: 1}} onClick={() => { setShowBuy(false); setOrder(null); setQrCode(null); router.push('/query'); }}>
-                    📋 订单查询
+                    <Icon name="list" size={16} style={{marginRight: '6px'}} /> 订单查询
                   </button>
                 </div>
               ) : null}
@@ -1767,7 +1768,7 @@ export default function Home() {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 20px;
+          margin-bottom: 8px;
           flex-wrap: wrap;
           gap: 16px;
         }
@@ -1801,7 +1802,7 @@ export default function Home() {
           color: #2563eb;
         }
         .footer-bottom-responsive {
-          padding-top: 12px;
+          padding-top: 4px;
           font-size: 12px;
           color: #9ca3af;
           text-align: left;
@@ -1822,6 +1823,8 @@ export default function Home() {
           }
           .footer-right-responsive {
             gap: 16px;
+            justify-content: center;
+            width: 100%;
           }
           .footer-bottom-responsive {
             text-align: center;
