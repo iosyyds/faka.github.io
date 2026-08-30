@@ -771,8 +771,9 @@ export default function Home() {
           flex: 1;
         }
         .nav-search-responsive {
-          max-width: 220px;
+          max-width: 260px;
           position: relative;
+          flex: 1;
         }
         .nav-search-mobile-responsive {
           display: none;
@@ -782,31 +783,46 @@ export default function Home() {
         }
         .nav-search-icon-responsive {
           position: absolute;
-          left: 12px;
+          left: 14px;
           top: 50%;
           transform: translateY(-50%);
-          font-size: 14px;
-          opacity: 0.5;
+          opacity: 0.4;
           display: flex;
           align-items: center;
           justify-content: center;
           line-height: 1;
+          z-index: 2;
+          pointer-events: none;
         }
         .nav-search-input-responsive {
           width: 100%;
-          padding: 7px 12px 7px 34px;
+          padding: 9px 16px 9px 38px;
           border: 1px solid #e5e7eb;
-          border-radius: 20px;
+          border-radius: 24px;
           font-size: 13px;
           outline: none;
-          background: #f9fafb;
+          background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
           line-height: 1.4;
-          transition: all 0.2s ease;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          color: #111827;
+        }
+        .nav-search-input-responsive::placeholder {
+          color: #9ca3af;
+        }
+        .nav-search-input-responsive:hover {
+          border-color: #d1d5db;
+          background: #fff;
         }
         .nav-search-input-responsive:focus {
           background: #fff;
           border-color: #2563eb;
-          box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+          box-shadow: 0 0 0 4px rgba(37,99,235,0.1), 0 2px 8px rgba(37,99,235,0.08);
+        }
+        .nav-search-input-responsive:focus + .nav-search-icon-responsive,
+        .nav-search-responsive:focus-within .nav-search-icon-responsive,
+        .nav-search-mobile-responsive:focus-within .nav-search-icon-responsive {
+          opacity: 0.8;
+          color: #2563eb;
         }
         .nav-right-responsive {
           display: flex;
@@ -1254,16 +1270,22 @@ export default function Home() {
             display: none;
           }
           .nav-search-mobile-responsive {
-            display: flex;
-            justify-content: center;
+            display: block;
             width: 100%;
             order: 3;
             padding-top: 8px;
             padding-bottom: 12px;
+            position: relative;
           }
           .nav-search-mobile-responsive .nav-search-input-responsive {
-            max-width: 280px;
-            text-align: center;
+            width: 100%;
+            max-width: 100%;
+            text-align: left;
+            padding-left: 38px;
+            padding-right: 16px;
+          }
+          .nav-search-mobile-responsive .nav-search-icon-responsive {
+            left: 14px;
           }
           .nav-left-responsive {
             order: 1;
