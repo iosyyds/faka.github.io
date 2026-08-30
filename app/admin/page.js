@@ -27,6 +27,7 @@ export default function Admin() {
   const [orders, setOrders] = useState([]);
   const [settings, setSettings] = useState({});
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [showProductModal, setShowProductModal] = useState(false);
@@ -173,6 +174,33 @@ export default function Admin() {
     }
   };
 
+  // 上传商品图片
+  const handleProductImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${API_BASE}/upload-image`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success) {
+        setProductForm({...productForm, image: data.url});
+      } else {
+        alert(data.message || '上传失败');
+      }
+    } catch (err) {
+      alert('上传失败: ' + err.message);
+    } finally {
+      setUploadingImage(false);
+      e.target.value = '';
+    }
+  };
+
   const saveSettings = async () => {
     try {
       const res = await fetch(`${API_BASE}/settings`, {
@@ -298,7 +326,7 @@ export default function Admin() {
             <div className="card">
               <div className="card-header">
                 <div className="card-title">商品列表（{products.length}）</div>
-                <button className="btn btn-primary btn-sm" onClick={() => { setEditingProduct(null); setProductForm({name: '', price: '', original_price: '', category: '', stock: 0, description: '', detail: '', image: '', status: 'active'}); setShowProductModal(true); }}>➕ 添加商品</button>
+                <button className="btn btn-primary btn-sm" onClick={() => { setEditingProduct(null); setProductForm({name: '', price: '', original_price: '', category: '', stock: 0, description: '', detail: '', image: '', tag: '', status: 'active'}); setShowProductModal(true); }}>➕ 添加商品</button>
               </div>
               <div className="table-wrapper">
                 <table className="table">
@@ -314,7 +342,7 @@ export default function Admin() {
                         <td><span className={`badge ${p.status === 'active' ? 'badge-success' : 'badge-secondary'}`}>{p.status === 'active' ? '上架' : '下架'}</span></td>
                         <td>
                           <div style={{display: 'flex', gap: '6px'}}>
-                            <button className="btn btn-secondary btn-sm" onClick={() => { setEditingProduct(p); setProductForm({name: p.name, price: p.price, original_price: p.original_price || '', category: p.category || '', stock: p.stock || 0, description: p.description || '', detail: p.detail || '', image: p.image || '', status: p.status || 'active'}); setShowProductModal(true); }}>编辑</button>
+                            <button className="btn btn-secondary btn-sm" onClick={() => { setEditingProduct(p); setProductForm({name: p.name, price: p.price, original_price: p.original_price || '', category: p.category || '', stock: p.stock || 0, description: p.description || '', detail: p.detail || '', image: p.image || '', tag: p.tag || '', status: p.status || 'active'}); setShowProductModal(true); }}>编辑</button>
                             <button className="btn btn-danger btn-sm" onClick={() => deleteProduct(p.id)}>删除</button>
                           </div>
                         </td>
@@ -507,7 +535,55 @@ export default function Admin() {
                 <div className="form-group"><label className="form-label">库存</label><input type="number" className="form-input" value={productForm.stock} onChange={(e) => setProductForm({...productForm, stock: parseInt(e.target.value) || 0})} /></div>
                 <div className="form-group"><label className="form-label">状态</label><select className="form-select" value={productForm.status} onChange={(e) => setProductForm({...productForm, status: e.target.value})}><option value="active">上架</option><option value="inactive">下架</option></select></div>
               </div>
-              <div className="form-group"><label className="form-label">商品图片URL</label><input type="text" className="form-input" value={productForm.image} onChange={(e) => setProductForm({...productForm, image: e.target.value})} placeholder="https://..." /></div>
+              <div className="form-group">
+                <label className="form-label">商品图片</label>
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '8px',
+                    border: '1px solid #e5e7eb',
+                    overflow: 'hidden',
+                    background: '#f9fafb',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    {productForm.image ? (
+                      <img src={productForm.image} alt="商品图" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                    ) : (
+                      <span style={{fontSize: '24px', color: '#9ca3af'}}>🖼️</span>
+                    )}
+                  </div>
+                  <div style={{flex: 1}}>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+                      onChange={handleProductImageUpload}
+                      style={{display: 'none'}}
+                      id="product-image-upload"
+                    />
+                    <label
+                      htmlFor="product-image-upload"
+                      style={{
+                        display: 'inline-block',
+                        padding: '6px 12px',
+                        background: '#2563eb',
+                        color: '#fff',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        marginBottom: '6px'
+                      }}
+                    >
+                      {uploadingImage ? '上传中...' : '📤 上传图片'}
+                    </label>
+                    <div style={{fontSize: '11px', color: '#9ca3af'}}>支持PNG/JPG，最大2MB</div>
+                  </div>
+                </div>
+              </div>
+              <div className="form-group"><label className="form-label">自定义标签（如：热销、新品、限时）</label><input type="text" className="form-input" value={productForm.tag || ''} onChange={(e) => setProductForm({...productForm, tag: e.target.value})} placeholder="不填则不显示" maxLength={6} /></div>
               <div className="form-group"><label className="form-label">商品简介</label><textarea className="form-textarea" style={{minHeight: '60px'}} value={productForm.description} onChange={(e) => setProductForm({...productForm, description: e.target.value})} /></div>
               <div className="form-group"><label className="form-label">商品详情（支持HTML）</label><textarea className="form-textarea" style={{minHeight: '80px'}} value={productForm.detail} onChange={(e) => setProductForm({...productForm, detail: e.target.value})} /></div>
             </div>

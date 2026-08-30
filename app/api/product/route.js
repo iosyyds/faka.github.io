@@ -15,6 +15,7 @@ export async function POST(request) {
         category: body.category || '全部',
         stock: parseInt(body.stock) || 0,
         image: body.image || '',
+        tag: body.tag || '',
         detail: body.detail || '',
         sort: parseInt(body.sort) || 0,
         status: body.status || 'active',

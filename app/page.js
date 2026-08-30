@@ -256,6 +256,17 @@ export default function Home() {
                   ) : (
                     <div className="product-card-placeholder-responsive">🎁</div>
                   )}
+                  {/* 自动发卡标签 */}
+                  <div className="product-card-badge-responsive">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                    </svg>
+                    自动发卡
+                  </div>
+                  {/* 自定义标签 */}
+                  {p.tag && (
+                    <div className="product-card-tag-responsive">{p.tag}</div>
+                  )}
                 </div>
 
                 {/* 商品信息 */}
@@ -801,13 +812,13 @@ export default function Home() {
         /* 商品网格 - PC端3列，手机端2列 */
         .product-grid-responsive {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 14px;
         }
         .product-card-responsive {
           background: #fff;
           border: 1px solid #e5e7eb;
-          border-radius: 12px;
+          border-radius: 10px;
           overflow: hidden;
           cursor: pointer;
           transition: all 0.2s ease-out;
@@ -823,6 +834,35 @@ export default function Home() {
           aspect-ratio: 4/3;
           overflow: hidden;
           background: #f3f4f6;
+        }
+        .product-card-badge-responsive {
+          position: absolute;
+          top: 8px;
+          left: 8px;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 8px;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: #fff;
+          font-size: 11px;
+          font-weight: 600;
+          border-radius: 6px;
+          box-shadow: 0 2px 4px rgba(16,185,129,0.3);
+          z-index: 2;
+        }
+        .product-card-tag-responsive {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          padding: 4px 8px;
+          background: rgba(0,0,0,0.6);
+          color: #fff;
+          font-size: 11px;
+          font-weight: 500;
+          border-radius: 6px;
+          backdrop-filter: blur(4px);
+          z-index: 2;
         }
         .product-card-image-responsive {
           width: 100%;
@@ -1159,10 +1199,29 @@ export default function Home() {
         .modal-overlay-responsive {
           touch-action: none;
           overscroll-behavior: contain;
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          background: rgba(0,0,0,0.5) !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          z-index: 1000 !important;
+          padding: 16px !important;
         }
         .modal-responsive {
           touch-action: pan-y;
           overscroll-behavior: contain;
+          background: #fff !important;
+          border-radius: 12px !important;
+          width: 100% !important;
+          max-width: 420px !important;
+          max-height: 90vh !important;
+          overflow-y: auto !important;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1) !important;
+          margin: 0 auto !important;
         }
 
         /* ===== 精致下单弹窗样式 ===== */

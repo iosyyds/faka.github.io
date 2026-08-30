@@ -25,6 +25,7 @@ export async function GET(req, { params }) {
         detail: product.detail || '',
         images: product.images || '',
         image: product.image || '',
+        tag: product.tag || '',
         category: product.category || '全部',
         price: product.price,
         original_price: product.original_price || 0,
@@ -53,6 +54,7 @@ export async function PUT(request, { params }) {
     if (body.category !== undefined) updates.category = body.category;
     if (body.stock !== undefined) updates.stock = parseInt(body.stock) || 0;
     if (body.image !== undefined) updates.image = body.image;
+    if (body.tag !== undefined) updates.tag = body.tag;
     if (body.detail !== undefined) updates.detail = body.detail;
     if (body.sort !== undefined) updates.sort = parseInt(body.sort) || 0;
     if (body.status !== undefined) updates.status = body.status;
