@@ -255,62 +255,87 @@ export default function Home() {
                     <img src={p.image} alt={p.name} className="product-card-image-responsive" />
                   ) : (
                     <div className="product-card-placeholder-responsive">
+                      <div className="product-card-placeholder-pattern"></div>
                       <div className="product-card-placeholder-icon">🎁</div>
-                      <div className="product-card-placeholder-bg"></div>
                     </div>
                   )}
-                  {/* 自动发卡标签 */}
-                  <div className="product-card-badge-responsive">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-                    </svg>
-                    自动发卡
+                  {/* 渐变遮罩 */}
+                  <div className="product-card-overlay-responsive"></div>
+                  
+                  {/* 左上角标签组 */}
+                  <div className="product-card-badges-responsive">
+                    <div className="product-card-badge-responsive">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                      </svg>
+                      秒发卡
+                    </div>
+                    {p.tag && (
+                      <div className="product-card-tag-responsive">{p.tag}</div>
+                    )}
                   </div>
-                  {/* 自定义标签 */}
-                  {p.tag && (
-                    <div className="product-card-tag-responsive">{p.tag}</div>
-                  )}
-                  {/* 库存状态角标 */}
+
+                  {/* 右上角价格标签 */}
+                  <div className="product-card-price-tag-responsive">
+                    <span className="product-card-price-tag-symbol">¥</span>
+                    <span className="product-card-price-tag-num">{Number(p.price).toFixed(2)}</span>
+                  </div>
+
+                  {/* 已售空遮罩 */}
                   {p.stock === 0 && (
-                    <div className="product-card-soldout-responsive">已售空</div>
+                    <div className="product-card-soldout-mask-responsive">
+                      <div className="product-card-soldout-text-responsive">已售空</div>
+                    </div>
                   )}
                 </div>
 
                 {/* 商品信息 */}
                 <div className="product-card-body-responsive">
-                  <div className="product-card-name-responsive">{p.name}</div>
-
-                  <div className="product-card-price-row-responsive">
-                    <div className="product-card-price-wrapper-responsive">
-                      <span className="product-card-price-responsive">
-                        <span className="product-card-price-symbol-responsive">¥</span>{p.price}
-                      </span>
-                      {p.original_price && p.original_price > p.price && (
-                        <span className="product-card-original-price-responsive">¥{p.original_price}</span>
-                      )}
+                  {/* 商品名称 */}
+                  <div className="product-card-name-row-responsive">
+                    <div className="product-card-name-responsive">{p.name}</div>
+                    <div className="product-card-stock-badge-responsive">
+                      <span className={`stock-dot ${p.stock > 0 ? 'active' : ''}`}></span>
+                      {p.stock > 0 ? `库存${p.stock}` : '缺货'}
                     </div>
-                    <span className={`product-card-stock-responsive ${p.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                      {p.stock > 0 ? `剩${p.stock}` : '售空'}
-                    </span>
                   </div>
 
-                  <div className="product-card-footer-responsive">
-                    <span className="product-card-sales-responsive">
+                  {/* 库存进度条 */}
+                  {p.stock > 0 && (
+                    <div className="product-card-stock-bar-responsive">
+                      <div className="product-card-stock-progress-responsive" style={{width: `${Math.min(100, p.stock * 10)}%`}}></div>
+                    </div>
+                  )}
+
+                  {/* 价格和销量 */}
+                  <div className="product-card-info-row-responsive">
+                    <div className="product-card-price-wrapper-responsive">
+                      <span className="product-card-price-responsive">
+                        <span className="product-card-price-symbol-responsive">¥</span>
+                        {Number(p.price).toFixed(2)}
+                      </span>
+                      {p.original_price && p.original_price > p.price && (
+                        <span className="product-card-original-price-responsive">¥{Number(p.original_price).toFixed(2)}</span>
+                      )}
+                    </div>
+                    <div className="product-card-sales-responsive">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                         <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                       </svg>
-                      已售 {p.sales || 0}
-                    </span>
-                    <span className="product-card-buy-responsive">
-                      立即购买
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      {p.sales || 0}人已购
+                    </div>
+                  </div>
+
+                  {/* 底部购买按钮 */}
+                  <div className="product-card-action-responsive">
+                    <span className="product-card-buy-text-responsive">立即购买</span>
+                    <div className="product-card-buy-btn-responsive">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                         <polyline points="12 5 19 12 12 19"></polyline>
                       </svg>
-                    </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1943,6 +1968,251 @@ export default function Home() {
           gap: 4px !important;
           font-size: 12px !important;
           color: #9ca3af !important;
+        }
+
+        /* ===== 商品卡片全新精致设计 ===== */
+        .product-card-responsive {
+          border-radius: 14px !important;
+          overflow: hidden !important;
+          background: #fff !important;
+          border: 1px solid #f1f5f9 !important;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06) !important;
+        }
+        .product-card-responsive:hover {
+          transform: translateY(-6px) !important;
+          box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(59,130,246,0.2) !important;
+          border-color: #bfdbfe !important;
+        }
+        .product-card-img-responsive {
+          aspect-ratio: 16/10 !important;
+          background: linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #fcd34d 60%, #fbbf24 100%) !important;
+          position: relative !important;
+          overflow: hidden !important;
+        }
+        .product-card-placeholder-responsive {
+          width: 100% !important;
+          height: 100% !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          position: relative !important;
+        }
+        .product-card-placeholder-pattern {
+          position: absolute !important;
+          width: 100% !important;
+          height: 100% !important;
+          background-image: 
+            radial-gradient(circle at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 40%),
+            radial-gradient(circle at 80% 70%, rgba(255,255,255,0.2) 0%, transparent 40%) !important;
+        }
+        .product-card-placeholder-icon {
+          font-size: 52px !important;
+          z-index: 2 !important;
+          filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15)) !important;
+          animation: float 3s ease-in-out infinite !important;
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+        .product-card-overlay-responsive {
+          position: absolute !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          height: 50% !important;
+          background: linear-gradient(to top, rgba(0,0,0,0.1) 0%, transparent 100%) !important;
+          pointer-events: none !important;
+        }
+        .product-card-badges-responsive {
+          position: absolute !important;
+          top: 10px !important;
+          left: 10px !important;
+          display: flex !important;
+          gap: 6px !important;
+          z-index: 3 !important;
+        }
+        .product-card-badge-responsive {
+          display: flex !important;
+          align-items: center !important;
+          gap: 4px !important;
+          padding: 5px 10px !important;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+          color: #fff !important;
+          font-size: 11px !important;
+          font-weight: 700 !important;
+          border-radius: 20px !important;
+          box-shadow: 0 4px 12px rgba(16,185,129,0.4) !important;
+          backdrop-filter: blur(4px) !important;
+        }
+        .product-card-tag-responsive {
+          padding: 5px 10px !important;
+          background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%) !important;
+          color: #fff !important;
+          font-size: 11px !important;
+          font-weight: 700 !important;
+          border-radius: 20px !important;
+          box-shadow: 0 4px 12px rgba(236,72,153,0.4) !important;
+        }
+        .product-card-price-tag-responsive {
+          position: absolute !important;
+          top: 10px !important;
+          right: 10px !important;
+          display: flex !important;
+          align-items: baseline !important;
+          padding: 6px 12px !important;
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+          color: #fff !important;
+          border-radius: 20px !important;
+          box-shadow: 0 4px 12px rgba(239,68,68,0.4) !important;
+          z-index: 3 !important;
+        }
+        .product-card-price-tag-symbol {
+          font-size: 11px !important;
+          font-weight: 600 !important;
+        }
+        .product-card-price-tag-num {
+          font-size: 15px !important;
+          font-weight: 800 !important;
+          margin-left: 1px !important;
+        }
+        .product-card-soldout-mask-responsive {
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          background: rgba(0,0,0,0.5) !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          z-index: 4 !important;
+          backdrop-filter: blur(2px) !important;
+        }
+        .product-card-soldout-text-responsive {
+          padding: 8px 24px !important;
+          background: rgba(255,255,255,0.95) !important;
+          color: #374151 !important;
+          font-size: 14px !important;
+          font-weight: 700 !important;
+          border-radius: 8px !important;
+          letter-spacing: 4px !important;
+          transform: rotate(-10deg) !important;
+        }
+        .product-card-body-responsive {
+          padding: 14px !important;
+        }
+        .product-card-name-row-responsive {
+          display: flex !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          margin-bottom: 10px !important;
+        }
+        .product-card-name-responsive {
+          font-size: 15px !important;
+          font-weight: 700 !important;
+          color: #111827 !important;
+          flex: 1 !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+          white-space: nowrap !important;
+          margin-right: 8px !important;
+        }
+        .product-card-stock-badge-responsive {
+          display: flex !important;
+          align-items: center !important;
+          gap: 4px !important;
+          font-size: 11px !important;
+          color: #6b7280 !important;
+          flex-shrink: 0 !important;
+        }
+        .stock-dot {
+          width: 6px !important;
+          height: 6px !important;
+          border-radius: 50% !important;
+          background: #d1d5db !important;
+        }
+        .stock-dot.active {
+          background: #10b981 !important;
+          box-shadow: 0 0 0 3px rgba(16,185,129,0.2) !important;
+        }
+        .product-card-stock-bar-responsive {
+          height: 4px !important;
+          background: #f3f4f6 !important;
+          border-radius: 2px !important;
+          margin-bottom: 12px !important;
+          overflow: hidden !important;
+        }
+        .product-card-stock-progress-responsive {
+          height: 100% !important;
+          background: linear-gradient(90deg, #10b981 0%, #34d399 100%) !important;
+          border-radius: 2px !important;
+          transition: width 0.5s ease !important;
+        }
+        .product-card-info-row-responsive {
+          display: flex !important;
+          justify-content: space-between !important;
+          align-items: flex-end !important;
+          margin-bottom: 12px !important;
+        }
+        .product-card-price-wrapper-responsive {
+          display: flex !important;
+          align-items: baseline !important;
+          gap: 6px !important;
+        }
+        .product-card-price-responsive {
+          font-size: 22px !important;
+          font-weight: 800 !important;
+          color: #ef4444 !important;
+          display: flex !important;
+          align-items: baseline !important;
+          line-height: 1 !important;
+        }
+        .product-card-price-symbol-responsive {
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          margin-right: 1px !important;
+        }
+        .product-card-original-price-responsive {
+          font-size: 12px !important;
+          color: #9ca3af !important;
+          text-decoration: line-through !important;
+        }
+        .product-card-sales-responsive {
+          font-size: 11px !important;
+          color: #9ca3af !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 3px !important;
+        }
+        .product-card-action-responsive {
+          display: flex !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          padding-top: 12px !important;
+          border-top: 1px solid #f3f4f6 !important;
+        }
+        .product-card-buy-text-responsive {
+          font-size: 13px !important;
+          font-weight: 600 !important;
+          color: #374151 !important;
+        }
+        .product-card-buy-btn-responsive {
+          width: 28px !important;
+          height: 28px !important;
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+          border-radius: 50% !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          color: #fff !important;
+          transition: all 0.3s ease !important;
+          box-shadow: 0 4px 10px rgba(59,130,246,0.3) !important;
+        }
+        .product-card-responsive:hover .product-card-buy-btn-responsive {
+          transform: scale(1.1) !important;
+          box-shadow: 0 6px 16px rgba(59,130,246,0.5) !important;
         }
       `}</style>
     </div>
