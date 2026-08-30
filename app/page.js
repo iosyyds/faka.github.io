@@ -238,9 +238,9 @@ export default function Home() {
               </span>
             </div>
           </div>
-          <div className="hero-banner-right-responsive">
-            {settings.banner_image ? (
-              <img src={settings.banner_image} alt="横幅图" className="hero-banner-image-responsive" />
+          {/* 横幅装饰图片 - 左上角放大半透明 */}
+          {settings.banner_image ? (
+            <img src={settings.banner_image} alt="横幅装饰" className="hero-banner-bg-image-responsive" />
             ) : (
               <div className="hero-banner-flower-responsive">
                 <svg viewBox="0 0 100 100" className="hero-banner-flower-svg-responsive">
@@ -256,7 +256,6 @@ export default function Home() {
                 </svg>
               </div>
             )}
-          </div>
         </div>
 
         {/* 分类标签 */}
@@ -1819,23 +1818,30 @@ export default function Home() {
         /* 手机端页脚适配 */
         @media (max-width: 768px) {
           .footer-inner-responsive {
-            padding: 0 16px;
+            padding: 0 16px !important;
           }
           .footer-top-responsive {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
           }
           .footer-left-responsive {
-            text-align: center;
+            text-align: center !important;
+            width: 100% !important;
+          }
+          .footer-brand-responsive {
+            text-align: center !important;
+          }
+          .footer-desc-responsive {
+            text-align: center !important;
           }
           .footer-right-responsive {
-            gap: 16px;
-            justify-content: center;
-            width: 100%;
+            gap: 16px !important;
+            justify-content: center !important;
+            width: 100% !important;
           }
           .footer-bottom-responsive {
-            text-align: center;
+            text-align: center !important;
           }
           .top-banner-content-responsive {
             white-space: normal;
@@ -2406,6 +2412,17 @@ export default function Home() {
           object-fit: contain;
           border-radius: 12px;
         }
+        .hero-banner-bg-image-responsive {
+          position: absolute;
+          top: -20px;
+          left: -20px;
+          width: 180px;
+          height: 180px;
+          object-fit: contain;
+          opacity: 0.15;
+          z-index: 1;
+          pointer-events: none;
+        }
 
 
 
@@ -2483,6 +2500,13 @@ export default function Home() {
           .hero-banner-image-responsive {
             width: 60px !important;
             height: 60px !important;
+          }
+          .hero-banner-bg-image-responsive {
+            width: 120px !important;
+            height: 120px !important;
+            top: -10px !important;
+            left: -10px !important;
+            opacity: 0.12 !important;
           }
           /* 手机端商品卡片价格区域布局修复 */
           .product-card-info-row-responsive {
