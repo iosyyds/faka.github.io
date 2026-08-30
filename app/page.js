@@ -22,6 +22,7 @@ export default function Home() {
   const [quantity, setQuantity] = useState(1);
   const [ordering, setOrdering] = useState(false);
   const [order, setOrder] = useState(null);
+  const [payMethod, setPayMethod] = useState('alipay');
 
   useEffect(() => {
     setMounted(true);
@@ -253,72 +254,217 @@ export default function Home() {
       {showBuy && selectedProduct && (
         <div className="modal-overlay-responsive">
           <div className="modal-responsive" onClick={(e) => e.stopPropagation()}>
+            {/* 弹窗头部 */}
             <div className="modal-header-responsive">
-              <div className="modal-title-responsive">{order ? '支付结果' : '确认下单'}</div>
-              <div className="modal-close-responsive" onClick={() => { setShowBuy(false); setOrder(null); }}>×</div>
+              <div className="modal-title-responsive">
+                {order ? (
+                  <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <span style={{color: '#059669'}}>✓</span> 支付结果
+                  </span>
+                ) : (
+                  <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <span>🛒</span> 确认订单
+                  </span>
+                )}
+              </div>
+              <div className="modal-close-responsive" onClick={() => { setShowBuy(false); setOrder(null); }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </div>
             </div>
 
             <div className="modal-body-responsive">
               {!order ? (
                 <>
-                  <div className="modal-product-info-responsive">
-                    <div style={{fontWeight: 600, color: '#111827', marginBottom: '6px', fontSize: '14px'}}>{selectedProduct.name}</div>
-                    <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#6b7280'}}>
-                      <span>单价：¥{selectedProduct.price}</span>
-                      <span>库存：{selectedProduct.stock}</span>
+                  {/* 商品信息卡片 */}
+                  <div className="modal-product-card-responsive">
+                    <div className="modal-product-img-responsive">
+                      {selectedProduct.image ? (
+                        <img src={selectedProduct.image} alt={selectedProduct.name} />
+                      ) : (
+                        <span>🎁</span>
+                      )}
+                    </div>
+                    <div className="modal-product-detail-responsive">
+                      <div className="modal-product-name-responsive">{selectedProduct.name}</div>
+                      <div className="modal-product-meta-responsive">
+                        <span className="modal-product-price-responsive">
+                          <span className="modal-product-price-symbol-responsive">¥</span>
+                          {selectedProduct.price}
+                        </span>
+                        {selectedProduct.original_price && selectedProduct.original_price > selectedProduct.price && (
+                          <span className="modal-product-original-price-responsive">¥{selectedProduct.original_price}</span>
+                        )}
+                      </div>
+                      <div className="modal-product-stock-responsive">
+                        <span className={`stock-dot-responsive ${selectedProduct.stock > 0 ? 'in-stock' : 'out-stock'}`}></span>
+                        {selectedProduct.stock > 0 ? `库存充足 (${selectedProduct.stock}件)` : '已售空'}
+                      </div>
                     </div>
                   </div>
 
+                  {/* 邮箱输入 */}
                   <div className="form-group-responsive">
-                    <label className="form-label-responsive">邮箱地址（用于接收卡密）</label>
-                    <input
-                      type="email"
-                      placeholder="请输入您的邮箱"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="form-input-responsive"
-                    />
+                    <label className="form-label-responsive">
+                      <span style={{marginRight: '4px'}}>📧</span>
+                      邮箱地址
+                      <span style={{color: '#9ca3af', fontWeight: 400, marginLeft: '6px'}}>用于接收卡密</span>
+                    </label>
+                    <div className="input-wrapper-responsive">
+                      <span className="input-icon-responsive">✉️</span>
+                      <input
+                        type="email"
+                        placeholder="请输入您的邮箱地址"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="form-input-with-icon-responsive"
+                      />
+                    </div>
                   </div>
 
+                  {/* 购买数量 */}
                   <div className="form-group-responsive">
-                    <label className="form-label-responsive">购买数量</label>
+                    <label className="form-label-responsive">
+                      <span style={{marginRight: '4px'}}>📦</span>
+                      购买数量
+                    </label>
                     <div className="quantity-selector-responsive">
-                      <button className="quantity-btn-responsive" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                      <button className="quantity-btn-responsive" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </button>
                       <span className="quantity-value-responsive">{quantity}</span>
-                      <button className="quantity-btn-responsive" onClick={() => setQuantity(Math.min(selectedProduct.stock, quantity + 1))}>+</button>
+                      <button className="quantity-btn-responsive" onClick={() => setQuantity(Math.min(selectedProduct.stock, quantity + 1))}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                          <line x1="12" y1="5" x2="12" y2="19"></line>
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </button>
+                      <span style={{marginLeft: '12px', fontSize: '13px', color: '#9ca3af'}}>最多可买 {selectedProduct.stock} 件</span>
                     </div>
                   </div>
 
-                  <div className="modal-total-responsive">
-                    <span style={{fontSize: '14px', color: '#4b5563'}}>合计金额</span>
-                    <span style={{fontSize: '18px', fontWeight: 700, color: '#2563eb'}}><span style={{fontSize: '13px'}}>¥</span>{(selectedProduct.price * quantity).toFixed(2)}</span>
+                  {/* 支付方式 */}
+                  <div className="form-group-responsive">
+                    <label className="form-label-responsive">
+                      <span style={{marginRight: '4px'}}>💳</span>
+                      支付方式
+                    </label>
+                    <div className="pay-methods-responsive">
+                      <div
+                        className={`pay-method-item-responsive ${payMethod === 'alipay' ? 'active' : ''}`}
+                        onClick={() => setPayMethod('alipay')}
+                      >
+                        <span className="pay-icon-responsive" style={{background: '#1677ff'}}>支</span>
+                        <span className="pay-name-responsive">支付宝</span>
+                        <span className="pay-check-responsive">{payMethod === 'alipay' && '✓'}</span>
+                      </div>
+                      <div
+                        className={`pay-method-item-responsive ${payMethod === 'wechat' ? 'active' : ''}`}
+                        onClick={() => setPayMethod('wechat')}
+                      >
+                        <span className="pay-icon-responsive" style={{background: '#07c160'}}>微</span>
+                        <span className="pay-name-responsive">微信支付</span>
+                        <span className="pay-check-responsive">{payMethod === 'wechat' && '✓'}</span>
+                      </div>
+                    </div>
                   </div>
 
+                  {/* 合计金额 */}
+                  <div className="modal-total-responsive">
+                    <div>
+                      <div style={{fontSize: '13px', color: '#6b7280', marginBottom: '2px'}}>合计金额</div>
+                      <div style={{fontSize: '12px', color: '#9ca3af'}}>{quantity} 件商品</div>
+                    </div>
+                    <div className="modal-total-price-responsive">
+                      <span className="modal-total-symbol-responsive">¥</span>
+                      {(selectedProduct.price * quantity).toFixed(2)}
+                    </div>
+                  </div>
+
+                  {/* 支付按钮 */}
                   <button
                     onClick={handleBuy}
                     disabled={ordering || selectedProduct.stock <= 0}
                     className="modal-submit-responsive"
                   >
-                    {ordering ? '处理中...' : `确认支付 ¥${(selectedProduct.price * quantity).toFixed(2)}`}
+                    {ordering ? (
+                      <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                        <span className="btn-spinner-responsive"></span>
+                        正在创建订单...
+                      </span>
+                    ) : (
+                      <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                        🔒 立即支付 ¥{(selectedProduct.price * quantity).toFixed(2)}
+                      </span>
+                    )}
                   </button>
+
+                  {/* 安全提示 */}
+                  <div className="security-tip-responsive">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink: 0}}>
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span>支付成功后自动发货，卡密将发送至您的邮箱，请确保邮箱正确</span>
+                  </div>
                 </>
               ) : (
                 <div style={{textAlign: 'center'}}>
-                  <div style={{fontSize: '48px', marginBottom: '12px'}}>✅</div>
-                  <h3 style={{fontSize: '18px', fontWeight: 600, color: '#111827', marginBottom: '6px'}}>支付成功</h3>
-                  <p style={{fontSize: '13px', color: '#6b7280', marginBottom: '16px'}}>订单号：{order.order_no || order.id}</p>
-                  <p style={{fontSize: '12px', color: '#9ca3af', marginBottom: '16px'}}>卡密已发送至您的邮箱，也可在下方查看</p>
+                  <div className="success-icon-responsive">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                  <h3 style={{fontSize: '20px', fontWeight: 700, color: '#111827', marginBottom: '6px'}}>支付成功</h3>
+                  <p style={{fontSize: '13px', color: '#6b7280', marginBottom: '16px'}}>
+                    订单号：<span style={{fontFamily: 'monospace', color: '#111827'}}>{order.order_no || order.id}</span>
+                  </p>
+
+                  {/* 订单信息 */}
+                  <div className="order-info-responsive">
+                    <div className="order-info-row-responsive">
+                      <span>商品名称</span>
+                      <span style={{fontWeight: 500, color: '#111827'}}>{order.product_name}</span>
+                    </div>
+                    <div className="order-info-row-responsive">
+                      <span>支付金额</span>
+                      <span style={{fontWeight: 600, color: '#2563eb'}}>¥{order.amount || order.total}</span>
+                    </div>
+                    <div className="order-info-row-responsive">
+                      <span>接收邮箱</span>
+                      <span style={{color: '#111827'}}>{email}</span>
+                    </div>
+                  </div>
+
+                  <div className="email-tip-responsive">
+                    <span>📧</span>
+                    <span>卡密已发送至您的邮箱，也可在下方查看复制</span>
+                  </div>
+
                   {order.cards && order.cards.length > 0 && (
                     <div style={{textAlign: 'left', marginBottom: '16px'}}>
-                      <div style={{fontSize: '13px', fontWeight: 600, color: '#111827', marginBottom: '10px'}}>您的卡密：</div>
+                      <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '10px'}}>
+                        🎫 您的卡密 ({order.cards.length}条)
+                      </div>
                       {order.cards.map((card, i) => (
                         <div key={i} className="card-item-responsive">
+                          <span className="card-index-responsive">{i + 1}</span>
                           <span className="card-content-responsive">{card.card_content || card.content || card}</span>
-                          <button className="card-copy-btn-responsive" onClick={() => copyCard(card.card_content || card.content || card)}>复制</button>
+                          <button className="card-copy-btn-responsive" onClick={() => copyCard(card.card_content || card.content || card)}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '4px'}}>
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            复制
+                          </button>
                         </div>
                       ))}
                     </div>
                   )}
+
                   {(!order.cards || order.cards.length === 0) && (
                     <div style={{padding: '14px', background: '#f9fafb', borderRadius: '8px', marginBottom: '16px'}}>
                       <p style={{fontSize: '13px', color: '#6b7280'}}>卡密将在支付确认后自动发放，请在订单查询中查看</p>
@@ -330,9 +476,18 @@ export default function Home() {
 
             <div className="modal-footer-responsive">
               {!order ? (
-                <button className="modal-cancel-btn-responsive" onClick={() => setShowBuy(false)}>取消</button>
+                <button className="modal-cancel-btn-responsive" onClick={() => setShowBuy(false)}>
+                  取消购买
+                </button>
               ) : (
-                <button className="modal-query-btn-responsive" onClick={() => { setShowBuy(false); setOrder(null); router.push('/query'); }}>订单查询</button>
+                <div style={{display: 'flex', gap: '10px', width: '100%'}}>
+                  <button className="modal-cancel-btn-responsive" style={{flex: 1}} onClick={() => setShowBuy(false)}>
+                    关闭
+                  </button>
+                  <button className="modal-query-btn-responsive" style={{flex: 1}} onClick={() => { setShowBuy(false); setOrder(null); router.push('/query'); }}>
+                    📋 订单查询
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -863,6 +1018,255 @@ export default function Home() {
         .modal-responsive {
           touch-action: pan-y;
           overscroll-behavior: contain;
+        }
+
+        /* ===== 精致下单弹窗样式 ===== */
+        .modal-product-card-responsive {
+          display: flex;
+          gap: 14px;
+          padding: 14px;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          margin-bottom: 18px;
+        }
+        .modal-product-img-responsive {
+          width: 72px;
+          height: 72px;
+          border-radius: 10px;
+          overflow: hidden;
+          background: #fff;
+          border: 1px solid #e2e8f0;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 32px;
+        }
+        .modal-product-img-responsive img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .modal-product-detail-responsive {
+          flex: 1;
+          min-width: 0;
+        }
+        .modal-product-name-responsive {
+          font-size: 15px;
+          font-weight: 600;
+          color: #111827;
+          margin-bottom: 6px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .modal-product-meta-responsive {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+          margin-bottom: 6px;
+        }
+        .modal-product-price-responsive {
+          font-size: 20px;
+          font-weight: 700;
+          color: #dc2626;
+        }
+        .modal-product-price-symbol-responsive {
+          font-size: 13px;
+          font-weight: 600;
+        }
+        .modal-product-original-price-responsive {
+          font-size: 13px;
+          color: #9ca3af;
+          text-decoration: line-through;
+        }
+        .modal-product-stock-responsive {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          color: #6b7280;
+        }
+        .stock-dot-responsive {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+        }
+        .stock-dot-responsive.in-stock {
+          background: #10b981;
+          box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+        }
+        .stock-dot-responsive.out-stock {
+          background: #ef4444;
+        }
+        .input-wrapper-responsive {
+          position: relative;
+        }
+        .input-icon-responsive {
+          position: absolute;
+          left: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 14px;
+          opacity: 0.5;
+        }
+        .form-input-with-icon-responsive {
+          width: 100%;
+          padding: 11px 12px 11px 40px;
+          border: 1px solid #d1d5db;
+          border-radius: 10px;
+          font-size: 15px;
+          outline: none;
+          background: #fff;
+          transition: all 0.2s ease-out;
+        }
+        .form-input-with-icon-responsive:focus {
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+        .form-input-with-icon-responsive::placeholder {
+          color: #9ca3af;
+        }
+        .pay-methods-responsive {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .pay-method-item-responsive {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 14px;
+          border: 1.5px solid #e5e7eb;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.2s ease-out;
+          background: #fff;
+        }
+        .pay-method-item-responsive:hover {
+          border-color: #93c5fd;
+          background: #f8fafc;
+        }
+        .pay-method-item-responsive.active {
+          border-color: #2563eb;
+          background: #eff6ff;
+        }
+        .pay-icon-responsive {
+          width: 28px;
+          height: 28px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-size: 13px;
+          font-weight: 700;
+          flex-shrink: 0;
+        }
+        .pay-name-responsive {
+          font-size: 14px;
+          font-weight: 500;
+          color: #374151;
+          flex: 1;
+        }
+        .pay-check-responsive {
+          font-size: 14px;
+          color: #2563eb;
+          font-weight: 700;
+        }
+        .modal-total-price-responsive {
+          font-size: 24px;
+          font-weight: 800;
+          color: #1d4ed8;
+        }
+        .modal-total-symbol-responsive {
+          font-size: 15px;
+          font-weight: 600;
+        }
+        .btn-spinner-responsive {
+          width: 16px;
+          height: 16px;
+          border: 2px solid rgba(255,255,255,0.3);
+          border-top-color: #fff;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+          display: inline-block;
+        }
+        .security-tip-responsive {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          padding: 10px 12px;
+          background: #f0fdf4;
+          border: 1px solid #bbf7d0;
+          border-radius: 8px;
+          font-size: 12px;
+          color: #166534;
+          line-height: 1.5;
+        }
+        .success-icon-responsive {
+          width: 64px;
+          height: 64px;
+          margin: 0 auto 16px;
+          background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #059669;
+          animation: successPop 0.4s ease-out;
+        }
+        @keyframes successPop {
+          0% { transform: scale(0); opacity: 0; }
+          50% { transform: scale(1.1); }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .order-info-responsive {
+          background: #f9fafb;
+          border: 1px solid #e5e7eb;
+          border-radius: 10px;
+          padding: 14px;
+          margin-bottom: 14px;
+          text-align: left;
+        }
+        .order-info-row-responsive {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 6px 0;
+          font-size: 13px;
+          color: #6b7280;
+          border-bottom: 1px dashed #e5e7eb;
+        }
+        .order-info-row-responsive:last-child {
+          border-bottom: none;
+        }
+        .email-tip-responsive {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 12px;
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          border-radius: 8px;
+          font-size: 12px;
+          color: #1e40af;
+          margin-bottom: 14px;
+          text-align: left;
+        }
+        .card-index-responsive {
+          width: 22px;
+          height: 22px;
+          background: #2563eb;
+          color: #fff;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+          font-weight: 600;
+          flex-shrink: 0;
         }
       `}</style>
     </div>
