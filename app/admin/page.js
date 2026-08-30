@@ -157,7 +157,7 @@ export default function Admin() {
             <div style={{textAlign: 'center', marginBottom: '24px'}}>
               <div style={{width: '56px', height: '56px', margin: '0 auto 14px', background: '#2563eb', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '24px', fontWeight: 700}}>N</div>
               <h1 style={{fontSize: '20px', fontWeight: 600, color: '#111827', marginBottom: '4px'}}>管理后台</h1>
-              <p style={{fontSize: '13px', color: '#6b7280'}}>Nova Key 管理系统</p>
+              <p style={{fontSize: '13px', color: '#6b7280'}}>甜甜发卡管理系统</p>
             </div>
             <form onSubmit={handleLogin}>
               <div className="form-group">

@@ -93,7 +93,7 @@ export default function ProductDetail() {
         <div className="nav-inner">
           <div className="nav-logo" onClick={() => router.push('/')} style={{cursor:'pointer'}}>
             <div className="nav-logo-icon">N</div>
-            <span>Nova Key</span>
+            <span>甜甜发卡</span>
           </div>
           <div className="nav-right">
             <button className="btn btn-secondary btn-sm" onClick={() => router.push('/')}>← 返回首页</button>

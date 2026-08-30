@@ -46,7 +46,7 @@ export default function Home() {
         <div className="nav-inner">
           <div className="nav-logo" onClick={() => router.push('/')} style={{cursor:'pointer'}}>
             <div className="nav-logo-icon">N</div>
-            <span>{settings.site_name || 'Nova Key'}</span>
+            <span>{settings.site_name || '甜甜发卡'}</span>
           </div>
           <div className="nav-right">
             <div style={{position: 'relative', width: '240px'}}>
@@ -171,7 +171,7 @@ export default function Home() {
       {/* 页脚 */}
       <footer className="footer">
         <div style={{marginBottom: '4px'}}>
-          {settings.site_name || 'Nova Key'} © {new Date().getFullYear()}
+          {settings.site_name || '甜甜发卡'} © {new Date().getFullYear()}
           {settings.icp && <span style={{marginLeft: '16px'}}>{settings.icp}</span>}
         </div>
         {settings.footer && <div>{settings.footer}</div>}

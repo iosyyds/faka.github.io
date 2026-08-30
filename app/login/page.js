@@ -120,7 +120,7 @@ export default function Login() {
             fontWeight: 800,
             marginBottom: '16px'
           }}>N</div>
-          <h1 style={{fontSize: '24px', fontWeight: 700, marginBottom: '4px'}}>Nova Key</h1>
+          <h1 style={{fontSize: '24px', fontWeight: 700, marginBottom: '4px'}}>甜甜发卡</h1>
           <p style={{fontSize: '14px', color: 'var(--text-muted)'}}>安全快捷的自动发卡平台</p>
         </div>
 
