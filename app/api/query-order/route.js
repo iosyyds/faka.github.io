@@ -51,7 +51,7 @@ export async function GET(req) {
                 }
                 // 发送卡密邮件
                 try {
-                  const { sendCardEmail } = require('@/lib/email');
+                  const { sendCardEmail } = await import('@/lib/email');
                   const email = order.remark ? order.remark.replace('联系方式: ', '') : '';
                   if (email) {
                     await sendCardEmail({
