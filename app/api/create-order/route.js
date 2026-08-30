@@ -47,65 +47,60 @@ export async function POST(req) {
 
     const orderNo = generateOrderNo();
 
-    // 创建订单
-    let order = await db.createOrder(orderNo, productId, product.name, quantity, amount, email, null);
+    // 创建订单（待支付状态）
+    const order = await db.createOrder(orderNo, productId, product.name, quantity, amount, email, null);
 
-    // 更新订单状态为已支付
-    try {
-      await db.supabase
-        .from('orders')
-        .update({ status: 'paid', paid_at: new Date().toISOString() })
-        .eq('id', order.id);
-      order = { ...order, status: 'paid' };
-    } catch (e) {
-      console.error('更新订单状态失败:', e);
+    // 检查支付宝是否配置
+    const alipayConfigured = process.env.ALIPAY_APP_ID && process.env.ALIPAY_APP_ID !== 'placeholder' &&
+      process.env.ALIPAY_PRIVATE_KEY && process.env.ALIPAY_PRIVATE_KEY !== 'placeholder' &&
+      process.env.ALIPAY_PUBLIC_KEY && process.env.ALIPAY_PUBLIC_KEY !== 'placeholder';
+
+    if (!alipayConfigured) {
+      // 未配置支付宝，返回提示
+      return NextResponse.json({
+        success: false,
+        message: '支付尚未配置，请联系管理员配置支付宝支付',
+        order: {
+          id: order.id,
+          order_no: orderNo,
+          product_name: product.name,
+          quantity,
+          amount,
+          status: 'pending'
+        }
+      }, { status: 500 });
     }
 
-    // 自动发货：取出卡密
-    let cards = [];
-    try {
-      const { data: availableCards, error } = await db.supabase
-        .from('cards')
-        .select('*')
-        .eq('product_id', productId)
-        .eq('status', 'unsold')
-        .order('created_at', { ascending: true })
-        .limit(quantity);
+    // 调用支付宝预下单，生成支付二维码
+    const Alipay = (await import('@/lib/alipay')).default;
+    const alipay = new Alipay({
+      appId: process.env.ALIPAY_APP_ID,
+      privateKey: process.env.ALIPAY_PRIVATE_KEY,
+      publicKey: process.env.ALIPAY_PUBLIC_KEY,
+      notifyUrl: process.env.ALIPAY_NOTIFY_URL || (process.env.NEXT_PUBLIC_SITE_URL || '') + '/api/notify',
+      sandbox: process.env.ALIPAY_SANDBOX === 'true'
+    });
 
-      if (error) console.error('查询卡密失败:', error);
-
-      if (availableCards && availableCards.length > 0) {
-        cards = availableCards.slice(0, quantity);
-        // 更新卡密状态为已售
-        const cardIds = cards.map(c => c.id);
-        await db.supabase
-          .from('cards')
-          .update({ status: 'sold', order_id: order.id || orderNo, sold_at: new Date().toISOString() })
-          .in('id', cardIds);
-
-        // 更新商品库存
-        const newStock = Math.max(0, stock - quantity);
-        await db.supabase
-          .from('products')
-          .update({ stock: newStock, sales: (product.sales || 0) + quantity })
-          .eq('id', productId);
-      }
-    } catch (e) {
-      console.error('自动发货失败:', e);
-    }
+    const payResult = await alipay.precreate({
+      outTradeNo: orderNo,
+      totalAmount: amount,
+      subject: `${product.name} x${quantity}`,
+      body: product.description || ''
+    });
 
     return NextResponse.json({
       success: true,
       order: {
         id: order.id,
-        order_no: order.order_no || orderNo,
-        product_name: order.product_name || product.name,
-        quantity: order.quantity || quantity,
-        amount: order.amount || amount,
-        status: 'paid',
-        email: email,
-        cards: cards.map(c => ({ card_content: c.card_content || c.content || c }))
-      }
+        order_no: orderNo,
+        product_name: product.name,
+        quantity,
+        amount,
+        status: 'pending',
+        email
+      },
+      qr_code: payResult.qrCode,
+      trade_no: payResult.tradeNo
     });
 
   } catch (err) {

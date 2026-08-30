@@ -23,6 +23,8 @@ export default function Home() {
   const [ordering, setOrdering] = useState(false);
   const [order, setOrder] = useState(null);
   const [payMethod, setPayMethod] = useState('alipay');
+  const [qrCode, setQrCode] = useState(null);
+  const [polling, setPolling] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -64,30 +66,56 @@ export default function Home() {
       return;
     }
     setOrdering(true);
+    setQrCode(null);
     try {
       const res = await fetch(`${API_BASE}/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: selectedProduct.id, email, quantity, pay_method: 'epay' })
+        body: JSON.stringify({ product_id: selectedProduct.id, email, quantity, pay_method: payMethod })
       });
       const data = await res.json();
-      if (data.order || data.data) {
-        const ord = data.order || data.data;
-        setOrder(ord);
-        if (data.pay_url) {
-          window.open(data.pay_url, '_blank');
-        } else {
-          setTimeout(() => {
-            fetch(`${API_BASE}/query-order?order_no=${ord.order_no || ord.id}&email=${email}`)
-              .then(r => r.json())
-              .then(d => { if (d.order || d.data) setOrder(d.order || d.data); });
-          }, 2000);
+      if (data.success && data.order) {
+        setOrder(data.order);
+        if (data.qr_code) {
+          setQrCode(data.qr_code);
+          // 开始轮询订单状态
+          startPolling(data.order.order_no, email);
         }
       } else {
-        alert(data.error || '下单失败');
+        alert(data.message || data.error || '下单失败');
       }
-    } catch (e) { alert('下单失败，请重试'); }
+    } catch (e) {
+      alert('下单失败，请重试');
+    }
     finally { setOrdering(false); }
+  };
+
+  // 轮询订单状态
+  const startPolling = (orderNo, email) => {
+    setPolling(true);
+    let attempts = 0;
+    const maxAttempts = 60; // 最多轮询5分钟
+    const interval = setInterval(async () => {
+      attempts++;
+      if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        setPolling(false);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/query-order?order_no=${orderNo}&email=${email}`);
+        const data = await res.json();
+        const ord = data.order || data.data;
+        if (ord && (ord.status === 'paid' || ord.status === 'success')) {
+          clearInterval(interval);
+          setPolling(false);
+          setOrder(ord);
+          setQrCode(null);
+        }
+      } catch (e) {
+        console.error('轮询失败:', e);
+      }
+    }, 3000);
   };
 
   const copyCard = (text) => {
@@ -277,7 +305,7 @@ export default function Home() {
                   </span>
                 )}
               </div>
-              <div className="modal-close-responsive" onClick={() => { setShowBuy(false); setOrder(null); }}>
+              <div className="modal-close-responsive" onClick={() => { setShowBuy(false); setOrder(null); setQrCode(null); }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -286,7 +314,61 @@ export default function Home() {
             </div>
 
             <div className="modal-body-responsive">
-              {!order ? (
+              {/* 支付二维码页面 */}
+              {qrCode && order && order.status === 'pending' ? (
+                <div style={{textAlign: 'center', padding: '10px 0'}}>
+                  <div style={{fontSize: '16px', fontWeight: 600, color: '#111827', marginBottom: '6px'}}>请使用支付宝扫码支付</div>
+                  <div style={{fontSize: '13px', color: '#6b7280', marginBottom: '16px'}}>
+                    订单号：<span style={{fontFamily: 'monospace'}}>{order.order_no}</span>
+                  </div>
+                  <div style={{
+                    width: '200px',
+                    height: '200px',
+                    margin: '0 auto 16px',
+                    padding: '12px',
+                    background: '#fff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrCode)}`}
+                      alt="支付二维码"
+                      style={{width: '180px', height: '180px'}}
+                    />
+                  </div>
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 16px',
+                    background: '#eff6ff',
+                    border: '1px solid #bfdbfe',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    color: '#1e40af',
+                    marginBottom: '12px'
+                  }}>
+                    <span style={{
+                      width: '14px',
+                      height: '14px',
+                      border: '2px solid #1e40af',
+                      borderTopColor: 'transparent',
+                      borderRadius: '50%',
+                      animation: 'spin 0.8s linear infinite'
+                    }}></span>
+                    等待支付中...
+                  </div>
+                  <div style={{fontSize: '18px', fontWeight: 700, color: '#dc2626', marginBottom: '8px'}}>
+                    ¥{order.amount}
+                  </div>
+                  <div style={{fontSize: '12px', color: '#9ca3af'}}>
+                    支付成功后将自动发货，卡密发送至 {email}
+                  </div>
+                </div>
+              ) : !order ? (
                 <>
                   {/* 商品信息卡片 */}
                   <div className="modal-product-card-responsive">
@@ -493,16 +575,20 @@ export default function Home() {
             </div>
 
             <div className="modal-footer-responsive">
-              {order && (
+              {qrCode && order && order.status === 'pending' ? (
+                <button className="modal-cancel-btn-responsive" onClick={() => { setShowBuy(false); setQrCode(null); setOrder(null); }}>
+                  取消支付
+                </button>
+              ) : order && order.status === 'paid' ? (
                 <div style={{display: 'flex', gap: '10px', width: '100%'}}>
-                  <button className="modal-cancel-btn-responsive" style={{flex: 1}} onClick={() => setShowBuy(false)}>
+                  <button className="modal-cancel-btn-responsive" style={{flex: 1}} onClick={() => { setShowBuy(false); setOrder(null); setQrCode(null); }}>
                     关闭
                   </button>
-                  <button className="modal-query-btn-responsive" style={{flex: 1}} onClick={() => { setShowBuy(false); setOrder(null); router.push('/query'); }}>
+                  <button className="modal-query-btn-responsive" style={{flex: 1}} onClick={() => { setShowBuy(false); setOrder(null); setQrCode(null); router.push('/query'); }}>
                     📋 订单查询
                   </button>
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

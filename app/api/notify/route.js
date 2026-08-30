@@ -25,7 +25,7 @@ export async function POST(req) {
       sandbox: process.env.ALIPAY_SANDBOX === 'true'
     });
 
-    const signValid = alipay.verifyNotify(params);
+    const signValid = alipay.verify(params);
     if (!signValid) {
       console.error('支付宝回调签名验证失败:', out_trade_no);
       return new NextResponse('fail', { status: 400 });

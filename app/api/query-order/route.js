@@ -4,14 +4,11 @@ import { getDB } from '@/lib/db';
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const orderNo = searchParams.get('orderNo');
+    const orderNo = searchParams.get('order_no') || searchParams.get('orderNo');
+    const email = searchParams.get('email');
 
     if (!orderNo) {
       return NextResponse.json({ success: false, message: '缺少订单号' }, { status: 400 });
-    }
-
-    if (!/^[A-Z0-9]{20,30}$/.test(orderNo)) {
-      return NextResponse.json({ success: false, message: '订单号格式错误' }, { status: 400 });
     }
 
     const db = getDB();
@@ -27,7 +24,6 @@ export async function GET(req) {
             process.env.ALIPAY_APP_ID !== 'placeholder' &&
             process.env.ALIPAY_PRIVATE_KEY &&
             process.env.ALIPAY_PRIVATE_KEY !== 'placeholder';
-
         if (alipayConfigured) {
           const Alipay = (await import('@/lib/alipay')).default;
           const alipay = new Alipay({
@@ -37,9 +33,7 @@ export async function GET(req) {
             notifyUrl: process.env.ALIPAY_NOTIFY_URL,
             sandbox: process.env.ALIPAY_SANDBOX === 'true'
           });
-
           const queryResult = await alipay.query({ outTradeNo: orderNo });
-
           if (queryResult.tradeStatus === 'TRADE_SUCCESS') {
             const alipayAmount = parseFloat(queryResult.totalAmount);
             if (Math.abs(alipayAmount - order.amount) > 0.001) {
@@ -63,24 +57,30 @@ export async function GET(req) {
     }
 
     const orderInfo = {
+      id: order.id,
       order_no: order.order_no,
       product_name: order.product_name,
       quantity: order.quantity,
       amount: order.amount,
       status: order.status,
-      created_at: order.created_at
+      created_at: order.created_at,
+      email: order.remark ? order.remark.replace('联系方式: ', '') : ''
     };
 
     if (order.status === 'paid') {
-      const cards = await db.getCardsByOrderId(order.id);
-      orderInfo.cards = cards.map(c => ({
-        card_type: c.card_type,
-        card_content: c.card_content
-      }));
+      try {
+        const cards = await db.getCardsByOrderId(order.id);
+        orderInfo.cards = (cards || []).map(c => ({
+          card_type: c.card_type,
+          card_content: c.card_content || c.content
+        }));
+      } catch (e) {
+        orderInfo.cards = [];
+      }
       orderInfo.paid_at = order.paid_at;
     }
 
-    return NextResponse.json({ success: true, order: orderInfo });
+    return NextResponse.json({ success: true, order: orderInfo, data: orderInfo });
   } catch (err) {
     console.error('查询订单失败:', err);
     return NextResponse.json({ success: false, message: '查询订单失败' }, { status: 500 });
