@@ -168,15 +168,13 @@ export default function Home() {
       </nav>
 
       <div className="container-responsive">
-        {/* 公告栏 */}
-        {settings.notice && (
-          <div className="notice-responsive">
-            <span style={{fontSize: '16px', flexShrink: 0}}>📢</span>
-            <div className="notice-content-responsive">
-              <div className="notice-marquee-responsive">{settings.notice}</div>
-            </div>
+        {/* 顶部公告横幅 */}
+        <div className="top-banner-responsive">
+          <div className="top-banner-icon-responsive">📢</div>
+          <div className="top-banner-content-responsive">
+            {settings.notice || settings.announcement || '欢迎来到甜甜发卡，24小时自动发货，秒发卡密！'}
           </div>
-        )}
+        </div>
 
         {/* 分类标签 */}
         <div className="category-tabs-responsive">
@@ -243,11 +241,23 @@ export default function Home() {
 
       {/* 页脚 */}
       <footer className="footer-responsive">
-        <div style={{marginBottom: '4px'}}>
-          {settings.site_name || '甜甜发卡'} © {new Date().getFullYear()}
-          {settings.icp && <span style={{marginLeft: '12px'}}>{settings.icp}</span>}
+        <div className="footer-inner-responsive">
+          <div className="footer-top-responsive">
+            <div className="footer-left-responsive">
+              <div className="footer-brand-responsive">{settings.site_name || '甜甜发卡'}</div>
+              <div className="footer-desc-responsive">本站仅出售合规虚拟商品，下单即视为同意服务条款。</div>
+            </div>
+            <div className="footer-right-responsive">
+              <a href="#" className="footer-link-responsive">服务条款</a>
+              <a href="#" className="footer-link-responsive">隐私政策</a>
+              <a href="/query" className="footer-link-responsive">订单查询</a>
+            </div>
+          </div>
+          <div className="footer-bottom-responsive">
+            © {new Date().getFullYear()} {settings.site_name || '甜甜发卡'}. Powered by Next.js
+            {settings.icp && <span style={{marginLeft: '12px'}}>{settings.icp}</span>}
+          </div>
         </div>
-        {settings.footer && <div>{settings.footer}</div>}
       </footer>
 
       {/* 购买弹窗 */}
@@ -343,7 +353,7 @@ export default function Home() {
                           <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
                       </button>
-                      <span style={{marginLeft: '12px', fontSize: '13px', color: '#9ca3af', alignSelf: 'center', lineHeight: 1}}>最多可买 {selectedProduct.stock} 件</span>
+                      <span style={{marginLeft: '12px', fontSize: '13px', color: '#9ca3af', alignSelf: 'center', lineHeight: '38px', height: '38px', display: 'flex', alignItems: 'center'}}>最多可买 {selectedProduct.stock} 件</span>
                     </div>
                   </div>
 
@@ -363,12 +373,12 @@ export default function Home() {
                         <span className="pay-check-responsive">{payMethod === 'alipay' && '✓'}</span>
                       </div>
                       <div
-                        className={`pay-method-item-responsive ${payMethod === 'wechat' ? 'active' : ''}`}
-                        onClick={() => setPayMethod('wechat')}
+                        className="pay-method-item-responsive disabled"
+                        style={{opacity: 0.5, cursor: 'not-allowed'}}
                       >
                         <span className="pay-icon-responsive" style={{background: '#07c160'}}>微</span>
                         <span className="pay-name-responsive">微信支付</span>
-                        <span className="pay-check-responsive">{payMethod === 'wechat' && '✓'}</span>
+                        <span style={{fontSize: '11px', color: '#9ca3af'}}>暂未开通</span>
                       </div>
                     </div>
                   </div>
@@ -1421,6 +1431,147 @@ export default function Home() {
         /* 底部footer - 未支付时隐藏 */
         .modal-footer-responsive:empty {
           display: none;
+        }
+
+        /* ===== 顶部公告横幅 ===== */
+        .top-banner-responsive {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 18px;
+          background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+          border: 1px solid #bfdbfe;
+          border-radius: 12px;
+          margin-bottom: 16px;
+        }
+        .top-banner-icon-responsive {
+          width: 36px;
+          height: 36px;
+          background: #fff;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          flex-shrink: 0;
+          box-shadow: 0 2px 4px rgba(37,99,235,0.1);
+        }
+        .top-banner-content-responsive {
+          flex: 1;
+          font-size: 14px;
+          color: #1e40af;
+          font-weight: 500;
+          line-height: 1.5;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        /* ===== 底部页脚 ===== */
+        .footer-responsive {
+          background: #fff;
+          border-top: 1px solid #e5e7eb;
+          padding: 32px 0 24px;
+          margin-top: 40px;
+        }
+        .footer-inner-responsive {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 24px;
+        }
+        .footer-top-responsive {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 20px;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+        .footer-left-responsive {
+          flex: 1;
+          min-width: 200px;
+        }
+        .footer-brand-responsive {
+          font-size: 16px;
+          font-weight: 700;
+          color: #111827;
+          margin-bottom: 6px;
+        }
+        .footer-desc-responsive {
+          font-size: 13px;
+          color: #6b7280;
+          line-height: 1.6;
+        }
+        .footer-right-responsive {
+          display: flex;
+          gap: 20px;
+          align-items: center;
+        }
+        .footer-link-responsive {
+          font-size: 13px;
+          color: #6b7280;
+          text-decoration: none;
+          transition: color 0.2s ease-out;
+        }
+        .footer-link-responsive:hover {
+          color: #2563eb;
+        }
+        .footer-bottom-responsive {
+          padding-top: 16px;
+          border-top: 1px solid #f3f4f6;
+          font-size: 12px;
+          color: #9ca3af;
+          text-align: center;
+        }
+
+        /* 手机端页脚适配 */
+        @media (max-width: 768px) {
+          .footer-inner-responsive {
+            padding: 0 16px;
+          }
+          .footer-top-responsive {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+          }
+          .footer-left-responsive {
+            text-align: center;
+          }
+          .footer-right-responsive {
+            gap: 16px;
+          }
+          .top-banner-content-responsive {
+            white-space: normal;
+          }
+        }
+
+        /* ===== 数量选择器强制对齐 ===== */
+        .quantity-selector-responsive {
+          display: flex !important;
+          align-items: center !important;
+          height: 38px !important;
+        }
+        .quantity-selector-responsive .quantity-btn-responsive {
+          width: 38px !important;
+          height: 38px !important;
+          min-height: 38px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          line-height: 1 !important;
+        }
+        .quantity-selector-responsive .quantity-value-responsive {
+          width: 50px !important;
+          height: 38px !important;
+          min-height: 38px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          line-height: 1 !important;
         }
       `}</style>
     </div>

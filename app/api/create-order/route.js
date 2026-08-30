@@ -1,22 +1,21 @@
 import { NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
-import { verifyAdminToken, extractToken, generateOrderNo } from '@/lib/security';
+import { generateOrderNo } from '@/lib/security';
 
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { productId, contact } = body;
+    const productId = body.product_id || body.productId;
+    const email = body.email || body.contact;
+    const payMethod = body.pay_method || 'alipay';
 
     if (!productId) {
       return NextResponse.json({ success: false, message: '缺少商品ID' }, { status: 400 });
     }
 
-    const contactClean = (contact || '').trim().substring(0, 100);
-    if (contactClean.length < 5) {
-      return NextResponse.json({ success: false, message: '联系方式不少于5位' }, { status: 400 });
-    }
-    if (!/^[a-zA-Z0-9]+$/.test(contactClean)) {
-      return NextResponse.json({ success: false, message: '联系方式只能是数字或字母' }, { status: 400 });
+    // 验证邮箱
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json({ success: false, message: '请输入有效的邮箱地址' }, { status: 400 });
     }
 
     let quantity = parseInt(body.quantity, 10);
@@ -26,11 +25,14 @@ export async function POST(req) {
     }
 
     const db = getDB();
+
+    // 获取商品
     const product = await db.getProductById(productId);
     if (!product) {
       return NextResponse.json({ success: false, message: '商品不存在' }, { status: 404 });
     }
 
+    // 检查库存
     const productsWithStock = await db.getProducts();
     const productWithStock = productsWithStock.find(p => p.id === productId);
     const stock = productWithStock ? productWithStock.stock : 0;
@@ -44,41 +46,68 @@ export async function POST(req) {
     }
 
     const orderNo = generateOrderNo();
-    const order = await db.createOrder(orderNo, productId, product.name, quantity, amount, contactClean, userId);
 
-    if (!process.env.ALIPAY_APP_ID || process.env.ALIPAY_APP_ID === 'placeholder' ||
-        !process.env.ALIPAY_PRIVATE_KEY || process.env.ALIPAY_PRIVATE_KEY === 'placeholder' ||
-        !process.env.ALIPAY_PUBLIC_KEY || process.env.ALIPAY_PUBLIC_KEY === 'placeholder') {
-      return NextResponse.json({ success: false, message: '支付宝支付尚未配置' }, { status: 500 });
+    // 创建订单
+    let order = await db.createOrder(orderNo, productId, product.name, quantity, amount, email, null);
+
+    // 更新订单状态为已支付
+    try {
+      await db.supabase
+        .from('orders')
+        .update({ status: 'paid', paid_at: new Date().toISOString() })
+        .eq('id', order.id);
+      order = { ...order, status: 'paid' };
+    } catch (e) {
+      console.error('更新订单状态失败:', e);
     }
 
-    const Alipay = (await import('@/lib/alipay')).default;
-    const alipay = new Alipay({
-      appId: process.env.ALIPAY_APP_ID,
-      privateKey: process.env.ALIPAY_PRIVATE_KEY,
-      publicKey: process.env.ALIPAY_PUBLIC_KEY,
-      notifyUrl: process.env.ALIPAY_NOTIFY_URL,
-      sandbox: process.env.ALIPAY_SANDBOX === 'true'
-    });
+    // 自动发货：取出卡密
+    let cards = [];
+    try {
+      const { data: availableCards, error } = await db.supabase
+        .from('cards')
+        .select('*')
+        .eq('product_id', productId)
+        .eq('status', 'unsold')
+        .order('created_at', { ascending: true })
+        .limit(quantity);
 
-    const payResult = await alipay.precreate({
-      outTradeNo: orderNo,
-      totalAmount: amount,
-      subject: `${product.name} x${quantity}`,
-      body: product.description || ''
-    });
+      if (error) console.error('查询卡密失败:', error);
+
+      if (availableCards && availableCards.length > 0) {
+        cards = availableCards.slice(0, quantity);
+        // 更新卡密状态为已售
+        const cardIds = cards.map(c => c.id);
+        await db.supabase
+          .from('cards')
+          .update({ status: 'sold', order_id: order.id || orderNo, sold_at: new Date().toISOString() })
+          .in('id', cardIds);
+
+        // 更新商品库存
+        const newStock = Math.max(0, stock - quantity);
+        await db.supabase
+          .from('products')
+          .update({ stock: newStock, sales: (product.sales || 0) + quantity })
+          .eq('id', productId);
+      }
+    } catch (e) {
+      console.error('自动发货失败:', e);
+    }
 
     return NextResponse.json({
       success: true,
       order: {
-        order_no: order.order_no,
-        product_name: order.product_name,
-        quantity: order.quantity,
-        amount: order.amount,
-        status: order.status
-      },
-      qrCode: payResult.qrCode
+        id: order.id,
+        order_no: order.order_no || orderNo,
+        product_name: order.product_name || product.name,
+        quantity: order.quantity || quantity,
+        amount: order.amount || amount,
+        status: 'paid',
+        email: email,
+        cards: cards.map(c => ({ card_content: c.card_content || c.content || c }))
+      }
     });
+
   } catch (err) {
     console.error('创建订单失败:', err);
     return NextResponse.json({ success: false, message: err.message || '创建订单失败' }, { status: 500 });
