@@ -2214,8 +2214,7 @@ export default function Home() {
           transform: scale(1.1) !important;
           box-shadow: 0 6px 16px rgba(59,130,246,0.5) !important;
         }
-      `}
-        /* ===== 手机端商品卡片最终优化 ===== */
+      /* ===== 手机端商品卡片最终优化 ===== */
         @media (max-width: 768px) {
           .product-grid-responsive {
             grid-template-columns: repeat(2, 1fr) !important;
@@ -2258,7 +2257,8 @@ export default function Home() {
             height: 24px !important;
           }
         }
-      </style>
+      `}
+        </style>
     </div>
   );
 }
