@@ -618,7 +618,7 @@ export default function Home() {
                         </span>
                       ) : (
                         <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
-                          🔒 立即支付
+                          立即支付
                         </span>
                       )}
                     </button>
