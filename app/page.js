@@ -426,19 +426,21 @@ export default function Home() {
                       <span style={{marginRight: '4px'}}>📦</span>
                       购买数量
                     </label>
-                    <div className="quantity-selector-responsive">
-                      <button className="quantity-btn-responsive" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                          <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                      </button>
-                      <span className="quantity-value-responsive">{quantity}</span>
-                      <button className="quantity-btn-responsive" onClick={() => setQuantity(Math.min(selectedProduct.stock, quantity + 1))}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                          <line x1="12" y1="5" x2="12" y2="19"></line>
-                          <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                      </button>
+                    <div className="quantity-wrapper-responsive">
+                      <div className="quantity-selector-responsive">
+                        <button className="quantity-btn-responsive" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                          </svg>
+                        </button>
+                        <span className="quantity-value-responsive">{quantity}</span>
+                        <button className="quantity-btn-responsive" onClick={() => setQuantity(Math.min(selectedProduct.stock, quantity + 1))}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                          </svg>
+                        </button>
+                      </div>
                       <span style={{marginLeft: '12px', fontSize: '13px', color: '#9ca3af', alignSelf: 'center', lineHeight: '38px', height: '38px', display: 'flex', alignItems: 'center'}}>最多可买 {selectedProduct.stock} 件</span>
                     </div>
                   </div>
@@ -1641,11 +1643,19 @@ export default function Home() {
           }
         }
 
-        /* ===== 数量选择器强制对齐 ===== */
+        /* ===== 数量选择器整体样式 ===== */
+        .quantity-wrapper-responsive {
+          display: flex !important;
+          align-items: center !important;
+        }
         .quantity-selector-responsive {
           display: flex !important;
           align-items: center !important;
           height: 38px !important;
+          border: 1px solid #d1d5db !important;
+          border-radius: 8px !important;
+          overflow: hidden !important;
+          background: #fff !important;
         }
         .quantity-selector-responsive .quantity-btn-responsive {
           width: 38px !important;
@@ -1657,16 +1667,17 @@ export default function Home() {
           padding: 0 !important;
           margin: 0 !important;
           line-height: 1 !important;
-          border: 1px solid #d1d5db !important;
+          border: none !important;
           background: #fff !important;
+          cursor: pointer !important;
+          color: #4b5563 !important;
+          transition: background 0.2s !important;
         }
-        .quantity-selector-responsive .quantity-btn-responsive:first-child {
-          border-radius: 8px 0 0 8px !important;
-          border-right: none !important;
+        .quantity-selector-responsive .quantity-btn-responsive:hover {
+          background: #f3f4f6 !important;
         }
-        .quantity-selector-responsive .quantity-btn-responsive:last-child {
-          border-radius: 0 8px 8px 0 !important;
-          border-left: none !important;
+        .quantity-selector-responsive .quantity-btn-responsive:active {
+          background: #e5e7eb !important;
         }
         .quantity-selector-responsive .quantity-value-responsive {
           width: 50px !important;
@@ -1678,11 +1689,14 @@ export default function Home() {
           padding: 0 !important;
           margin: 0 !important;
           line-height: 1 !important;
-          border-top: 1px solid #d1d5db !important;
-          border-bottom: 1px solid #d1d5db !important;
-          border-left: none !important;
-          border-right: none !important;
+          border-left: 1px solid #e5e7eb !important;
+          border-right: 1px solid #e5e7eb !important;
+          border-top: none !important;
+          border-bottom: none !important;
           background: #f9fafb !important;
+          font-size: 15px !important;
+          font-weight: 600 !important;
+          color: #111827 !important;
         }
 
         /* ===== 卡密列表居中修复 ===== */
