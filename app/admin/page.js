@@ -494,6 +494,76 @@ export default function Admin() {
                   <input type="text" className="form-input" maxLength={2} value={settings.logo_text || ''} onChange={(e) => setSettings({...settings, logo_text: e.target.value})} placeholder="如：甜、N、VIP" />
                 </div>
 
+                {/* 横幅配置 */}
+                <div style={{padding: '18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '18px'}}>
+                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    🎨 首页横幅配置
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">横幅标题</label>
+                    <input type="text" className="form-input" value={settings.banner_title || ''} onChange={(e) => setSettings({...settings, banner_title: e.target.value})} placeholder="如：虚拟商品·即拍即发" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">横幅副标题</label>
+                    <input type="text" className="form-input" value={settings.banner_subtitle || ''} onChange={(e) => setSettings({...settings, banner_subtitle: e.target.value})} placeholder="如：支付宝多渠道支付，付款后自动秒发卡密" />
+                  </div>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px'}}>
+                    <div className="form-group">
+                      <label className="form-label">标签1</label>
+                      <input type="text" className="form-input" value={settings.banner_tag1 || ''} onChange={(e) => setSettings({...settings, banner_tag1: e.target.value})} placeholder="自动秒发" />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">标签2</label>
+                      <input type="text" className="form-input" value={settings.banner_tag2 || ''} onChange={(e) => setSettings({...settings, banner_tag2: e.target.value})} placeholder="加密存储" />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">标签3</label>
+                      <input type="text" className="form-input" value={settings.banner_tag3 || ''} onChange={(e) => setSettings({...settings, banner_tag3: e.target.value})} placeholder="多渠道支付" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 底部链接配置 */}
+                <div style={{padding: '18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '18px'}}>
+                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    🔗 底部链接配置
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">底部描述文字</label>
+                    <input type="text" className="form-input" value={settings.footer_desc || ''} onChange={(e) => setSettings({...settings, footer_desc: e.target.value})} placeholder="本站仅出售合规虚拟商品，下单即视为同意服务条款。" />
+                  </div>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px'}}>
+                    <div className="form-group" style={{marginBottom: 0}}>
+                      <label className="form-label">链接1文字</label>
+                      <input type="text" className="form-input" value={settings.footer_link1_text || ''} onChange={(e) => setSettings({...settings, footer_link1_text: e.target.value})} placeholder="服务条款" />
+                    </div>
+                    <div className="form-group" style={{marginBottom: 0}}>
+                      <label className="form-label">链接1地址</label>
+                      <input type="text" className="form-input" value={settings.footer_link1_url || ''} onChange={(e) => setSettings({...settings, footer_link1_url: e.target.value})} placeholder="https://..." />
+                    </div>
+                  </div>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px'}}>
+                    <div className="form-group" style={{marginBottom: 0}}>
+                      <label className="form-label">链接2文字</label>
+                      <input type="text" className="form-input" value={settings.footer_link2_text || ''} onChange={(e) => setSettings({...settings, footer_link2_text: e.target.value})} placeholder="隐私政策" />
+                    </div>
+                    <div className="form-group" style={{marginBottom: 0}}>
+                      <label className="form-label">链接2地址</label>
+                      <input type="text" className="form-input" value={settings.footer_link2_url || ''} onChange={(e) => setSettings({...settings, footer_link2_url: e.target.value})} placeholder="https://..." />
+                    </div>
+                  </div>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+                    <div className="form-group" style={{marginBottom: 0}}>
+                      <label className="form-label">链接3文字</label>
+                      <input type="text" className="form-input" value={settings.footer_link3_text || ''} onChange={(e) => setSettings({...settings, footer_link3_text: e.target.value})} placeholder="订单查询" />
+                    </div>
+                    <div className="form-group" style={{marginBottom: 0}}>
+                      <label className="form-label">链接3地址</label>
+                      <input type="text" className="form-input" value={settings.footer_link3_url || ''} onChange={(e) => setSettings({...settings, footer_link3_url: e.target.value})} placeholder="/query" />
+                    </div>
+                  </div>
+                </div>
+
                 {/* 邮件配置 */}
                 <div style={{padding: '18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '18px'}}>
                   <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}>

@@ -17,13 +17,26 @@ export async function GET() {
       site_subtitle: settings.site_subtitle || '',
       site_description: settings.site_description || '',
       site_logo: settings.site_logo || '',
+      logo_text: settings.logo_text || '',
       contact_qq: settings.contact_qq || '',
       contact_wechat: settings.contact_wechat || '',
       contact_email: settings.contact_email || '',
       announcement: settings.announcement || settings.notice || '',
       footer_text: settings.footer_text || settings.footer || '',
       icp_number: settings.icp_number || '',
-      payment_tip: settings.payment_tip || '请使用支付宝扫码支付，支付成功后将自动跳转'
+      payment_tip: settings.payment_tip || '请使用支付宝扫码支付，支付成功后将自动跳转',
+      banner_title: settings.banner_title || '',
+      banner_subtitle: settings.banner_subtitle || '',
+      banner_tag1: settings.banner_tag1 || '',
+      banner_tag2: settings.banner_tag2 || '',
+      banner_tag3: settings.banner_tag3 || '',
+      footer_desc: settings.footer_desc || '',
+      footer_link1_text: settings.footer_link1_text || '',
+      footer_link1_url: settings.footer_link1_url || '',
+      footer_link2_text: settings.footer_link2_text || '',
+      footer_link2_url: settings.footer_link2_url || '',
+      footer_link3_text: settings.footer_link3_text || '',
+      footer_link3_url: settings.footer_link3_url || ''
     };
     return NextResponse.json({ success: true, settings: publicSettings });
   } catch (err) {
@@ -41,10 +54,12 @@ export async function POST(req) {
 
     const body = await req.json();
     const allowedKeys = [
-      'site_name', 'site_subtitle', 'site_description', 'site_logo',
+      'site_name', 'site_subtitle', 'site_description', 'site_logo', 'logo_text',
       'contact_qq', 'contact_wechat', 'contact_email',
       'announcement', 'footer_text', 'icp_number', 'payment_tip', 'stock_warning',
-      'notice', 'footer'
+      'notice', 'footer',
+      'banner_title', 'banner_subtitle', 'banner_tag1', 'banner_tag2', 'banner_tag3',
+      'footer_desc', 'footer_link1_text', 'footer_link1_url', 'footer_link2_text', 'footer_link2_url', 'footer_link3_text', 'footer_link3_url'
     ];
     const updates = {};
     for (const key of allowedKeys) {

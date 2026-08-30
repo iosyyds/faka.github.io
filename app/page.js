@@ -193,7 +193,7 @@ export default function Home() {
           {/* 右侧按钮 */}
           <div className="nav-right-responsive">
             <button className="btn-secondary-responsive" onClick={() => router.push('/query')}>订单查询</button>
-            <button className="btn-primary-responsive" onClick={() => router.push('/admin')}>管理后台</button>
+            <a href="/admin" target="_blank" rel="noopener noreferrer" className="btn-primary-responsive" style={{textDecoration: 'none', display: 'inline-flex', alignItems: 'center'}}>管理后台</a>
           </div>
 
           {/* 搜索框 - 手机端显示（独占一行） */}
@@ -211,11 +211,44 @@ export default function Home() {
       </nav>
 
       <div className="container-responsive">
-        {/* 顶部公告横幅 */}
-        <div className="top-banner-responsive">
-          <div className="top-banner-icon-responsive">📢</div>
-          <div className="top-banner-content-responsive">
-            {settings.notice || settings.announcement || '欢迎来到甜甜发卡，24小时自动发货，自动发卡密！'}
+        {/* 顶部横幅 */}
+        <div className="hero-banner-responsive">
+          <div className="hero-banner-left-responsive">
+            <h2 className="hero-banner-title-responsive">
+              {settings.banner_title || '虚拟商品·即拍即发'}
+            </h2>
+            <p className="hero-banner-subtitle-responsive">
+              {settings.banner_subtitle || '支付宝多渠道支付，付款后自动秒发卡密'}
+            </p>
+            <div className="hero-banner-tags-responsive">
+              <span className="hero-banner-tag-responsive">
+                <span className="hero-banner-tag-icon-responsive">⚡</span>
+                {settings.banner_tag1 || '自动秒发'}
+              </span>
+              <span className="hero-banner-tag-responsive">
+                <span className="hero-banner-tag-icon-responsive">🔒</span>
+                {settings.banner_tag2 || '加密存储'}
+              </span>
+              <span className="hero-banner-tag-responsive">
+                <span className="hero-banner-tag-icon-responsive">💳</span>
+                {settings.banner_tag3 || '多渠道支付'}
+              </span>
+            </div>
+          </div>
+          <div className="hero-banner-right-responsive">
+            <div className="hero-banner-flower-responsive">
+              <svg viewBox="0 0 100 100" className="hero-banner-flower-svg-responsive">
+                <circle cx="50" cy="50" r="8" fill="#fff" opacity="0.9"/>
+                <ellipse cx="50" cy="25" rx="12" ry="18" fill="#FFB7C5" opacity="0.7"/>
+                <ellipse cx="50" cy="75" rx="12" ry="18" fill="#FFB7C5" opacity="0.7"/>
+                <ellipse cx="25" cy="50" rx="18" ry="12" fill="#FFB7C5" opacity="0.7"/>
+                <ellipse cx="75" cy="50" rx="18" ry="12" fill="#FFB7C5" opacity="0.7"/>
+                <ellipse cx="32" cy="32" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(-45 32 32)"/>
+                <ellipse cx="68" cy="32" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(45 68 32)"/>
+                <ellipse cx="32" cy="68" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(45 32 68)"/>
+                <ellipse cx="68" cy="68" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(-45 68 68)"/>
+              </svg>
+            </div>
           </div>
         </div>
 
@@ -344,17 +377,26 @@ export default function Home() {
           <div className="footer-top-responsive">
             <div className="footer-left-responsive">
               <div className="footer-brand-responsive">{settings.site_name || '甜甜发卡'}</div>
-              <div className="footer-desc-responsive">本站仅出售合规虚拟商品，下单即视为同意服务条款。</div>
+              <div className="footer-desc-responsive">{settings.footer_desc || '本站仅出售合规虚拟商品，下单即视为同意服务条款。'}</div>
             </div>
             <div className="footer-right-responsive">
-              <a href="#" className="footer-link-responsive">服务条款</a>
-              <a href="#" className="footer-link-responsive">隐私政策</a>
-              <a href="/query" className="footer-link-responsive">订单查询</a>
+              {settings.footer_link1_text && (
+                <a href={settings.footer_link1_url || '#'} className="footer-link-responsive" target="_blank" rel="noopener noreferrer">{settings.footer_link1_text}</a>
+              )}
+              {settings.footer_link2_text && (
+                <a href={settings.footer_link2_url || '#'} className="footer-link-responsive" target="_blank" rel="noopener noreferrer">{settings.footer_link2_text}</a>
+              )}
+              {settings.footer_link3_text && (
+                <a href={settings.footer_link3_url || '#'} className="footer-link-responsive" target="_blank" rel="noopener noreferrer">{settings.footer_link3_text}</a>
+              )}
+              {!settings.footer_link1_text && (
+                <a href="/query" className="footer-link-responsive">订单查询</a>
+              )}
             </div>
           </div>
           <div className="footer-bottom-responsive">
             © {new Date().getFullYear()} {settings.site_name || '甜甜发卡'}. Powered by Next.js
-            {settings.icp && <span style={{marginLeft: '12px'}}>{settings.icp}</span>}
+            {settings.icp_number && <span style={{marginLeft: '12px'}}>{settings.icp_number}</span>}
           </div>
         </div>
       </footer>
@@ -2252,12 +2294,128 @@ export default function Home() {
             height: 24px !important;
           }
         }
+
+        /* ===== 顶部横幅 ===== */
+        .hero-banner-responsive {
+          background: #fff;
+          border-radius: 16px;
+          padding: 28px 32px;
+          margin-bottom: 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+          border: 1px solid #f3f4f6;
+          position: relative;
+          overflow: hidden;
+        }
+        .hero-banner-left-responsive {
+          flex: 1;
+          z-index: 2;
+        }
+        .hero-banner-title-responsive {
+          font-size: 28px;
+          font-weight: 800;
+          color: #111827;
+          margin: 0 0 8px 0;
+          letter-spacing: -0.5px;
+        }
+        .hero-banner-subtitle-responsive {
+          font-size: 14px;
+          color: #6b7280;
+          margin: 0 0 16px 0;
+          line-height: 1.6;
+        }
+        .hero-banner-tags-responsive {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+        .hero-banner-tag-responsive {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 6px 12px;
+          background: #f9fafb;
+          border: 1px solid #e5e7eb;
+          border-radius: 20px;
+          font-size: 12px;
+          color: #4b5563;
+          font-weight: 500;
+        }
+        .hero-banner-tag-icon-responsive {
+          font-size: 13px;
+        }
+        .hero-banner-right-responsive {
+          flex-shrink: 0;
+          margin-left: 20px;
+        }
+        .hero-banner-flower-responsive {
+          width: 100px;
+          height: 100px;
+          opacity: 0.8;
+        }
+        .hero-banner-flower-svg-responsive {
+          width: 100%;
+          height: 100%;
+        }
+
+
+        /* ===== 底部优化 ===== */
+        .footer-top-responsive {
+          display: flex !important;
+          justify-content: space-between !important;
+          align-items: flex-start !important;
+          gap: 20px !important;
+        }
+        .footer-left-responsive {
+          flex: 1 !important;
+          text-align: left !important;
+        }
+        .footer-right-responsive {
+          display: flex !important;
+          gap: 20px !important;
+          flex-shrink: 0 !important;
+        }
+        .footer-link-responsive {
+          color: #6b7280 !important;
+          text-decoration: none !important;
+          font-size: 13px !important;
+          transition: color 0.2s !important;
+        }
+        .footer-link-responsive:hover {
+          color: #2563eb !important;
+        }
+
         /* ===== 手机端标签位置调整 ===== */
         @media (max-width: 768px) {
           .product-card-badges-responsive {
             top: 4px !important;
             left: 4px !important;
             gap: 4px !important;
+          }
+          /* 手机端横幅响应式 */
+          .hero-banner-responsive {
+            padding: 20px 16px !important;
+            flex-direction: column !important;
+            text-align: center !important;
+            gap: 16px !important;
+          }
+          .hero-banner-title-responsive {
+            font-size: 22px !important;
+          }
+          .hero-banner-subtitle-responsive {
+            font-size: 13px !important;
+          }
+          .hero-banner-tags-responsive {
+            justify-content: center !important;
+          }
+          .hero-banner-right-responsive {
+            margin-left: 0 !important;
+          }
+          .hero-banner-flower-responsive {
+            width: 70px !important;
+            height: 70px !important;
           }
           /* 手机端商品卡片价格区域布局修复 */
           .product-card-info-row-responsive {
