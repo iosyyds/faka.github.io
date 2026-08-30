@@ -1450,6 +1450,12 @@ export default function Home() {
           transform: translateY(-50%);
           font-size: 14px;
           opacity: 0.5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          line-height: 1;
+          z-index: 2;
+          pointer-events: none;
         }
         .form-input-with-icon-responsive {
           width: 100%;
@@ -1460,6 +1466,9 @@ export default function Home() {
           outline: none;
           background: #fff;
           transition: all 0.2s ease-out;
+          line-height: 1.4;
+          display: flex;
+          align-items: center;
         }
         .form-input-with-icon-responsive:focus {
           border-color: #2563eb;
