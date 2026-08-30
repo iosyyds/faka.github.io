@@ -159,7 +159,11 @@ export default function Home() {
         <div className="nav-inner-responsive">
           {/* Logo */}
           <div className="nav-logo-responsive" onClick={() => router.push('/')}>
-            <div className="nav-logo-icon-responsive">N</div>
+            {settings.site_logo ? (
+              <img src={settings.site_logo} alt="Logo" className="nav-logo-img-responsive" />
+            ) : (
+              <div className="nav-logo-icon-responsive">N</div>
+            )}
             <span className="nav-logo-text-responsive">{settings.site_name || '甜甜发卡'}</span>
           </div>
 
@@ -631,6 +635,12 @@ export default function Home() {
           color: #fff;
           font-weight: 700;
           font-size: 16px;
+        }
+        .nav-logo-img-responsive {
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          object-fit: cover;
         }
         .nav-logo-text-responsive {
           font-size: 18px;

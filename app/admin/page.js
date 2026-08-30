@@ -26,6 +26,7 @@ export default function Admin() {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [settings, setSettings] = useState({});
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [showProductModal, setShowProductModal] = useState(false);
@@ -123,6 +124,34 @@ export default function Admin() {
         setShowCardModal(false); setCardContent(''); loadData();
       } else { alert(data.error || '导入失败'); }
     } catch (e) { alert('导入失败'); }
+  };
+
+  // 上传Logo
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingLogo(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${API_BASE}/upload-logo`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSettings({...settings, site_logo: data.logo_url});
+        alert('Logo上传成功');
+      } else {
+        alert(data.message || '上传失败');
+      }
+    } catch (err) {
+      alert('上传失败: ' + err.message);
+    } finally {
+      setUploadingLogo(false);
+      e.target.value = '';
+    }
   };
 
   const saveSettings = async () => {
@@ -335,23 +364,80 @@ export default function Admin() {
             <div className="card" style={{maxWidth: '700px'}}>
               <div className="card-header"><div className="card-title">系统设置</div></div>
               <div className="card-body">
-                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px'}}>
-                  <div className="form-group">
-                    <label className="form-label">网站名称</label>
-                    <input type="text" className="form-input" value={settings.site_name || ''} onChange={(e) => setSettings({...settings, site_name: e.target.value})} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">网站副标题</label>
-                    <input type="text" className="form-input" value={settings.site_subtitle || ''} onChange={(e) => setSettings({...settings, site_subtitle: e.target.value})} />
+                {/* 网站Logo上传 */}
+                <div className="form-group" style={{marginBottom: '18px'}}>
+                  <label className="form-label">网站Logo</label>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+                    <div style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: '12px',
+                      border: '2px dashed #d1d5db',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      background: '#f9fafb',
+                      flexShrink: 0
+                    }}>
+                      {settings.site_logo ? (
+                        <img src={settings.site_logo} alt="Logo" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                      ) : (
+                        <span style={{fontSize: '24px', color: '#9ca3af'}}>🖼️</span>
+                      )}
+                    </div>
+                    <div style={{flex: 1}}>
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/svg+xml"
+                        onChange={handleLogoUpload}
+                        style={{display: 'none'}}
+                        id="logo-upload"
+                      />
+                      <label
+                        htmlFor="logo-upload"
+                        style={{
+                          display: 'inline-block',
+                          padding: '8px 16px',
+                          background: '#2563eb',
+                          color: '#fff',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          marginBottom: '8px'
+                        }}
+                      >
+                        {uploadingLogo ? '上传中...' : '📤 上传Logo'}
+                      </label>
+                      <div style={{fontSize: '12px', color: '#9ca3af'}}>
+                        支持PNG/JPG/GIF/WEBP/SVG，最大2MB
+                      </div>
+                      {settings.site_logo && (
+                        <button
+                          onClick={() => setSettings({...settings, site_logo: ''})}
+                          style={{
+                            display: 'block',
+                            marginTop: '8px',
+                            fontSize: '12px',
+                            color: '#ef4444',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0
+                          }}
+                        >
+                          移除Logo
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
+
                 <div className="form-group">
-                  <label className="form-label">网站公告</label>
-                  <textarea className="form-textarea" value={settings.notice || ''} onChange={(e) => setSettings({...settings, notice: e.target.value})} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">页脚信息</label>
-                  <textarea className="form-textarea" style={{minHeight: '60px'}} value={settings.footer || ''} onChange={(e) => setSettings({...settings, footer: e.target.value})} />
+                  <label className="form-label">网站名称</label>
+                  <input type="text" className="form-input" value={settings.site_name || ''} onChange={(e) => setSettings({...settings, site_name: e.target.value})} />
                 </div>
 
                 {/* 邮件配置 */}
