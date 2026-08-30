@@ -168,6 +168,37 @@ export default function QueryOrder() {
           </div>
         )}
       </div>
+      
+      {/* 页脚 */}
+      <footer style={{
+        marginTop: '40px',
+        padding: '24px 16px',
+        background: '#fff',
+        borderTop: '1px solid #f3f4f6',
+        textAlign: 'center'
+      }}>
+        <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '6px'}}>
+          {settings.site_name || '甜甜发卡'}
+        </div>
+        <div style={{fontSize: '12px', color: '#6b7280', marginBottom: '12px'}}>
+          {settings.footer_desc || '本站仅出售合规虚拟商品，下单即视为同意服务条款。'}
+        </div>
+        <div style={{display: 'flex', justifyContent: 'center', gap: '16px', marginBottom: '12px', flexWrap: 'wrap'}}>
+          {settings.footer_link1_text ? (
+            <a href={settings.footer_link1_url || '#'} target="_blank" rel="noopener noreferrer" style={{fontSize: '12px', color: '#6b7280', textDecoration: 'none'}}>{settings.footer_link1_text}</a>
+          ) : (
+            <a href="/terms" style={{fontSize: '12px', color: '#6b7280', textDecoration: 'none'}}>服务条款</a>
+          )}
+          {settings.footer_link2_text ? (
+            <a href={settings.footer_link2_url || '#'} target="_blank" rel="noopener noreferrer" style={{fontSize: '12px', color: '#6b7280', textDecoration: 'none'}}>{settings.footer_link2_text}</a>
+          ) : (
+            <a href="/privacy" style={{fontSize: '12px', color: '#6b7280', textDecoration: 'none'}}>隐私政策</a>
+          )}
+        </div>
+        <div style={{fontSize: '11px', color: '#9ca3af'}}>
+          © {new Date().getFullYear()} {settings.site_name || '甜甜发卡'}. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }

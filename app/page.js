@@ -225,15 +225,15 @@ export default function Home() {
             </p>
             <div className="hero-banner-tags-responsive">
               <span className="hero-banner-tag-responsive">
-                <span className="hero-banner-tag-icon-responsive">⚡</span>
+                <span className="hero-banner-tag-icon-responsive"><Icon name="check" size={12} /></span>
                 {settings.banner_tag1 || '自动秒发'}
               </span>
               <span className="hero-banner-tag-responsive">
-                <span className="hero-banner-tag-icon-responsive">🔒</span>
+                <span className="hero-banner-tag-icon-responsive"><Icon name="key" size={12} /></span>
                 {settings.banner_tag2 || '加密存储'}
               </span>
               <span className="hero-banner-tag-responsive">
-                <span className="hero-banner-tag-icon-responsive">💳</span>
+                <span className="hero-banner-tag-icon-responsive"><Icon name="money" size={12} /></span>
                 {settings.banner_tag3 || '多渠道支付'}
               </span>
             </div>
@@ -772,7 +772,7 @@ export default function Home() {
           flex: 1;
         }
         .nav-search-responsive {
-          max-width: 280px;
+          max-width: 220px;
           position: relative;
         }
         .nav-search-mobile-responsive {
@@ -795,20 +795,19 @@ export default function Home() {
         }
         .nav-search-input-responsive {
           width: 100%;
-          padding: 10px 12px 10px 36px;
-          border: none;
-          border-bottom: 1px solid transparent;
-          border-radius: 8px;
-          font-size: 14px;
+          padding: 7px 12px 7px 34px;
+          border: 1px solid #e5e7eb;
+          border-radius: 20px;
+          font-size: 13px;
           outline: none;
-          background: #f3f4f6;
-          line-height: 1.5;
-          display: flex;
-          align-items: center;
+          background: #f9fafb;
+          line-height: 1.4;
+          transition: all 0.2s ease;
         }
         .nav-search-input-responsive:focus {
-          background: #e5e7eb;
-          box-shadow: none;
+          background: #fff;
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
         }
         .nav-right-responsive {
           display: flex;
@@ -1517,7 +1516,7 @@ export default function Home() {
         }
         .security-tip-responsive {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           gap: 8px;
           padding: 10px 12px;
           background: #f0fdf4;
@@ -1525,7 +1524,7 @@ export default function Home() {
           border-radius: 8px;
           font-size: 12px;
           color: #166534;
-          line-height: 1.5;
+          line-height: 1.4;
         }
         .success-icon-responsive {
           width: 64px;
@@ -2384,6 +2383,9 @@ export default function Home() {
         }
         .hero-banner-tag-icon-responsive {
           font-size: 13px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .hero-banner-right-responsive {
           flex-shrink: 0;
@@ -2459,7 +2461,14 @@ export default function Home() {
           }
           .hero-banner-tags-responsive {
             justify-content: flex-start !important;
-            flex-wrap: wrap !important;
+            flex-wrap: nowrap !important;
+            gap: 6px !important;
+          }
+          .hero-banner-tag-responsive {
+            padding: 4px 8px !important;
+            font-size: 10px !important;
+            gap: 3px !important;
+            white-space: nowrap !important;
           }
           .hero-banner-right-responsive {
             position: absolute !important;
