@@ -39,6 +39,19 @@ export default function Admin() {
   const [cardProductId, setCardProductId] = useState('');
   const [cardContent, setCardContent] = useState('');
 
+  // 折叠面板状态
+  const [collapsedSections, setCollapsedSections] = useState({
+    settingsBasic: false,
+    settingsBanner: true,
+    settingsFooter: true,
+    settingsContent: true,
+    settingsEmail: true,
+  });
+
+  const toggleSection = (key) => {
+    setCollapsedSections(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   useEffect(() => {
     document.title = '甜甜发卡-后台管理';
     const token = localStorage.getItem('admin_token');
@@ -447,6 +460,14 @@ export default function Admin() {
             <div className="card" style={{maxWidth: '700px'}}>
               <div className="card-header"><div className="card-title">系统设置</div></div>
               <div className="card-body">
+                {/* 基础设置 - 折叠面板 */}
+                <div className="collapsible-section">
+                  <div className="collapsible-header" onClick={() => toggleSection('settingsBasic')}>
+                    <div className="collapsible-title">🏠 基础设置</div>
+                    <span className={`collapsible-icon ${!collapsedSections.settingsBasic ? 'open' : ''}`}>▼</span>
+                  </div>
+                  {!collapsedSections.settingsBasic && (
+                  <div className="collapsible-content">
                 {/* 网站Logo上传 */}
                 <div className="form-group" style={{marginBottom: '18px'}}>
                   <label className="form-label">网站Logo</label>
@@ -527,10 +548,20 @@ export default function Admin() {
                   <label className="form-label">Logo图标文字（无图片时显示）</label>
                   <input type="text" className="form-input" maxLength={2} value={settings.logo_text || ''} onChange={(e) => setSettings({...settings, logo_text: e.target.value})} placeholder="如：甜、N、VIP" />
                 </div>
+                  </div>
+                  </div>
+                )}
 
-                {/* 横幅配置 */}
-                <div style={{padding: '18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '18px'}}>
-                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                {/* 横幅配置 - 折叠面板 */}
+                <div className="collapsible-section">
+                  <div className="collapsible-header" onClick={() => toggleSection('settingsBanner')}>
+                    <div className="collapsible-title">🎨 首页横幅配置</div>
+                    <span className={`collapsible-icon ${!collapsedSections.settingsBanner ? 'open' : ''}`}>▼</span>
+                  </div>
+                  {!collapsedSections.settingsBanner && (
+                  <div className="collapsible-content">
+                <div style={{padding: '0', background: 'transparent', border: 'none', borderRadius: '0', marginBottom: '0'}}>
+                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', display: 'none'}}>
                     🎨 首页横幅配置
                   </div>
                   {/* 横幅右侧图片上传 */}
@@ -626,10 +657,20 @@ export default function Admin() {
                     </div>
                   </div>
                 </div>
+                  </div>
+                  </div>
+                )}
 
-                {/* 底部链接配置 */}
-                <div style={{padding: '18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '18px'}}>
-                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                {/* 底部链接配置 - 折叠面板 */}
+                <div className="collapsible-section">
+                  <div className="collapsible-header" onClick={() => toggleSection('settingsFooter')}>
+                    <div className="collapsible-title">🔗 底部链接配置</div>
+                    <span className={`collapsible-icon ${!collapsedSections.settingsFooter ? 'open' : ''}`}>▼</span>
+                  </div>
+                  {!collapsedSections.settingsFooter && (
+                  <div className="collapsible-content">
+                <div style={{padding: '0', background: 'transparent', border: 'none', borderRadius: '0', marginBottom: '0'}}>
+                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', display: 'none'}}>
                     🔗 底部链接配置
                   </div>
                   <div className="form-group">
@@ -667,10 +708,20 @@ export default function Admin() {
                     </div>
                   </div>
                 </div>
+                  </div>
+                  </div>
+                )}
 
-                {/* 页面内容配置 */}
-                <div style={{padding: '18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '18px'}}>
-                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                {/* 页面内容配置 - 折叠面板 */}
+                <div className="collapsible-section">
+                  <div className="collapsible-header" onClick={() => toggleSection('settingsContent')}>
+                    <div className="collapsible-title">📄 页面内容配置</div>
+                    <span className={`collapsible-icon ${!collapsedSections.settingsContent ? 'open' : ''}`}>▼</span>
+                  </div>
+                  {!collapsedSections.settingsContent && (
+                  <div className="collapsible-content">
+                <div style={{padding: '0', background: 'transparent', border: 'none', borderRadius: '0', marginBottom: '0'}}>
+                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', display: 'none'}}>
                     📄 页面内容配置
                   </div>
                   <div className="form-group">
@@ -694,10 +745,20 @@ export default function Admin() {
                     />
                   </div>
                 </div>
+                  </div>
+                  </div>
+                )}
 
-                {/* 邮件配置 */}
-                <div style={{padding: '18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '18px'}}>
-                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                {/* 邮件配置 - 折叠面板 */}
+                <div className="collapsible-section">
+                  <div className="collapsible-header" onClick={() => toggleSection('settingsEmail')}>
+                    <div className="collapsible-title">📧 邮件自动发送配置</div>
+                    <span className={`collapsible-icon ${!collapsedSections.settingsEmail ? 'open' : ''}`}>▼</span>
+                  </div>
+                  {!collapsedSections.settingsEmail && (
+                  <div className="collapsible-content">
+                <div style={{padding: '0', background: 'transparent', border: 'none', borderRadius: '0', marginBottom: '0'}}>
+                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', display: 'none'}}>
                     📧 邮件自动发送配置
                   </div>
                   <div style={{fontSize: '13px', color: '#6b7280', marginBottom: '12px', lineHeight: 1.6}}>
@@ -714,6 +775,9 @@ export default function Admin() {
                     支持QQ邮箱、163邮箱、Gmail等SMTP服务。QQ邮箱需使用授权码而非登录密码。
                   </div>
                 </div>
+                  </div>
+                  </div>
+                )}
 
                 <button className="btn btn-primary" onClick={saveSettings}>💾 保存设置</button>
               </div>
@@ -727,7 +791,7 @@ export default function Admin() {
               <div className="modal-title">{editingProduct ? '编辑商品' : '添加商品'}</div>
               <div className="modal-close" onClick={() => setShowProductModal(false)}>×</div>
             </div>
-            <div className="modal-body" style={{maxHeight: '60vh', overflowY: 'auto'}}>
+            <div className="modal-body modal-body-scroll">
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
                 <div className="form-group"><label className="form-label">商品名称 *</label><input type="text" className="form-input" value={productForm.name} onChange={(e) => setProductForm({...productForm, name: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">分类</label><input type="text" className="form-input" value={productForm.category} onChange={(e) => setProductForm({...productForm, category: e.target.value})} placeholder="如：会员、软件" /></div>
