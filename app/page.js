@@ -9,7 +9,7 @@ const API_BASE = typeof window !== 'undefined' && window.location.hostname === '
 
 export default function Home() {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(true);
   const [products, setProducts] = useState([]);
   const [settings, setSettings] = useState({});
   const [categories, setCategories] = useState([]);
@@ -135,147 +135,8 @@ export default function Home() {
     alert('已复制到剪贴板');
   };
 
-  if (!mounted) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #f8fafc 0%, #eff6ff 50%, #f8fafc 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-      }}>
-        <div style={{
-          position: 'absolute',
-          width: '300px',
-          height: '300px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(37,99,235,0.08), rgba(96,165,250,0.05))',
-          top: '-100px',
-          right: '-100px',
-          animation: 'loadingFloat 6s ease-in-out infinite'
-        }}></div>
-        <div style={{
-          position: 'absolute',
-          width: '200px',
-          height: '200px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(37,99,235,0.06), rgba(96,165,250,0.04))',
-          bottom: '-50px',
-          left: '-50px',
-          animation: 'loadingFloat 6s ease-in-out 2s infinite'
-        }}></div>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          zIndex: 10,
-          animation: 'loadingFadeIn 0.6s ease-out'
-        }}>
-          <div style={{
-            width: '72px',
-            height: '72px',
-            background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-            borderRadius: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            fontSize: '32px',
-            fontWeight: 800,
-            marginBottom: '20px',
-            boxShadow: '0 8px 24px rgba(37,99,235,0.3)',
-            animation: 'loadingPulse 2s ease-in-out infinite'
-          }}>甜</div>
-          <div style={{
-            fontSize: '24px',
-            fontWeight: 800,
-            color: '#111827',
-            marginBottom: '6px',
-            letterSpacing: '-0.5px'
-          }}>甜甜发卡</div>
-          <div style={{
-            fontSize: '13px',
-            color: '#64748b',
-            marginBottom: '32px'
-          }}>24小时自动发卡平台</div>
-          <div style={{
-            display: 'flex',
-            gap: '8px',
-            marginBottom: '24px'
-          }}>
-            <span style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              background: '#2563eb',
-              animation: 'loadingDotBounce 1.4s ease-in-out 0s infinite'
-            }}></span>
-            <span style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              background: '#2563eb',
-              animation: 'loadingDotBounce 1.4s ease-in-out 0.2s infinite'
-            }}></span>
-            <span style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              background: '#2563eb',
-              animation: 'loadingDotBounce 1.4s ease-in-out 0.4s infinite'
-            }}></span>
-          </div>
-          <div style={{
-            width: '200px',
-            height: '4px',
-            background: '#e2e8f0',
-            borderRadius: '4px',
-            overflow: 'hidden',
-            marginBottom: '16px'
-          }}>
-            <div style={{
-              height: '100%',
-              width: '50%',
-              background: 'linear-gradient(90deg, #2563eb, #60a5fa)',
-              borderRadius: '4px',
-              animation: 'loadingProgress 1.5s ease-in-out infinite'
-            }}></div>
-          </div>
-          <div style={{
-            fontSize: '13px',
-            color: '#94a3b8',
-            fontWeight: 500
-          }}>正在加载精彩内容...</div>
-        </div>
-        <style dangerouslySetInnerHTML={{__html: `
-          @keyframes loadingFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
-          }
-          @keyframes loadingFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes loadingPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-          }
-          @keyframes loadingDotBounce {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
-          }
-          @keyframes loadingProgress {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-          }
-        `}}></style>
-      </div>
-    );
-  }
+  // 加载页面已移除
+
 
 
 
