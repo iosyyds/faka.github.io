@@ -8,26 +8,26 @@ export async function POST(req) {
     const auth = req.headers.get('authorization') || '';
     const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
     if (!token || !verifyAdminToken(token)) {
-      return NextResponse.json({ success: false, message: '未授权' }, { status: 401 });
+      return NextResponse.json({ success: false, error: '未授权' }, { status: 401 });
     }
 
     const formData = await req.formData();
     const file = formData.get('file');
 
     if (!file) {
-      return NextResponse.json({ success: false, message: '请选择文件' }, { status: 400 });
+      return NextResponse.json({ success: false, error: '请选择文件' }, { status: 400 });
     }
 
     // 检查文件类型
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/svg+xml'];
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ success: false, message: '只支持图片格式（PNG/JPG/GIF/WEBP）' }, { status: 400 });
+      return NextResponse.json({ success: false, error: '只支持图片格式（PNG/JPG/GIF/WEBP）' }, { status: 400 });
     }
 
     // 检查文件大小（最大2MB）
     const maxSize = 2 * 1024 * 1024;
     if (file.size > maxSize) {
-      return NextResponse.json({ success: false, message: '图片大小不能超过2MB' }, { status: 400 });
+      return NextResponse.json({ success: false, error: '图片大小不能超过2MB' }, { status: 400 });
     }
 
     // 转换为base64
@@ -44,6 +44,6 @@ export async function POST(req) {
 
   } catch (err) {
     console.error('上传图片失败:', err);
-    return NextResponse.json({ success: false, message: err.message || '上传失败' }, { status: 500 });
+    return NextResponse.json({ success: false, error: err.message || '上传失败' }, { status: 500 });
   }
 }

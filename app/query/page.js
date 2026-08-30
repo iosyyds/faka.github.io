@@ -81,7 +81,6 @@ export default function QueryOrder() {
         <div className="card animate-fade-in">
           <div className="card-body" style={{padding: '32px'}}>
             <div style={{textAlign: 'center', marginBottom: '24px'}}>
-              <div style={{fontSize: '40px', marginBottom: '10px'}}>🔍</div>
               <h1 style={{fontSize: '20px', fontWeight: 700, color: '#111827', marginBottom: '4px'}}>订单查询</h1>
               <p style={{fontSize: '14px', color: '#6b7280'}}>输入订单号和邮箱查询您的订单</p>
             </div>

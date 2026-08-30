@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
+import { verifyAdminToken } from '@/lib/security';
+
+function getAuthToken(req) {
+  const auth = req.headers.get('authorization') || '';
+  if (auth.startsWith('Bearer ')) return auth.slice(7);
+  return null;
+}
 
 export async function GET(req, { params }) {
   try {
@@ -42,6 +49,10 @@ export async function GET(req, { params }) {
 
 export async function PUT(request, { params }) {
   try {
+    const token = getAuthToken(request);
+    if (!verifyAdminToken(token)) {
+      return NextResponse.json({ error: '未授权' }, { status: 401 });
+    }
     const { id } = params;
     const body = await request.json();
     const db = getDB();
@@ -56,7 +67,11 @@ export async function PUT(request, { params }) {
     if (body.image !== undefined) updates.image = body.image;
     if (body.tag !== undefined) updates.tag = body.tag;
     if (body.detail !== undefined) updates.detail = body.detail;
-    if (body.sort !== undefined) updates.sort = parseInt(body.sort) || 0;
+    if (body.sort !== undefined || body.sort_order !== undefined) {
+      const sortVal = parseInt(body.sort) || parseInt(body.sort_order) || 0;
+      updates.sort = sortVal;
+      updates.sort_order = sortVal;
+    }
     if (body.status !== undefined) {
       updates.status = body.status;
       updates.is_active = body.status === 'active';
@@ -80,6 +95,10 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
+    const token = getAuthToken(request);
+    if (!verifyAdminToken(token)) {
+      return NextResponse.json({ error: '未授权' }, { status: 401 });
+    }
     const { id } = params;
     const db = getDB();
     const { error } = await db.client

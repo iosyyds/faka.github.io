@@ -565,7 +565,7 @@ export default function Home() {
                   {/* 支付方式 */}
                   <div className="form-group-responsive">
                     <label className="form-label-responsive">
-                      <span style={{marginRight: '4px'}}>💳</span>
+                      <Icon name="money" size={14} style={{marginRight: '4px'}} />
                       支付方式
                     </label>
                     <div className="pay-methods-responsive">
@@ -788,16 +788,23 @@ export default function Home() {
           transform: translateY(-50%);
           font-size: 14px;
           opacity: 0.5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          line-height: 1;
         }
         .nav-search-input-responsive {
           width: 100%;
-          padding: 8px 12px 8px 36px;
+          padding: 10px 12px 10px 36px;
           border: none;
           border-bottom: 1px solid transparent;
           border-radius: 8px;
           font-size: 14px;
           outline: none;
           background: #f3f4f6;
+          line-height: 1.5;
+          display: flex;
+          align-items: center;
         }
         .nav-search-input-responsive:focus {
           background: #e5e7eb;
@@ -1118,11 +1125,13 @@ export default function Home() {
           margin-bottom: 14px;
         }
         .form-label-responsive {
-          display: block;
+          display: flex;
+          align-items: center;
           font-size: 13px;
           font-weight: 500;
           color: #4b5563;
           margin-bottom: 6px;
+          line-height: 1;
         }
         .form-input-responsive {
           width: 100%;

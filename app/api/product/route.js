@@ -1,8 +1,19 @@
 import { NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
+import { verifyAdminToken } from '@/lib/security';
+
+function getAuthToken(req) {
+  const auth = req.headers.get('authorization') || '';
+  if (auth.startsWith('Bearer ')) return auth.slice(7);
+  return null;
+}
 
 export async function POST(request) {
   try {
+    const token = getAuthToken(request);
+    if (!verifyAdminToken(token)) {
+      return NextResponse.json({ error: '未授权' }, { status: 401 });
+    }
     const body = await request.json();
     const db = getDB();
     const { data, error } = await db.client
@@ -17,7 +28,8 @@ export async function POST(request) {
         image: body.image || '',
         tag: body.tag || '',
         detail: body.detail || '',
-        sort: parseInt(body.sort) || 0,
+        sort: parseInt(body.sort) || parseInt(body.sort_order) || 0,
+        sort_order: parseInt(body.sort) || parseInt(body.sort_order) || 0,
         status: body.status || 'active',
         is_active: (body.status || 'active') === 'active',
         sales: parseInt(body.sales) || 0

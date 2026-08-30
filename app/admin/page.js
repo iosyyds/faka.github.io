@@ -917,7 +917,7 @@ export default function Admin() {
               <div className="form-group"><label className="form-label">商品简介</label><textarea className="form-textarea" style={{minHeight: '60px'}} value={productForm.description} onChange={(e) => setProductForm({...productForm, description: e.target.value})} /></div>
               <div className="form-group"><label className="form-label">商品详情（支持HTML）</label><textarea className="form-textarea" style={{minHeight: '80px'}} value={productForm.detail} onChange={(e) => setProductForm({...productForm, detail: e.target.value})} /></div>
             </div>
-            <div className="modal-footer">
+            <div className="modal-footer product-modal-footer">
               <button className="btn btn-secondary" onClick={() => setShowProductModal(false)}>取消</button>
               <button className="btn btn-primary" onClick={saveProduct}>保存</button>
             </div>
@@ -955,19 +955,7 @@ export default function Admin() {
       )}
         </div>
 
-        {/* 移动端底部导航 */}
-        <div className="admin-mobile-nav">
-          {MENU.map((item) => (
-            <div 
-              key={item.key} 
-              className={`admin-mobile-nav-item ${activeMenu === item.key ? 'active' : ''}`} 
-              onClick={() => setActiveMenu(item.key)}
-            >
-              <span className="admin-mobile-nav-icon"><Icon name={item.icon} size={20} /></span>
-              <span className="admin-mobile-nav-label">{item.label}</span>
-            </div>
-          ))}
-        </div>
+        {/* 移动端底部导航已移除 - 后台使用侧边栏菜单 */}
       </div>
     </div>
   );
