@@ -549,8 +549,8 @@ export default function Admin() {
                   <input type="text" className="form-input" maxLength={2} value={settings.logo_text || ''} onChange={(e) => setSettings({...settings, logo_text: e.target.value})} placeholder="如：甜、N、VIP" />
                 </div>
                   </div>
-                  </div>
                 )}
+                </div>
 
                 {/* 横幅配置 - 折叠面板 */}
                 <div className="collapsible-section">
@@ -658,8 +658,8 @@ export default function Admin() {
                   </div>
                 </div>
                   </div>
-                  </div>
                 )}
+                </div>
 
                 {/* 底部链接配置 - 折叠面板 */}
                 <div className="collapsible-section">
@@ -709,8 +709,8 @@ export default function Admin() {
                   </div>
                 </div>
                   </div>
-                  </div>
                 )}
+                </div>
 
                 {/* 页面内容配置 - 折叠面板 */}
                 <div className="collapsible-section">
@@ -746,8 +746,8 @@ export default function Admin() {
                   </div>
                 </div>
                   </div>
-                  </div>
                 )}
+                </div>
 
                 {/* 邮件配置 - 折叠面板 */}
                 <div className="collapsible-section">
@@ -776,8 +776,8 @@ export default function Admin() {
                   </div>
                 </div>
                   </div>
-                  </div>
                 )}
+                </div>
 
                 <button className="btn btn-primary" onClick={saveSettings}>💾 保存设置</button>
               </div>

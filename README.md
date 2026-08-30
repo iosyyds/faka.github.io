@@ -1,6 +1,6 @@
 # 甜甜发卡 - 自动发卡商城系统
 
-基于 Next.js + Supabase + 支付宝的全自动发卡系统，支持PC端和移动端自适应。
+基于 Next.js 14 + Supabase + 支付宝的全自动发卡系统，支持PC端和移动端自适应，SEO友好。
 
 ## 功能特性
 
@@ -11,33 +11,55 @@
 - 支付成功自动发卡，页面即时显示卡密
 - 卡密自动发送到用户邮箱（HTML精美模板）
 - 订单查询（订单号+邮箱）
-- 网站Logo自定义上传
+- 网站Logo自定义上传，自动同步Favicon
+- 首页横幅配置（标题、副标题、标签、右侧图片）
+- 底部链接自定义（服务条款、隐私政策等独立页面）
+- 商品图片上传、自定义标签、销量手动控制
 - 响应式设计，完美适配手机和电脑
-- 界面锁定：禁止放大缩小、禁止F12、禁止右键
+- 服务端渲染（SSR），SEO友好
 
 ### 后台功能
-- 管理员登录（bcrypt密码哈希）
-- 商品管理（增删改查、上下架、分类、价格、库存）
+- 管理员登录（Token认证）
+- 数据概览仪表盘（商品数、订单数、销售额、待处理）
+- 商品管理（增删改查、上下架、分类、价格、库存、图片、标签、销量）
 - 卡密管理（批量导入TXT、手动添加、删除、状态管理）
 - 订单管理（查看、状态筛选、手动标记支付）
-- 系统设置（网站名称、Logo上传）
-- 邮件SMTP配置说明
-- 数据统计（今日销售额、订单数、待处理）
+- 系统设置（可折叠面板）：
+  - 🏠 基础设置（网站名称、Logo、图标文字）
+  - 🎨 首页横幅配置（图片、标题、副标题、标签）
+  - 🔗 底部链接配置（描述、3个自定义链接）
+  - 📄 页面内容配置（服务条款、隐私政策内容）
+  - 📧 邮件自动发送配置（SMTP说明）
+- 移动端底部导航栏（5个功能入口，选中高亮动画）
+- 弹窗flex布局，保存按钮始终可见
+
+### SEO优化
+- 商品详情页服务端渲染（SSR），搜索引擎可直接抓取内容
+- 动态Metadata：每个商品页面独立title、description、keywords
+- 结构化数据（JSON-LD）：WebSite + Product类型，支持富媒体搜索结果
+- 自动生成sitemap.xml（包含所有商品页面）
+- robots.txt（允许搜索引擎爬取，禁止后台和API）
+- Open Graph + Twitter Card社交分享标签
+- PWA manifest.json，支持添加到主屏幕
+- 移除防复制脚本，改善用户体验和搜索引擎评分
 
 ### 安全特性
 - 卡密按顺序发放，支付成功后自动标记已使用
 - 支付宝回调RSA2签名验签
-- 后台Session认证
+- 后台Token认证（24小时有效期）
 - 订单状态双保险（回调+主动查询）
 - 库存自动扣减，防止超卖
+- 安全响应头（X-Content-Type-Options、Referrer-Policy等）
 
 ## 技术栈
-- **前端框架**：Next.js 14 (App Router)
+
+- **前端框架**：Next.js 14 (App Router) - ESM模块
 - **数据库**：Supabase (PostgreSQL)
 - **支付**：支付宝当面付（扫码支付）
 - **邮件**：Nodemailer (SMTP)
 - **样式**：原生CSS + 响应式设计
 - **部署**：Vercel
+- **SEO**：SSR + Metadata API + JSON-LD
 
 ## 环境变量配置
 
@@ -47,7 +69,7 @@
 ```env
 NEXT_PUBLIC_SUPABASE_URL=你的Supabase项目URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=你的Supabase anon key
-SUPABASE_SERVICE_ROLE_KEY=你的Supabase service_role key
+SUPABASE_SERVICE_KEY=你的Supabase service_role key
 ```
 
 ### 支付宝支付配置
@@ -71,7 +93,6 @@ SMTP_FROM=你的邮箱地址
 ### 站点配置
 ```env
 NEXT_PUBLIC_SITE_URL=https://你的域名
-ADMIN_USERNAME=admin
 ADMIN_PASSWORD=管理员密码
 ```
 
@@ -105,6 +126,7 @@ npm run dev
 4. 在 Environment Variables 中配置所有环境变量
 5. 点击 Deploy 部署
 6. 部署完成后，在 Supabase 中配置网站域名到 CORS 白名单
+7. 配置自定义域名（可选）
 
 ## 支付宝配置说明
 
@@ -119,10 +141,29 @@ npm run dev
 ## 邮件配置说明
 
 支持 QQ邮箱、163邮箱、Gmail 等SMTP服务：
-
 - **QQ邮箱**：SMTP服务器 `smtp.qq.com`，端口465，使用授权码
 - **163邮箱**：SMTP服务器 `smtp.163.com`，端口465，使用授权码
 - **Gmail**：SMTP服务器 `smtp.gmail.com`，端口587，使用应用密码
+
+## SEO优化说明
+
+### 已实现的SEO功能
+1. **服务端渲染（SSR）**：商品详情页使用SSR，页面源码包含完整商品信息
+2. **动态Metadata**：每个商品页面自动生成独立的title、description、keywords
+3. **结构化数据**：
+   - WebSite类型（全站）
+   - Product类型（商品页，包含价格、库存、图片）
+4. **sitemap.xml**：自动生成，包含所有静态页面和商品详情页
+5. **robots.txt**：允许搜索引擎爬取前台，禁止后台和API
+6. **社交分享**：Open Graph + Twitter Card
+7. **PWA支持**：manifest.json，支持添加到主屏幕
+
+### 部署后SEO操作
+1. 配置 `NEXT_PUBLIC_SITE_URL` 环境变量为实际域名
+2. 替换 layout.js 和 sitemap.js 中的示例域名
+3. 在 public 目录添加 og-image.jpg（1200x630）用于社交分享
+4. 提交 sitemap.xml 到 Google Search Console 和百度资源平台
+5. 使用 Google Rich Results Test 验证结构化数据
 
 ## 项目结构
 
@@ -134,25 +175,36 @@ faka-nextjs/
 │   │   ├── query-order/        # 查询订单
 │   │   ├── notify/             # 支付宝回调
 │   │   ├── upload-logo/        # Logo上传
+│   │   ├── upload-image/       # 商品图片上传
 │   │   ├── settings/           # 系统设置
 │   │   ├── admin-login/        # 管理员登录
 │   │   ├── admin-products/     # 商品管理
 │   │   ├── admin-cards/        # 卡密管理
-│   │   └── admin-orders/       # 订单管理
-│   ├── admin/                  # 后台管理页面
-│   ├── product/[id]/           # 商品详情页
+│   │   ├── admin-orders/       # 订单管理
+│   │   └── change-password/    # 修改密码
+│   ├── admin/                  # 后台管理页面（折叠面板+底部导航）
+│   ├── product/[id]/           # 商品详情页（SSR + 动态Metadata）
+│   │   ├── page.js             # 服务端组件
+│   │   └── ProductClient.js    # 客户端交互组件
 │   ├── query/                  # 订单查询页
-│   ├── layout.js               # 全局布局
+│   ├── terms/                  # 服务条款页
+│   ├── privacy/                # 隐私政策页
+│   ├── layout.js               # 全局布局（SEO Metadata + 结构化数据）
 │   ├── page.js                 # 首页
-│   └── globals.css             # 全局样式
+│   ├── globals.css             # 全局样式
+│   ├── sitemap.js              # 自动生成sitemap.xml
+│   ├── robots.js               # robots.txt
+│   └── manifest.js             # PWA manifest.json
 ├── lib/
-│   ├── db.js                   # 数据库操作
-│   ├── alipay.js               # 支付宝SDK
-│   ├── email.js                # 邮件发送
-│   └── security.js             # 安全工具
+│   ├── db.js                   # 数据库操作（ESM）
+│   ├── alipay.js               # 支付宝SDK（ESM）
+│   ├── email.js                # 邮件发送（ESM）
+│   └── security.js             # 安全工具（ESM）
 ├── public/                     # 静态资源
 ├── supabase-schema.sql         # 数据库初始化脚本
+├── SEO.md                      # SEO优化详细说明
 ├── .env.example                # 环境变量示例
+├── next.config.js              # Next.js配置（图片优化、安全头）
 ├── package.json
 └── README.md
 ```
@@ -161,7 +213,7 @@ faka-nextjs/
 
 ### 后台管理
 - 访问 `https://你的域名/admin`
-- 使用管理员账号密码登录
+- 使用管理员密码登录
 - 首次使用请先添加商品和卡密
 
 ### 添加卡密
@@ -177,6 +229,14 @@ faka-nextjs/
 4. 支付成功后自动显示卡密，同时发送邮件
 5. 可在订单查询页随时查看
 
+### 后台折叠面板
+系统设置页面分为5个可折叠面板，点击标题展开/折叠：
+- 基础设置（默认展开）
+- 首页横幅配置（默认折叠）
+- 底部链接配置（默认折叠）
+- 页面内容配置（默认折叠）
+- 邮件自动发送配置（默认折叠）
+
 ## 注意事项
 
 1. **支付宝沙箱测试**：将 `ALIPAY_SANDBOX` 设为 `true` 可使用沙箱环境测试
@@ -184,6 +244,8 @@ faka-nextjs/
 3. **库存管理**：卡密数量即为商品库存，售完后自动显示已售空
 4. **数据备份**：定期在 Supabase 中备份数据库
 5. **HTTPS**：生产环境必须使用HTTPS，支付宝回调需要
+6. **ESM模块**：所有lib文件使用ESM语法（import/export），不支持require
+7. **域名配置**：部署后请更新 `NEXT_PUBLIC_SITE_URL` 和代码中的示例域名
 
 ## License
 
