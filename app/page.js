@@ -572,18 +572,13 @@ export default function Home() {
                         className={`pay-method-item-responsive ${payMethod === 'alipay' ? 'active' : ''}`}
                         onClick={() => setPayMethod('alipay')}
                       >
-                        <span className="pay-icon-responsive" style={{
-                          background: '#1677ff',
-                          fontSize: '14px',
-                          fontWeight: 800,
-                          fontFamily: 'Arial, sans-serif',
-                          color: '#fff',
+                        <img src="/alipay-icon.png" alt="支付宝" style={{
+                          width: '28px',
+                          height: '28px',
                           borderRadius: '6px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 2px 6px rgba(22,119,255,0.35)'
-                        }}>支</span>
+                          objectFit: 'cover',
+                          boxShadow: '0 2px 6px rgba(22,119,255,0.25)'
+                        }} />
                         <span className="pay-name-responsive">支付宝</span>
                         <span className="pay-check-responsive">{payMethod === 'alipay' && '✓'}</span>
                       </div>

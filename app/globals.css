@@ -774,8 +774,6 @@ html, body {
     background: #2563eb;
     border-radius: 0 0 3px 3px;
   }
-    margin: 0 4px;
-  }
   
   /* 确保内容不超出屏幕 */
   .admin-content, .admin-header {
