@@ -343,7 +343,7 @@ export default function Home() {
                           <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
                       </button>
-                      <span style={{marginLeft: '12px', fontSize: '13px', color: '#9ca3af'}}>最多可买 {selectedProduct.stock} 件</span>
+                      <span style={{marginLeft: '12px', fontSize: '13px', color: '#9ca3af', alignSelf: 'center', lineHeight: 1}}>最多可买 {selectedProduct.stock} 件</span>
                     </div>
                   </div>
 
@@ -375,40 +375,48 @@ export default function Home() {
 
                   {/* 合计金额 */}
                   <div className="modal-total-responsive">
-                    <div>
-                      <div style={{fontSize: '13px', color: '#6b7280', marginBottom: '2px'}}>合计金额</div>
-                      <div style={{fontSize: '12px', color: '#9ca3af'}}>{quantity} 件商品</div>
+                    <div className="modal-total-left-responsive">
+                      <span className="modal-total-label-responsive">合计金额</span>
+                      <span className="modal-total-count-responsive">共 {quantity} 件</span>
                     </div>
-                    <div className="modal-total-price-responsive">
+                    <div className="modal-total-right-responsive">
                       <span className="modal-total-symbol-responsive">¥</span>
-                      {(selectedProduct.price * quantity).toFixed(2)}
+                      <span className="modal-total-price-responsive">{(selectedProduct.price * quantity).toFixed(2)}</span>
                     </div>
                   </div>
 
-                  {/* 支付按钮 */}
-                  <button
-                    onClick={handleBuy}
-                    disabled={ordering || selectedProduct.stock <= 0}
-                    className="modal-submit-responsive"
-                  >
-                    {ordering ? (
-                      <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                        <span className="btn-spinner-responsive"></span>
-                        正在创建订单...
-                      </span>
-                    ) : (
-                      <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                        🔒 立即支付 ¥{(selectedProduct.price * quantity).toFixed(2)}
-                      </span>
-                    )}
-                  </button>
+                  {/* 按钮组 */}
+                  <div className="modal-buttons-responsive">
+                    <button
+                      className="modal-cancel-inline-responsive"
+                      onClick={() => setShowBuy(false)}
+                    >
+                      取消
+                    </button>
+                    <button
+                      onClick={handleBuy}
+                      disabled={ordering || selectedProduct.stock <= 0}
+                      className="modal-submit-responsive"
+                    >
+                      {ordering ? (
+                        <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                          <span className="btn-spinner-responsive"></span>
+                          处理中...
+                        </span>
+                      ) : (
+                        <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
+                          🔒 立即支付
+                        </span>
+                      )}
+                    </button>
+                  </div>
 
                   {/* 安全提示 */}
                   <div className="security-tip-responsive">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink: 0}}>
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
-                    <span>支付成功后自动发货，卡密将发送至您的邮箱，请确保邮箱正确</span>
+                    <span>支付成功后自动发货，卡密将发送至您的邮箱</span>
                   </div>
                 </>
               ) : (
@@ -475,11 +483,7 @@ export default function Home() {
             </div>
 
             <div className="modal-footer-responsive">
-              {!order ? (
-                <button className="modal-cancel-btn-responsive" onClick={() => setShowBuy(false)}>
-                  取消购买
-                </button>
-              ) : (
+              {order && (
                 <div style={{display: 'flex', gap: '10px', width: '100%'}}>
                   <button className="modal-cancel-btn-responsive" style={{flex: 1}} onClick={() => setShowBuy(false)}>
                     关闭
@@ -808,11 +812,12 @@ export default function Home() {
           box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
         }
         .modal-header-responsive {
-          padding: 16px 20px;
+          padding: 14px 16px 14px 20px;
           border-bottom: 1px solid #f3f4f6;
           display: flex;
           justifyContent: space-between;
           alignItems: center;
+          position: relative;
         }
         .modal-title-responsive {
           font-size: 16px;
@@ -820,10 +825,23 @@ export default function Home() {
           color: #111827;
         }
         .modal-close-responsive {
-          font-size: 24px;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           color: #9ca3af;
           cursor: pointer;
           line-height: 1;
+          border-radius: 8px;
+          transition: all 0.2s ease-out;
+          position: absolute;
+          top: 10px;
+          right: 10px;
+        }
+        .modal-close-responsive:hover {
+          background: #f3f4f6;
+          color: #4b5563;
         }
         .modal-body-responsive {
           padding: 20px;
@@ -1267,6 +1285,142 @@ export default function Home() {
           font-size: 11px;
           font-weight: 600;
           flex-shrink: 0;
+        }
+
+        /* ===== 细节优化覆盖样式 ===== */
+        /* 数量选择器 - 数字居中 */
+        .quantity-selector-responsive {
+          display: flex !important;
+          align-items: center !important;
+          gap: 0 !important;
+        }
+        .quantity-btn-responsive {
+          width: 38px !important;
+          height: 38px !important;
+          background: #fff !important;
+          border: 1px solid #d1d5db !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          cursor: pointer !important;
+          color: #4b5563 !important;
+          transition: all 0.2s ease-out !important;
+          font-size: 16px !important;
+          line-height: 1 !important;
+        }
+        .quantity-btn-responsive:first-child {
+          border-radius: 8px 0 0 8px !important;
+        }
+        .quantity-btn-responsive:last-child {
+          border-radius: 0 8px 8px 0 !important;
+        }
+        .quantity-value-responsive {
+          width: 50px !important;
+          height: 38px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border-top: 1px solid #d1d5db !important;
+          border-bottom: 1px solid #d1d5db !important;
+          font-size: 15px !important;
+          font-weight: 600 !important;
+          color: #111827 !important;
+          background: #f9fafb !important;
+          text-align: center !important;
+          line-height: 1 !important;
+        }
+
+        /* 合计金额 - 重新设计 */
+        .modal-total-responsive {
+          display: flex !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          padding: 16px 18px !important;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 12px !important;
+          margin-bottom: 14px !important;
+        }
+        .modal-total-left-responsive {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .modal-total-label-responsive {
+          font-size: 14px;
+          font-weight: 600;
+          color: #374151;
+        }
+        .modal-total-count-responsive {
+          font-size: 12px;
+          color: #9ca3af;
+        }
+        .modal-total-right-responsive {
+          display: flex;
+          align-items: baseline;
+          gap: 2px;
+        }
+        .modal-total-symbol-responsive {
+          font-size: 16px !important;
+          font-weight: 700 !important;
+          color: #dc2626 !important;
+        }
+        .modal-total-price-responsive {
+          font-size: 26px !important;
+          font-weight: 800 !important;
+          color: #dc2626 !important;
+          line-height: 1 !important;
+        }
+
+        /* 按钮组 - 取消+支付并排 */
+        .modal-buttons-responsive {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 12px;
+        }
+        .modal-cancel-inline-responsive {
+          flex: 0 0 100px;
+          padding: 13px;
+          background: #fff;
+          border: 1px solid #d1d5db;
+          border-radius: 10px;
+          font-size: 15px;
+          font-weight: 500;
+          color: #4b5563;
+          cursor: pointer;
+          transition: all 0.2s ease-out;
+        }
+        .modal-cancel-inline-responsive:hover {
+          background: #f9fafb;
+          border-color: #9ca3af;
+        }
+        .modal-submit-responsive {
+          flex: 1 !important;
+          padding: 13px !important;
+          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+          color: #fff !important;
+          border: none !important;
+          border-radius: 10px !important;
+          font-size: 15px !important;
+          font-weight: 600 !important;
+          cursor: pointer !important;
+          transition: all 0.2s ease-out !important;
+          box-shadow: 0 4px 12px rgba(37,99,235,0.3) !important;
+          margin-bottom: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+
+        /* 安全提示 - 增加间距 */
+        .security-tip-responsive {
+          margin-top: 4px !important;
+          padding: 10px 12px !important;
+        }
+
+        /* 底部footer - 未支付时隐藏 */
+        .modal-footer-responsive:empty {
+          display: none;
         }
       `}</style>
     </div>
