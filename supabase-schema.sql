@@ -21,12 +21,16 @@ CREATE TABLE IF NOT EXISTS products (
     detail TEXT DEFAULT '',
     images TEXT DEFAULT '',
     image VARCHAR(500) DEFAULT '',
+    tag VARCHAR(50) DEFAULT '',
     category VARCHAR(50) DEFAULT '全部',
     price DECIMAL(10, 2) NOT NULL CHECK (price > 0),
     original_price DECIMAL(10, 2) DEFAULT 0,
+    stock INTEGER DEFAULT 0,
     sales INTEGER DEFAULT 0,
     sort_order INTEGER DEFAULT 0,
+    sort INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT true,
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -161,3 +165,11 @@ ALTER TABLE orders ALTER COLUMN product_id TYPE INTEGER USING product_id::text::
 ALTER TABLE cards ADD CONSTRAINT cards_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
 ALTER TABLE orders ADD CONSTRAINT orders_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id);
 */
+
+
+-- ========== 迁移：为已有数据库添加缺失字段 ==========
+-- 如果你的数据库已经创建，请在Supabase SQL编辑器中执行以下语句：
+-- ALTER TABLE products ADD COLUMN IF NOT EXISTS tag VARCHAR(50) DEFAULT '';
+-- ALTER TABLE products ADD COLUMN IF NOT EXISTS stock INTEGER DEFAULT 0;
+-- ALTER TABLE products ADD COLUMN IF NOT EXISTS sort INTEGER DEFAULT 0;
+-- ALTER TABLE products ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive'));
