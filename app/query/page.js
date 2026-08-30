@@ -61,6 +61,83 @@ export default function QueryOrder() {
 
   return (
     <div>
+      <style jsx>{`
+        .query-footer {
+          margin-top: 40px;
+          padding: 24px 0;
+          background: #fff;
+          border-top: 1px solid #f3f4f6;
+        }
+        .query-footer-inner {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 24px;
+        }
+        .query-footer-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 8px;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+        .query-footer-left {
+          flex: 1;
+          min-width: 200px;
+        }
+        .query-footer-brand {
+          font-size: 16px;
+          font-weight: 700;
+          color: #111827;
+          margin-bottom: 6px;
+        }
+        .query-footer-desc {
+          font-size: 13px;
+          color: #6b7280;
+          line-height: 1.6;
+        }
+        .query-footer-right {
+          display: flex;
+          gap: 20px;
+          align-items: center;
+        }
+        .query-footer-link {
+          font-size: 13px;
+          color: #6b7280;
+          text-decoration: none;
+          transition: color 0.2s ease-out;
+        }
+        .query-footer-link:hover {
+          color: #2563eb;
+        }
+        .query-footer-bottom {
+          padding-top: 4px;
+          font-size: 12px;
+          color: #9ca3af;
+          text-align: left;
+        }
+        @media (max-width: 768px) {
+          .query-footer-inner {
+            padding: 0 16px;
+          }
+          .query-footer-top {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+          }
+          .query-footer-left {
+            text-align: center;
+          }
+          .query-footer-right {
+            gap: 16px;
+            justify-content: center;
+            width: 100%;
+          }
+          .query-footer-bottom {
+            text-align: center;
+          }
+        }
+      `}</style>
       <nav className="nav">
         <div className="nav-inner">
           <div className="nav-logo" onClick={() => router.push('/')} style={{cursor:'pointer'}}>
@@ -169,34 +246,34 @@ export default function QueryOrder() {
         )}
       </div>
       
-      {/* 页脚 */}
-      <footer style={{
-        marginTop: '40px',
-        padding: '24px 16px',
-        background: '#fff',
-        borderTop: '1px solid #f3f4f6',
-        textAlign: 'center'
-      }}>
-        <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '6px'}}>
-          {settings.site_name || '甜甜发卡'}
-        </div>
-        <div style={{fontSize: '12px', color: '#6b7280', marginBottom: '12px'}}>
-          {settings.footer_desc || '本站仅出售合规虚拟商品，下单即视为同意服务条款。'}
-        </div>
-        <div style={{display: 'flex', justifyContent: 'center', gap: '16px', marginBottom: '12px', flexWrap: 'wrap'}}>
-          {settings.footer_link1_text ? (
-            <a href={settings.footer_link1_url || '#'} target="_blank" rel="noopener noreferrer" style={{fontSize: '12px', color: '#6b7280', textDecoration: 'none'}}>{settings.footer_link1_text}</a>
-          ) : (
-            <a href="/terms" style={{fontSize: '12px', color: '#6b7280', textDecoration: 'none'}}>服务条款</a>
-          )}
-          {settings.footer_link2_text ? (
-            <a href={settings.footer_link2_url || '#'} target="_blank" rel="noopener noreferrer" style={{fontSize: '12px', color: '#6b7280', textDecoration: 'none'}}>{settings.footer_link2_text}</a>
-          ) : (
-            <a href="/privacy" style={{fontSize: '12px', color: '#6b7280', textDecoration: 'none'}}>隐私政策</a>
-          )}
-        </div>
-        <div style={{fontSize: '11px', color: '#9ca3af'}}>
-          © {new Date().getFullYear()} {settings.site_name || '甜甜发卡'}. All rights reserved.
+      {/* 页脚 - 与首页一致 */}
+      <footer className="query-footer">
+        <div className="query-footer-inner">
+          <div className="query-footer-top">
+            <div className="query-footer-left">
+              <div className="query-footer-brand">{settings.site_name || '甜甜发卡'}</div>
+              <div className="query-footer-desc">{settings.footer_desc || '本站仅出售合规虚拟商品，下单即视为同意服务条款。'}</div>
+            </div>
+            <div className="query-footer-right">
+              {settings.footer_link1_text ? (
+                <a href={settings.footer_link1_url || '#'} className="query-footer-link" target="_blank" rel="noopener noreferrer">{settings.footer_link1_text}</a>
+              ) : (
+                <a href="/terms" className="query-footer-link">服务条款</a>
+              )}
+              {settings.footer_link2_text ? (
+                <a href={settings.footer_link2_url || '#'} className="query-footer-link" target="_blank" rel="noopener noreferrer">{settings.footer_link2_text}</a>
+              ) : (
+                <a href="/privacy" className="query-footer-link">隐私政策</a>
+              )}
+              {settings.footer_link3_text && (
+                <a href={settings.footer_link3_url || '#'} className="query-footer-link" target="_blank" rel="noopener noreferrer">{settings.footer_link3_text}</a>
+              )}
+            </div>
+          </div>
+          <div className="query-footer-bottom">
+            © {new Date().getFullYear()} {settings.site_name || '甜甜发卡'}. All rights reserved.
+            {settings.icp_number && <span style={{marginLeft: '12px'}}>{settings.icp_number}</span>}
+          </div>
         </div>
       </footer>
     </div>
