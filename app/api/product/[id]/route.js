@@ -57,7 +57,14 @@ export async function PUT(request, { params }) {
     if (body.tag !== undefined) updates.tag = body.tag;
     if (body.detail !== undefined) updates.detail = body.detail;
     if (body.sort !== undefined) updates.sort = parseInt(body.sort) || 0;
-    if (body.status !== undefined) updates.status = body.status;
+    if (body.status !== undefined) {
+      updates.status = body.status;
+      updates.is_active = body.status === 'active';
+    }
+    if (body.is_active !== undefined) {
+      updates.is_active = body.is_active;
+      updates.status = body.is_active ? 'active' : 'inactive';
+    }
     if (body.sales !== undefined) updates.sales = parseInt(body.sales) || 0;
     const { data, error } = await db.client
       .from('products')

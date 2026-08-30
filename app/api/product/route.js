@@ -19,6 +19,7 @@ export async function POST(request) {
         detail: body.detail || '',
         sort: parseInt(body.sort) || 0,
         status: body.status || 'active',
+        is_active: (body.status || 'active') === 'active',
         sales: parseInt(body.sales) || 0
       })
       .select();

@@ -339,10 +339,10 @@ export default function Admin() {
                         <td className="hide-mobile">{p.category || '-'}</td>
                         <td className="price-primary">¥{p.price}</td>
                         <td>{p.stock}</td>
-                        <td><span className={`badge ${p.status === 'active' ? 'badge-success' : 'badge-secondary'}`}>{p.status === 'active' ? '上架' : '下架'}</span></td>
+                        <td><span className={`badge ${(p.status === 'active' || p.is_active === true) ? 'badge-success' : 'badge-secondary'}`}>{(p.status === 'active' || p.is_active === true) ? '上架' : '下架'}</span></td>
                         <td>
                           <div style={{display: 'flex', gap: '6px'}}>
-                            <button className="btn btn-secondary btn-sm" onClick={() => { setEditingProduct(p); setProductForm({name: p.name, price: p.price, original_price: p.original_price || '', category: p.category || '', stock: p.stock || 0, sales: p.sales || 0, description: p.description || '', detail: p.detail || '', image: p.image || '', tag: p.tag || '', status: p.status || 'active'}); setShowProductModal(true); }}>编辑</button>
+                            <button className="btn btn-secondary btn-sm" onClick={() => { setEditingProduct(p); setProductForm({name: p.name, price: p.price, original_price: p.original_price || '', category: p.category || '', stock: p.stock || 0, sales: p.sales || 0, description: p.description || '', detail: p.detail || '', image: p.image || '', tag: p.tag || '', status: (p.status || (p.is_active ? 'active' : 'inactive'))}); setShowProductModal(true); }}>编辑</button>
                             <button className="btn btn-danger btn-sm" onClick={() => deleteProduct(p.id)}>删除</button>
                           </div>
                         </td>

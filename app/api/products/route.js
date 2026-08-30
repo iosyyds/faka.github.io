@@ -14,8 +14,11 @@ export async function GET(req) {
       category: p.category || '全部',
       price: p.price,
       original_price: p.original_price || 0,
-      stock: p.stock,
-      sales: p.sales || 0
+      stock: p.stock !== undefined ? p.stock : 0,
+      sales: p.sales || 0,
+      // 兼容is_active和status两种字段
+      status: p.status || (p.is_active ? 'active' : 'inactive'),
+      is_active: p.is_active !== undefined ? p.is_active : (p.status === 'active')
     }));
     return NextResponse.json({ success: true, products: safeProducts });
   } catch (err) {
