@@ -109,7 +109,9 @@ export default function Admin() {
       });
       const data = await res.json();
       if (data.success || data.product || data.id) {
-        alert('保存成功'); setShowProductModal(false); loadData();
+        alert('保存成功'); setShowProductModal(false); 
+        // 强制刷新数据，避免缓存
+        setTimeout(() => { window.location.reload(); }, 500);
       } else { alert(data.error || '保存失败'); }
     } catch (e) { alert('保存失败'); }
   };
@@ -260,7 +262,7 @@ export default function Admin() {
       <div className="admin-sidebar">
         <div className="admin-sidebar-logo">
           <div style={{width: '32px', height: '32px', background: '#2563eb', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '14px'}}>{settings.logo_text || '甜'}</div>
-          {settings.site_name || '甜甜发卡'} 后台
+          管理后台
         </div>
         <div>
           {MENU.map((item) => (

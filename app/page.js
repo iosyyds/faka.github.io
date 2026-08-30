@@ -2258,6 +2258,29 @@ export default function Home() {
             left: 4px !important;
             gap: 4px !important;
           }
+          /* 手机端商品卡片价格区域布局修复 */
+          .product-card-info-row-responsive {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 6px !important;
+          }
+          .product-card-price-wrapper-responsive {
+            width: 100% !important;
+            display: flex !important;
+            align-items: baseline !important;
+            gap: 8px !important;
+          }
+          .product-card-price-responsive {
+            font-size: 20px !important;
+          }
+          .product-card-original-price-responsive {
+            font-size: 12px !important;
+          }
+          .product-card-sales-responsive {
+            width: 100% !important;
+            justify-content: flex-start !important;
+            font-size: 11px !important;
+          }
           .product-card-badge-responsive,
           .product-card-tag-responsive {
             padding: 3px 6px !important;
