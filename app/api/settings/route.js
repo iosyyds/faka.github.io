@@ -13,15 +13,15 @@ export async function GET() {
     const db = getDB();
     const settings = await db.getSettings();
     const publicSettings = {
-      site_name: settings.site_name || '自动发卡商城',
+      site_name: settings.site_name || '甜甜发卡',
       site_subtitle: settings.site_subtitle || '',
       site_description: settings.site_description || '',
       site_logo: settings.site_logo || '',
       contact_qq: settings.contact_qq || '',
       contact_wechat: settings.contact_wechat || '',
       contact_email: settings.contact_email || '',
-      announcement: settings.announcement || '',
-      footer_text: settings.footer_text || '',
+      announcement: settings.announcement || settings.notice || '',
+      footer_text: settings.footer_text || settings.footer || '',
       icp_number: settings.icp_number || '',
       payment_tip: settings.payment_tip || '请使用支付宝扫码支付，支付成功后将自动跳转'
     };
@@ -43,7 +43,8 @@ export async function POST(req) {
     const allowedKeys = [
       'site_name', 'site_subtitle', 'site_description', 'site_logo',
       'contact_qq', 'contact_wechat', 'contact_email',
-      'announcement', 'footer_text', 'icp_number', 'payment_tip', 'stock_warning'
+      'announcement', 'footer_text', 'icp_number', 'payment_tip', 'stock_warning',
+      'notice', 'footer'
     ];
     const updates = {};
     for (const key of allowedKeys) {

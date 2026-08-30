@@ -353,23 +353,6 @@ export default function Admin() {
                   <label className="form-label">页脚信息</label>
                   <textarea className="form-textarea" style={{minHeight: '60px'}} value={settings.footer || ''} onChange={(e) => setSettings({...settings, footer: e.target.value})} />
                 </div>
-                <div style={{padding: '18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '18px'}}>
-                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px'}}>易支付配置</div>
-                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
-                    <div className="form-group">
-                      <label className="form-label">支付接口地址</label>
-                      <input type="text" className="form-input" style={{fontSize: '13px'}} value={settings.epay_api || ''} onChange={(e) => setSettings({...settings, epay_api: e.target.value})} placeholder="https://pay.example.com" />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">商户ID</label>
-                      <input type="text" className="form-input" style={{fontSize: '13px'}} value={settings.epay_mchid || ''} onChange={(e) => setSettings({...settings, epay_mchid: e.target.value})} />
-                    </div>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">商户密钥</label>
-                    <input type="password" className="form-input" style={{fontSize: '13px'}} value={settings.epay_key || ''} onChange={(e) => setSettings({...settings, epay_key: e.target.value})} />
-                  </div>
-                </div>
                 <button className="btn btn-primary" onClick={saveSettings}>💾 保存设置</button>
               </div>
             </div>
