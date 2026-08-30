@@ -827,6 +827,22 @@ export default function Admin() {
           </div>
         </div>
       )}
+        </div>
+
+        {/* 移动端底部导航 */}
+        <div className="admin-mobile-nav">
+          {MENU.map((item) => (
+            <div 
+              key={item.key} 
+              className={`admin-mobile-nav-item ${activeMenu === item.key ? 'active' : ''}`} 
+              onClick={() => setActiveMenu(item.key)}
+            >
+              <span className="admin-mobile-nav-icon">{item.icon}</span>
+              <span className="admin-mobile-nav-label">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

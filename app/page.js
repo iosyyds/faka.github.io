@@ -168,26 +168,28 @@ export default function Home() {
       {/* 导航栏 - PC端一行，手机端两行 */}
       <nav className="nav-responsive">
         <div className="nav-inner-responsive">
-          {/* Logo */}
-          <div className="nav-logo-responsive" onClick={() => router.push('/')}>
-            {settings.site_logo ? (
-              <img src={settings.site_logo} alt="Logo" className="nav-logo-img-responsive" />
-            ) : (
-              <div className="nav-logo-icon-responsive">{settings.logo_text || '甜'}</div>
-            )}
-            <span className="nav-logo-text-responsive">{settings.site_name || '甜甜发卡'}</span>
-          </div>
+          {/* Logo + 搜索框 - 左边 */}
+          <div className="nav-left-responsive">
+            <div className="nav-logo-responsive" onClick={() => router.push('/')}>
+              {settings.site_logo ? (
+                <img src={settings.site_logo} alt="Logo" className="nav-logo-img-responsive" />
+              ) : (
+                <div className="nav-logo-icon-responsive">{settings.logo_text || '甜'}</div>
+              )}
+              <span className="nav-logo-text-responsive">{settings.site_name || '甜甜发卡'}</span>
+            </div>
 
-          {/* 搜索框 - PC端显示 */}
-          <div className="nav-search-responsive">
-            <span className="nav-search-icon-responsive">🔍</span>
-            <input
-              type="text"
-              placeholder="搜索商品..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="nav-search-input-responsive"
-            />
+            {/* 搜索框 - PC端显示 */}
+            <div className="nav-search-responsive">
+              <span className="nav-search-icon-responsive">🔍</span>
+              <input
+                type="text"
+                placeholder="搜索商品..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="nav-search-input-responsive"
+              />
+            </div>
           </div>
 
           {/* 右侧按钮 */}
@@ -196,7 +198,7 @@ export default function Home() {
             <a href="/admin" target="_blank" rel="noopener noreferrer" className="btn-primary-responsive" style={{textDecoration: 'none', display: 'inline-flex', alignItems: 'center'}}>管理后台</a>
           </div>
 
-          {/* 搜索框 - 手机端显示（独占一行） */}
+          {/* 搜索框 - 手机端显示（居中） */}
           <div className="nav-search-mobile-responsive">
             <span className="nav-search-icon-responsive">🔍</span>
             <input
@@ -767,9 +769,14 @@ export default function Home() {
           font-weight: 700;
           color: #111827;
         }
-        .nav-search-responsive {
+        .nav-left-responsive {
+          display: flex;
+          align-items: center;
+          gap: 20px;
           flex: 1;
-          max-width: 320px;
+        }
+        .nav-search-responsive {
+          max-width: 280px;
           position: relative;
         }
         .nav-search-mobile-responsive {
@@ -789,15 +796,16 @@ export default function Home() {
         .nav-search-input-responsive {
           width: 100%;
           padding: 8px 12px 8px 36px;
-          border: 1px solid #d1d5db;
+          border: none;
+          border-bottom: 1px solid transparent;
           border-radius: 8px;
           font-size: 14px;
           outline: none;
-          background: #fff;
+          background: #f3f4f6;
         }
         .nav-search-input-responsive:focus {
-          border-color: #2563eb;
-          box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+          background: #e5e7eb;
+          box-shadow: none;
         }
         .nav-right-responsive {
           display: flex;
@@ -988,9 +996,12 @@ export default function Home() {
           font-size: 20px;
           font-weight: 700;
           color: #dc2626;
-          }
-          .product-card-price-symbol-responsive {
+          display: flex;
+          align-items: baseline;
+        }
+        .product-card-price-symbol-responsive {
           font-size: 13px;
+          margin-right: 2px;
         }
         .product-card-original-price-responsive {
           font-size: 13px;
@@ -1240,7 +1251,23 @@ export default function Home() {
             display: none;
           }
           .nav-search-mobile-responsive {
-            display: block;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            order: 3;
+            padding-top: 8px;
+            padding-bottom: 12px;
+          }
+          .nav-search-mobile-responsive .nav-search-input-responsive {
+            max-width: 280px;
+            text-align: center;
+          }
+          .nav-left-responsive {
+            order: 1;
+          }
+          .nav-right-responsive {
+            order: 2;
+            margin-left: auto;
           }
           .nav-logo-text-responsive {
             font-size: 16px;
@@ -1985,8 +2012,11 @@ export default function Home() {
         .product-card-price-responsive {
           font-size: 18px !important;
           font-weight: 800 !important;
-          }
-          .product-card-stock-responsive {
+          color: #dc2626 !important;
+          display: flex !important;
+          align-items: baseline !important;
+        }
+        .product-card-stock-responsive {
           font-size: 11px !important;
           font-weight: 600 !important;
           padding: 3px 8px !important;
@@ -2210,8 +2240,8 @@ export default function Home() {
           display: flex !important;
           align-items: baseline !important;
           line-height: 1 !important;
-          }
-          .product-card-price-symbol-responsive {
+        }
+        .product-card-price-symbol-responsive {
           font-size: 13px !important;
           font-weight: 700 !important;
           margin-right: 1px !important;
@@ -2409,33 +2439,37 @@ export default function Home() {
           }
           /* 手机端横幅响应式 */
           .hero-banner-responsive {
-            padding: 20px 16px !important;
-            flex-direction: column !important;
-            text-align: center !important;
-            gap: 16px !important;
+            padding: 16px !important;
+            position: relative !important;
+            min-height: 120px !important;
+          }
+          .hero-banner-left-responsive {
+            padding-right: 80px !important;
+            text-align: left !important;
           }
           .hero-banner-title-responsive {
-            font-size: 22px !important;
+            font-size: 20px !important;
           }
           .hero-banner-subtitle-responsive {
-            font-size: 13px !important;
+            font-size: 12px !important;
           }
           .hero-banner-tags-responsive {
-            justify-content: center !important;
+            justify-content: flex-start !important;
+            flex-wrap: wrap !important;
           }
           .hero-banner-right-responsive {
+            position: absolute !important;
+            top: 12px !important;
+            right: 12px !important;
             margin-left: 0 !important;
           }
           .hero-banner-flower-responsive {
-            width: 70px !important;
-            height: 70px !important;
+            width: 60px !important;
+            height: 60px !important;
           }
           .hero-banner-image-responsive {
-            width: 70px !important;
-            height: 70px !important;
-          }
-          .hero-banner-tags-responsive {
-            justify-content: center !important;
+            width: 60px !important;
+            height: 60px !important;
           }
           /* 手机端商品卡片价格区域布局修复 */
           .product-card-info-row-responsive {
