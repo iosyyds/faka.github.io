@@ -30,13 +30,16 @@ export async function GET() {
       banner_tag1: settings.banner_tag1 || '',
       banner_tag2: settings.banner_tag2 || '',
       banner_tag3: settings.banner_tag3 || '',
+      banner_image: settings.banner_image || '',
       footer_desc: settings.footer_desc || '',
       footer_link1_text: settings.footer_link1_text || '',
       footer_link1_url: settings.footer_link1_url || '',
       footer_link2_text: settings.footer_link2_text || '',
       footer_link2_url: settings.footer_link2_url || '',
       footer_link3_text: settings.footer_link3_text || '',
-      footer_link3_url: settings.footer_link3_url || ''
+      footer_link3_url: settings.footer_link3_url || '',
+      terms_content: settings.terms_content || '',
+      privacy_content: settings.privacy_content || ''
     };
     return NextResponse.json({ success: true, settings: publicSettings });
   } catch (err) {
@@ -58,8 +61,9 @@ export async function POST(req) {
       'contact_qq', 'contact_wechat', 'contact_email',
       'announcement', 'footer_text', 'icp_number', 'payment_tip', 'stock_warning',
       'notice', 'footer',
-      'banner_title', 'banner_subtitle', 'banner_tag1', 'banner_tag2', 'banner_tag3',
-      'footer_desc', 'footer_link1_text', 'footer_link1_url', 'footer_link2_text', 'footer_link2_url', 'footer_link3_text', 'footer_link3_url'
+      'banner_title', 'banner_subtitle', 'banner_tag1', 'banner_tag2', 'banner_tag3', 'banner_image',
+      'footer_desc', 'footer_link1_text', 'footer_link1_url', 'footer_link2_text', 'footer_link2_url', 'footer_link3_text', 'footer_link3_url',
+      'terms_content', 'privacy_content'
     ];
     const updates = {};
     for (const key of allowedKeys) {

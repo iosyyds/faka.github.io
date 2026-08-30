@@ -236,19 +236,23 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-banner-right-responsive">
-            <div className="hero-banner-flower-responsive">
-              <svg viewBox="0 0 100 100" className="hero-banner-flower-svg-responsive">
-                <circle cx="50" cy="50" r="8" fill="#fff" opacity="0.9"/>
-                <ellipse cx="50" cy="25" rx="12" ry="18" fill="#FFB7C5" opacity="0.7"/>
-                <ellipse cx="50" cy="75" rx="12" ry="18" fill="#FFB7C5" opacity="0.7"/>
-                <ellipse cx="25" cy="50" rx="18" ry="12" fill="#FFB7C5" opacity="0.7"/>
-                <ellipse cx="75" cy="50" rx="18" ry="12" fill="#FFB7C5" opacity="0.7"/>
-                <ellipse cx="32" cy="32" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(-45 32 32)"/>
-                <ellipse cx="68" cy="32" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(45 68 32)"/>
-                <ellipse cx="32" cy="68" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(45 32 68)"/>
-                <ellipse cx="68" cy="68" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(-45 68 68)"/>
-              </svg>
-            </div>
+            {settings.banner_image ? (
+              <img src={settings.banner_image} alt="横幅图" className="hero-banner-image-responsive" />
+            ) : (
+              <div className="hero-banner-flower-responsive">
+                <svg viewBox="0 0 100 100" className="hero-banner-flower-svg-responsive">
+                  <circle cx="50" cy="50" r="8" fill="#fff" opacity="0.9"/>
+                  <ellipse cx="50" cy="25" rx="12" ry="18" fill="#FFB7C5" opacity="0.7"/>
+                  <ellipse cx="50" cy="75" rx="12" ry="18" fill="#FFB7C5" opacity="0.7"/>
+                  <ellipse cx="25" cy="50" rx="18" ry="12" fill="#FFB7C5" opacity="0.7"/>
+                  <ellipse cx="75" cy="50" rx="18" ry="12" fill="#FFB7C5" opacity="0.7"/>
+                  <ellipse cx="32" cy="32" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(-45 32 32)"/>
+                  <ellipse cx="68" cy="32" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(45 68 32)"/>
+                  <ellipse cx="32" cy="68" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(45 32 68)"/>
+                  <ellipse cx="68" cy="68" rx="14" ry="10" fill="#FFC0CB" opacity="0.6" transform="rotate(-45 68 68)"/>
+                </svg>
+              </div>
+            )}
           </div>
         </div>
 
@@ -380,17 +384,18 @@ export default function Home() {
               <div className="footer-desc-responsive">{settings.footer_desc || '本站仅出售合规虚拟商品，下单即视为同意服务条款。'}</div>
             </div>
             <div className="footer-right-responsive">
-              {settings.footer_link1_text && (
+              {settings.footer_link1_text ? (
                 <a href={settings.footer_link1_url || '#'} className="footer-link-responsive" target="_blank" rel="noopener noreferrer">{settings.footer_link1_text}</a>
+              ) : (
+                <a href="/terms" className="footer-link-responsive">服务条款</a>
               )}
-              {settings.footer_link2_text && (
+              {settings.footer_link2_text ? (
                 <a href={settings.footer_link2_url || '#'} className="footer-link-responsive" target="_blank" rel="noopener noreferrer">{settings.footer_link2_text}</a>
+              ) : (
+                <a href="/privacy" className="footer-link-responsive">隐私政策</a>
               )}
               {settings.footer_link3_text && (
                 <a href={settings.footer_link3_url || '#'} className="footer-link-responsive" target="_blank" rel="noopener noreferrer">{settings.footer_link3_text}</a>
-              )}
-              {!settings.footer_link1_text && (
-                <a href="/query" className="footer-link-responsive">订单查询</a>
               )}
             </div>
           </div>
@@ -2359,6 +2364,14 @@ export default function Home() {
           width: 100%;
           height: 100%;
         }
+        .hero-banner-image-responsive {
+          width: 100px;
+          height: 100px;
+          object-fit: contain;
+          border-radius: 12px;
+        }
+
+
 
 
         /* ===== 底部优化 ===== */
@@ -2416,6 +2429,13 @@ export default function Home() {
           .hero-banner-flower-responsive {
             width: 70px !important;
             height: 70px !important;
+          }
+          .hero-banner-image-responsive {
+            width: 70px !important;
+            height: 70px !important;
+          }
+          .hero-banner-tags-responsive {
+            justify-content: center !important;
           }
           /* 手机端商品卡片价格区域布局修复 */
           .product-card-info-row-responsive {

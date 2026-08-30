@@ -27,6 +27,7 @@ export default function Admin() {
   const [orders, setOrders] = useState([]);
   const [settings, setSettings] = useState({});
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingBannerImage, setUploadingBannerImage] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -39,6 +40,7 @@ export default function Admin() {
   const [cardContent, setCardContent] = useState('');
 
   useEffect(() => {
+    document.title = '甜甜发卡-后台管理';
     const token = localStorage.getItem('admin_token');
     if (token) { setAuthed(true); loadData(); }
     setAuthLoading(false);
@@ -172,6 +174,38 @@ export default function Admin() {
       alert('上传失败: ' + err.message);
     } finally {
       setUploadingLogo(false);
+      e.target.value = '';
+    }
+  };
+
+  // 上传横幅图片
+  const handleBannerImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('图片不能超过2MB');
+      return;
+    }
+    setUploadingBannerImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('admin_token') }
+      });
+      const data = await res.json();
+      if (data.success || data.url) {
+        setSettings({...settings, banner_image: data.url});
+        alert('横幅图片上传成功');
+      } else {
+        alert('上传失败: ' + (data.error || '未知错误'));
+      }
+    } catch (err) {
+      alert('上传失败: ' + err.message);
+    } finally {
+      setUploadingBannerImage(false);
       e.target.value = '';
     }
   };
@@ -499,6 +533,76 @@ export default function Admin() {
                   <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}>
                     🎨 首页横幅配置
                   </div>
+                  {/* 横幅右侧图片上传 */}
+                  <div className="form-group" style={{marginBottom: '18px'}}>
+                    <label className="form-label">横幅右侧图片</label>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+                      <div style={{
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '10px',
+                        border: '2px dashed #d1d5db',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                        background: '#f9fafb',
+                        flexShrink: 0
+                      }}>
+                        {settings.banner_image ? (
+                          <img src={settings.banner_image} alt="横幅图" style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                        ) : (
+                          <span style={{fontSize: '24px', color: '#9ca3af'}}>🌸</span>
+                        )}
+                      </div>
+                      <div style={{flex: 1}}>
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/svg+xml"
+                          onChange={handleBannerImageUpload}
+                          style={{display: 'none'}}
+                          id="banner-image-upload"
+                        />
+                        <label
+                          htmlFor="banner-image-upload"
+                          style={{
+                            display: 'inline-block',
+                            padding: '8px 16px',
+                            background: '#2563eb',
+                            color: '#fff',
+                            borderRadius: '8px',
+                            fontSize: '13px',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            marginBottom: '8px'
+                          }}
+                        >
+                          {uploadingBannerImage ? '上传中...' : '📤 上传图片'}
+                        </label>
+                        <div style={{fontSize: '12px', color: '#9ca3af'}}>
+                          建议尺寸100x100，支持PNG/JPG/GIF/WEBP/SVG
+                        </div>
+                        {settings.banner_image && (
+                          <button
+                            onClick={() => setSettings({...settings, banner_image: ''})}
+                            style={{
+                              display: 'block',
+                              marginTop: '8px',
+                              fontSize: '12px',
+                              color: '#ef4444',
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              padding: 0
+                            }}
+                          >
+                            移除图片
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                   <div className="form-group">
                     <label className="form-label">横幅标题</label>
                     <input type="text" className="form-input" value={settings.banner_title || ''} onChange={(e) => setSettings({...settings, banner_title: e.target.value})} placeholder="如：虚拟商品·即拍即发" />
@@ -561,6 +665,33 @@ export default function Admin() {
                       <label className="form-label">链接3地址</label>
                       <input type="text" className="form-input" value={settings.footer_link3_url || ''} onChange={(e) => setSettings({...settings, footer_link3_url: e.target.value})} placeholder="/query" />
                     </div>
+                  </div>
+                </div>
+
+                {/* 页面内容配置 */}
+                <div style={{padding: '18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '18px'}}>
+                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    📄 页面内容配置
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">服务条款内容（支持HTML）</label>
+                    <textarea 
+                      className="form-textarea" 
+                      style={{minHeight: '120px'}} 
+                      value={settings.terms_content || ''} 
+                      onChange={(e) => setSettings({...settings, terms_content: e.target.value})} 
+                      placeholder="留空则使用默认内容"
+                    />
+                  </div>
+                  <div className="form-group" style={{marginBottom: 0}}>
+                    <label className="form-label">隐私政策内容（支持HTML）</label>
+                    <textarea 
+                      className="form-textarea" 
+                      style={{minHeight: '120px'}} 
+                      value={settings.privacy_content || ''} 
+                      onChange={(e) => setSettings({...settings, privacy_content: e.target.value})} 
+                      placeholder="留空则使用默认内容"
+                    />
                   </div>
                 </div>
 
