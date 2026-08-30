@@ -719,3 +719,26 @@ html, body {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* 全局禁止拖动和放大 */
+* {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+input, textarea, select {
+  font-size: 16px !important;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.modal-overlay {
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+.modal {
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+html, body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}

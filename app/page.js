@@ -8,6 +8,7 @@ const API_BASE = typeof window !== 'undefined' && window.location.hostname === '
 
 export default function Home() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState([]);
   const [settings, setSettings] = useState({});
   const [categories, setCategories] = useState([]);
@@ -22,7 +23,10 @@ export default function Home() {
   const [ordering, setOrdering] = useState(false);
   const [order, setOrder] = useState(null);
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    setMounted(true);
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {
@@ -89,6 +93,35 @@ export default function Home() {
     navigator.clipboard.writeText(text);
     alert('已复制到剪贴板');
   };
+
+  if (!mounted) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: '#f8fafc',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          width: '40px',
+          height: '40px',
+          border: '3px solid #e5e7eb',
+          borderTopColor: '#2563eb',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite',
+          marginBottom: '16px'
+        }}></div>
+        <div style={{fontSize: '14px', color: '#6b7280'}}>加载中...</div>
+        <style jsx>{`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   return (
     <div style={{minHeight: '100vh', background: '#f8fafc'}}>
@@ -218,7 +251,7 @@ export default function Home() {
 
       {/* 购买弹窗 */}
       {showBuy && selectedProduct && (
-        <div className="modal-overlay-responsive" onClick={() => !order && setShowBuy(false)}>
+        <div className="modal-overlay-responsive">
           <div className="modal-responsive" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header-responsive">
               <div className="modal-title-responsive">{order ? '支付结果' : '确认下单'}</div>
@@ -658,10 +691,10 @@ export default function Home() {
         }
         .form-input-responsive {
           width: 100%;
-          padding: 8px 12px;
+          padding: 10px 12px;
           border: 1px solid #d1d5db;
           border-radius: 8px;
-          font-size: 14px;
+          font-size: 16px;
           outline: none;
         }
         .form-input-responsive:focus {
@@ -809,6 +842,27 @@ export default function Home() {
           .category-tab-responsive {
             flex-shrink: 0;
           }
+        }
+
+        /* 禁止拖动和放大 */
+        * {
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          user-select: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+        input, textarea {
+          -webkit-user-select: text;
+          user-select: text;
+          font-size: 16px !important;
+        }
+        .modal-overlay-responsive {
+          touch-action: none;
+          overscroll-behavior: contain;
+        }
+        .modal-responsive {
+          touch-action: pan-y;
+          overscroll-behavior: contain;
         }
       `}</style>
     </div>

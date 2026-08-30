@@ -378,7 +378,7 @@ export default function Admin() {
       </div>
 
       {showProductModal && (
-        <div className="modal-overlay" onClick={() => setShowProductModal(false)}>
+        <div className="modal-overlay">
           <div className="modal" onClick={(e) => e.stopPropagation()} style={{maxWidth: '560px'}}>
             <div className="modal-header">
               <div className="modal-title">{editingProduct ? '编辑商品' : '添加商品'}</div>
@@ -406,7 +406,7 @@ export default function Admin() {
       )}
 
       {showCardModal && (
-        <div className="modal-overlay" onClick={() => setShowCardModal(false)}>
+        <div className="modal-overlay">
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title">批量导入卡密</div>

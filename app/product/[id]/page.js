@@ -162,7 +162,7 @@ export default function ProductDetail() {
       </div>
 
       {showBuy && (
-        <div className="modal-overlay" onClick={() => !order && setShowBuy(false)}>
+        <div className="modal-overlay">
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title">{order ? '支付结果' : '确认下单'}</div>
