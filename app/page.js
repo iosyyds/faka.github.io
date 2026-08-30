@@ -1790,12 +1790,24 @@ export default function Home() {
           white-space: nowrap;
         }
 
-        /* ===== 底部页脚 ===== */
+        /* ===== 底部页脚 - 极致美化 ===== */
         .footer-responsive {
-          background: #fff;
-          border-top: 1px solid #e5e7eb;
-          padding: 32px 0 24px;
-          margin-top: 40px;
+          background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+          border-top: 1px solid #e2e8f0;
+          padding: 40px 0 28px;
+          margin-top: 48px;
+          position: relative;
+        }
+        .footer-responsive::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 60px;
+          height: 3px;
+          background: linear-gradient(90deg, #2563eb, #60a5fa);
+          border-radius: 0 0 3px 3px;
         }
         .footer-inner-responsive {
           max-width: 1200px;
@@ -1805,45 +1817,60 @@ export default function Home() {
         .footer-top-responsive {
           display: flex;
           justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 8px;
+          align-items: center;
+          margin-bottom: 20px;
           flex-wrap: wrap;
-          gap: 16px;
+          gap: 20px;
         }
         .footer-left-responsive {
           flex: 1;
           min-width: 200px;
         }
         .footer-brand-responsive {
-          font-size: 16px;
-          font-weight: 700;
-          color: #111827;
-          margin-bottom: 6px;
+          font-size: 18px;
+          font-weight: 800;
+          background: linear-gradient(135deg, #111827 0%, #374151 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-bottom: 8px;
+          letter-spacing: -0.3px;
         }
         .footer-desc-responsive {
           font-size: 13px;
-          color: #6b7280;
-          line-height: 1.6;
+          color: #64748b;
+          line-height: 1.7;
+          max-width: 400px;
         }
         .footer-right-responsive {
           display: flex;
-          gap: 20px;
+          gap: 8px;
           align-items: center;
         }
         .footer-link-responsive {
           font-size: 13px;
-          color: #6b7280;
+          color: #64748b;
           text-decoration: none;
-          transition: color 0.2s ease-out;
+          transition: all 0.2s ease;
+          padding: 6px 14px;
+          border-radius: 8px;
+          font-weight: 500;
         }
         .footer-link-responsive:hover {
           color: #2563eb;
+          background: rgba(37,99,235,0.08);
         }
         .footer-bottom-responsive {
-          padding-top: 4px;
+          padding-top: 20px;
+          border-top: 1px solid #e2e8f0;
           font-size: 12px;
-          color: #9ca3af;
+          color: #94a3b8;
           text-align: left;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px;
         }
 
         /* 手机端页脚适配 */
@@ -1873,6 +1900,15 @@ export default function Home() {
           }
           .footer-bottom-responsive {
             text-align: center !important;
+            justify-content: center !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+          }
+          .footer-responsive {
+            padding: 32px 0 24px !important;
+          }
+          .footer-desc-responsive {
+            max-width: 100% !important;
           }
           .top-banner-content-responsive {
             white-space: normal;
