@@ -2341,15 +2341,15 @@ export default function Home() {
 
         /* ===== 顶部横幅 ===== */
         .hero-banner-responsive {
-          background: #fff;
-          border-radius: 16px;
-          padding: 28px 32px;
-          margin-bottom: 20px;
+          background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+          border-radius: 20px;
+          padding: 32px 36px;
+          margin-bottom: 24px;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-          border: 1px solid #f3f4f6;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          border: 1px solid #e5e7eb;
           position: relative;
           overflow: hidden;
         }
@@ -2358,17 +2358,22 @@ export default function Home() {
           z-index: 2;
         }
         .hero-banner-title-responsive {
-          font-size: 28px;
+          font-size: 30px;
           font-weight: 800;
-          color: #111827;
-          margin: 0 0 8px 0;
+          background: linear-gradient(135deg, #111827 0%, #374151 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin: 0 0 10px 0;
           letter-spacing: -0.5px;
+          line-height: 1.2;
         }
         .hero-banner-subtitle-responsive {
           font-size: 14px;
           color: #6b7280;
-          margin: 0 0 16px 0;
-          line-height: 1.6;
+          margin: 0 0 18px 0;
+          line-height: 1.7;
+          max-width: 480px;
         }
         .hero-banner-tags-responsive {
           display: flex;
@@ -2379,13 +2384,18 @@ export default function Home() {
           display: flex;
           align-items: center;
           gap: 5px;
-          padding: 6px 12px;
-          background: #f9fafb;
-          border: 1px solid #e5e7eb;
+          padding: 7px 14px;
+          background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+          border: 1px solid #bfdbfe;
           border-radius: 20px;
           font-size: 12px;
-          color: #4b5563;
-          font-weight: 500;
+          color: #1d4ed8;
+          font-weight: 600;
+          transition: all 0.2s ease;
+        }
+        .hero-banner-tag-responsive:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(37,99,235,0.15);
         }
         .hero-banner-tag-icon-responsive {
           font-size: 13px;
@@ -2414,12 +2424,12 @@ export default function Home() {
         }
         .hero-banner-bg-image-responsive {
           position: absolute;
-          top: -20px;
-          left: -20px;
-          width: 180px;
-          height: 180px;
+          top: -10px;
+          right: -10px;
+          width: 160px;
+          height: 160px;
           object-fit: contain;
-          opacity: 0.15;
+          opacity: 0.2;
           z-index: 1;
           pointer-events: none;
         }
@@ -2462,16 +2472,17 @@ export default function Home() {
           }
           /* 手机端横幅响应式 */
           .hero-banner-responsive {
-            padding: 16px !important;
+            padding: 20px !important;
             position: relative !important;
             min-height: 120px !important;
+            border-radius: 16px !important;
           }
           .hero-banner-left-responsive {
             padding-right: 80px !important;
             text-align: left !important;
           }
           .hero-banner-title-responsive {
-            font-size: 20px !important;
+            font-size: 22px !important;
           }
           .hero-banner-subtitle-responsive {
             font-size: 12px !important;
@@ -2502,11 +2513,12 @@ export default function Home() {
             height: 60px !important;
           }
           .hero-banner-bg-image-responsive {
-            width: 120px !important;
-            height: 120px !important;
-            top: -10px !important;
-            left: -10px !important;
-            opacity: 0.12 !important;
+            width: 100px !important;
+            height: 100px !important;
+            top: -5px !important;
+            right: -5px !important;
+            left: auto !important;
+            opacity: 0.15 !important;
           }
           /* 手机端商品卡片价格区域布局修复 */
           .product-card-info-row-responsive {
