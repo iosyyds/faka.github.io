@@ -215,7 +215,7 @@ export default function Home() {
         <div className="top-banner-responsive">
           <div className="top-banner-icon-responsive">📢</div>
           <div className="top-banner-content-responsive">
-            {settings.notice || settings.announcement || '欢迎来到甜甜发卡，24小时自动发货，秒发卡密！'}
+            {settings.notice || settings.announcement || '欢迎来到甜甜发卡，24小时自动发货，移动发卡密！'}
           </div>
         </div>
 
@@ -268,7 +268,7 @@ export default function Home() {
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
                       </svg>
-                      秒发卡
+                      移动发卡
                     </div>
                     {p.tag && p.tag.trim() && (
                       <div className="product-card-tag-responsive">{p.tag}</div>
@@ -308,7 +308,7 @@ export default function Home() {
                         <span className="product-card-price-symbol-responsive">¥</span>
                         {Number(p.price).toFixed(2)}
                       </span>
-                      {Number(p.original_price) > Number(p.price) && (
+                      {p.original_price && Number(p.original_price) > 0 && Number(p.original_price) > Number(p.price) && (
                         <span className="product-card-original-price-responsive">¥{Number(p.original_price).toFixed(2)}</span>
                       )}
                     </div>
@@ -2256,7 +2256,21 @@ export default function Home() {
           }
         }
       `}
-        </style>
+        
+        /* ===== 手机端标签位置调整 ===== */
+        @media (max-width: 768px) {
+          .product-card-badges-responsive {
+            top: 6px !important;
+            left: 6px !important;
+            gap: 4px !important;
+          }
+          .product-card-badge-responsive,
+          .product-card-tag-responsive {
+            padding: 3px 6px !important;
+            font-size: 10px !important;
+          }
+        }
+      </style>
     </div>
   );
 }

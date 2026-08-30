@@ -32,7 +32,7 @@ export default function Admin() {
 
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [productForm, setProductForm] = useState({ name: '', price: '', original_price: '', category: '', stock: 0, description: '', detail: '', image: '', status: 'active' });
+  const [productForm, setProductForm] = useState({ name: '', price: '', original_price: '', category: '', stock: 0, sales: 0, description: '', detail: '', image: '', tag: '', status: 'active' });
 
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardProductId, setCardProductId] = useState('');
@@ -326,7 +326,7 @@ export default function Admin() {
             <div className="card">
               <div className="card-header">
                 <div className="card-title">商品列表（{products.length}）</div>
-                <button className="btn btn-primary btn-sm" onClick={() => { setEditingProduct(null); setProductForm({name: '', price: '', original_price: '', category: '', stock: 0, description: '', detail: '', image: '', tag: '', status: 'active'}); setShowProductModal(true); }}>➕ 添加商品</button>
+                <button className="btn btn-primary btn-sm" onClick={() => { setEditingProduct(null); setProductForm({name: '', price: '', original_price: '', category: '', stock: 0, sales: 0, description: '', detail: '', image: '', tag: '', status: 'active'}); setShowProductModal(true); }}>➕ 添加商品</button>
               </div>
               <div className="table-wrapper">
                 <table className="table">
@@ -342,7 +342,7 @@ export default function Admin() {
                         <td><span className={`badge ${p.status === 'active' ? 'badge-success' : 'badge-secondary'}`}>{p.status === 'active' ? '上架' : '下架'}</span></td>
                         <td>
                           <div style={{display: 'flex', gap: '6px'}}>
-                            <button className="btn btn-secondary btn-sm" onClick={() => { setEditingProduct(p); setProductForm({name: p.name, price: p.price, original_price: p.original_price || '', category: p.category || '', stock: p.stock || 0, description: p.description || '', detail: p.detail || '', image: p.image || '', tag: p.tag || '', status: p.status || 'active'}); setShowProductModal(true); }}>编辑</button>
+                            <button className="btn btn-secondary btn-sm" onClick={() => { setEditingProduct(p); setProductForm({name: p.name, price: p.price, original_price: p.original_price || '', category: p.category || '', stock: p.stock || 0, sales: p.sales || 0, description: p.description || '', detail: p.detail || '', image: p.image || '', tag: p.tag || '', status: p.status || 'active'}); setShowProductModal(true); }}>编辑</button>
                             <button className="btn btn-danger btn-sm" onClick={() => deleteProduct(p.id)}>删除</button>
                           </div>
                         </td>
@@ -533,6 +533,7 @@ export default function Admin() {
                 <div className="form-group"><label className="form-label">售价 *</label><input type="number" step="0.01" className="form-input" value={productForm.price} onChange={(e) => setProductForm({...productForm, price: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">划线价</label><input type="number" step="0.01" className="form-input" value={productForm.original_price} onChange={(e) => setProductForm({...productForm, original_price: e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">库存</label><input type="number" className="form-input" value={productForm.stock} onChange={(e) => setProductForm({...productForm, stock: parseInt(e.target.value) || 0})} /></div>
+                <div className="form-group"><label className="form-label">销量（可手动修改）</label><input type="number" className="form-input" value={productForm.sales || 0} onChange={(e) => setProductForm({...productForm, sales: parseInt(e.target.value) || 0})} /></div>
                 <div className="form-group"><label className="form-label">状态</label><select className="form-select" value={productForm.status} onChange={(e) => setProductForm({...productForm, status: e.target.value})}><option value="active">上架</option><option value="inactive">下架</option></select></div>
               </div>
               <div className="form-group">

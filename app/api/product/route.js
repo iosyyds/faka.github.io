@@ -19,7 +19,7 @@ export async function POST(request) {
         detail: body.detail || '',
         sort: parseInt(body.sort) || 0,
         status: body.status || 'active',
-        sales: 0
+        sales: parseInt(body.sales) || 0
       })
       .select();
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });

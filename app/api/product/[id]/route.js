@@ -58,6 +58,7 @@ export async function PUT(request, { params }) {
     if (body.detail !== undefined) updates.detail = body.detail;
     if (body.sort !== undefined) updates.sort = parseInt(body.sort) || 0;
     if (body.status !== undefined) updates.status = body.status;
+    if (body.sales !== undefined) updates.sales = parseInt(body.sales) || 0;
     const { data, error } = await db.client
       .from('products')
       .update(updates)
