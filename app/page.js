@@ -215,7 +215,7 @@ export default function Home() {
         <div className="top-banner-responsive">
           <div className="top-banner-icon-responsive">📢</div>
           <div className="top-banner-content-responsive">
-            {settings.notice || settings.announcement || '欢迎来到甜甜发卡，24小时自动发货，移动发卡密！'}
+            {settings.notice || settings.announcement || '欢迎来到甜甜发卡，24小时自动发货，自动发卡密！'}
           </div>
         </div>
 
@@ -268,7 +268,7 @@ export default function Home() {
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
                       </svg>
-                      移动发卡
+                      自动发卡
                     </div>
                     {p.tag && p.tag.trim() && (
                       <div className="product-card-tag-responsive">{p.tag}</div>
@@ -457,8 +457,8 @@ export default function Home() {
                           <span className="modal-product-price-symbol-responsive">¥</span>
                           {selectedProduct.price}
                         </span>
-                        {selectedProduct.original_price && selectedProduct.original_price > selectedProduct.price && (
-                          <span className="modal-product-original-price-responsive">¥{selectedProduct.original_price}</span>
+                        {selectedProduct.original_price && Number(selectedProduct.original_price) > 0 && Number(selectedProduct.original_price) > Number(selectedProduct.price) && (
+                          <span className="modal-product-original-price-responsive">¥{Number(selectedProduct.original_price).toFixed(2)}</span>
                         )}
                       </div>
                       <div className="modal-product-stock-responsive">
@@ -523,8 +523,17 @@ export default function Home() {
                         className={`pay-method-item-responsive ${payMethod === 'alipay' ? 'active' : ''}`}
                         onClick={() => setPayMethod('alipay')}
                       >
-                        <span className="pay-icon-responsive" style={{background: '#1677ff', fontSize: '16px', fontWeight: 700, fontFamily: 'Arial, sans-serif'}}>
-                          支
+                        <span className="pay-icon-responsive" style={{
+                          background: 'linear-gradient(135deg, #1677ff 0%, #0052d9 100%)',
+                          fontSize: '15px',
+                          fontWeight: 700,
+                          fontFamily: 'Arial, sans-serif',
+                          boxShadow: '0 2px 8px rgba(22,119,255,0.4)',
+                          position: 'relative',
+                          overflow: 'hidden'
+                        }}>
+                          <span style={{position: 'relative', zIndex: 2}}>支</span>
+                          <span style={{position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', background: 'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)', transform: 'rotate(45deg)'}}></span>
                         </span>
                         <span className="pay-name-responsive">支付宝</span>
                         <span className="pay-check-responsive">{payMethod === 'alipay' && '✓'}</span>
@@ -1902,13 +1911,13 @@ export default function Home() {
           transform: translate(-50%, -50%);
         }
         .product-card-badge-responsive {
-          top: 10px !important;
-          left: 10px !important;
+          top: 4px !important;
+          left: 4px !important;
           padding: 5px 10px !important;
           box-shadow: 0 2px 8px rgba(16,185,129,0.4) !important;
         }
         .product-card-tag-responsive {
-          top: 10px !important;
+          top: 4px !important;
           right: 10px !important;
           background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
           box-shadow: 0 2px 8px rgba(245,158,11,0.4) !important;
@@ -2008,8 +2017,8 @@ export default function Home() {
         }
         .product-card-badges-responsive {
           position: absolute !important;
-          top: 10px !important;
-          left: 10px !important;
+          top: 4px !important;
+          left: 4px !important;
           display: flex !important;
           gap: 6px !important;
           z-index: 3 !important;
@@ -2042,7 +2051,7 @@ export default function Home() {
         }
         .product-card-price-tag-responsive {
           position: absolute !important;
-          top: 10px !important;
+          top: 4px !important;
           right: 10px !important;
           display: flex !important;
           align-items: baseline !important;
@@ -2245,8 +2254,8 @@ export default function Home() {
         /* ===== 手机端标签位置调整 ===== */
         @media (max-width: 768px) {
           .product-card-badges-responsive {
-            top: 6px !important;
-            left: 6px !important;
+            top: 4px !important;
+            left: 4px !important;
             gap: 4px !important;
           }
           .product-card-badge-responsive,
