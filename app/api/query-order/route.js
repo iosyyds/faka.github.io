@@ -41,10 +41,33 @@ export async function GET(req) {
             } else {
               const updatedOrder = await db.markOrderPaid(orderNo, queryResult.tradeNo);
               if (updatedOrder) {
+                let cards = [];
                 try {
                   await db.consumeCards(order.product_id, order.quantity, updatedOrder.id);
+                  const cardResult = await db.getCardsByOrderId(updatedOrder.id);
+                  cards = cardResult || [];
                 } catch (cardErr) {
                   console.error('发卡失败:', cardErr);
+                }
+                // 发送卡密邮件
+                try {
+                  const { sendCardEmail } = require('@/lib/email');
+                  const email = order.remark ? order.remark.replace('联系方式: ', '') : '';
+                  if (email) {
+                    await sendCardEmail({
+                      to: email,
+                      siteName: '甜甜发卡',
+                      orderNo: orderNo,
+                      productName: order.product_name,
+                      quantity: order.quantity,
+                      amount: order.amount,
+                      cards: cards,
+                      email: email
+                    });
+                    console.log('卡密邮件已发送:', orderNo, email);
+                  }
+                } catch (emailErr) {
+                  console.error('卡密邮件发送失败:', orderNo, emailErr.message);
                 }
                 order = await db.getOrderByNo(orderNo);
               }

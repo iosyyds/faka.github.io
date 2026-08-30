@@ -353,6 +353,27 @@ export default function Admin() {
                   <label className="form-label">页脚信息</label>
                   <textarea className="form-textarea" style={{minHeight: '60px'}} value={settings.footer || ''} onChange={(e) => setSettings({...settings, footer: e.target.value})} />
                 </div>
+
+                {/* 邮件配置 */}
+                <div style={{padding: '18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '18px'}}>
+                  <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    📧 邮件自动发送配置
+                  </div>
+                  <div style={{fontSize: '13px', color: '#6b7280', marginBottom: '12px', lineHeight: 1.6}}>
+                    支付成功后系统自动发送卡密到用户邮箱。请在 Vercel 环境变量中配置以下参数：
+                  </div>
+                  <div style={{background: '#fff', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '12px', marginBottom: '12px', fontFamily: 'monospace', fontSize: '12px', color: '#374151', lineHeight: 1.8}}>
+                    <div><span style={{color: '#2563eb'}}>SMTP_HOST</span>=smtp.qq.com</div>
+                    <div><span style={{color: '#2563eb'}}>SMTP_PORT</span>=465</div>
+                    <div><span style={{color: '#2563eb'}}>SMTP_USER</span>=your@qq.com</div>
+                    <div><span style={{color: '#2563eb'}}>SMTP_PASS</span>=授权码</div>
+                    <div><span style={{color: '#2563eb'}}>SMTP_FROM</span>=your@qq.com</div>
+                  </div>
+                  <div style={{fontSize: '12px', color: '#9ca3af', lineHeight: 1.6}}>
+                    支持QQ邮箱、163邮箱、Gmail等SMTP服务。QQ邮箱需使用授权码而非登录密码。
+                  </div>
+                </div>
+
                 <button className="btn btn-primary" onClick={saveSettings}>💾 保存设置</button>
               </div>
             </div>

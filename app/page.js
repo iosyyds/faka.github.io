@@ -1647,6 +1647,16 @@ export default function Home() {
           padding: 0 !important;
           margin: 0 !important;
           line-height: 1 !important;
+          border: 1px solid #d1d5db !important;
+          background: #fff !important;
+        }
+        .quantity-selector-responsive .quantity-btn-responsive:first-child {
+          border-radius: 8px 0 0 8px !important;
+          border-right: none !important;
+        }
+        .quantity-selector-responsive .quantity-btn-responsive:last-child {
+          border-radius: 0 8px 8px 0 !important;
+          border-left: none !important;
         }
         .quantity-selector-responsive .quantity-value-responsive {
           width: 50px !important;
@@ -1658,6 +1668,11 @@ export default function Home() {
           padding: 0 !important;
           margin: 0 !important;
           line-height: 1 !important;
+          border-top: 1px solid #d1d5db !important;
+          border-bottom: 1px solid #d1d5db !important;
+          border-left: none !important;
+          border-right: none !important;
+          background: #f9fafb !important;
         }
       `}</style>
     </div>
