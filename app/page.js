@@ -270,15 +270,9 @@ export default function Home() {
                       </svg>
                       秒发卡
                     </div>
-                    {p.tag && (
+                    {p.tag && p.tag.trim() && (
                       <div className="product-card-tag-responsive">{p.tag}</div>
                     )}
-                  </div>
-
-                  {/* 右上角价格标签 */}
-                  <div className="product-card-price-tag-responsive">
-                    <span className="product-card-price-tag-symbol">¥</span>
-                    <span className="product-card-price-tag-num">{Number(p.price).toFixed(2)}</span>
                   </div>
 
                   {/* 已售空遮罩 */}
@@ -314,7 +308,7 @@ export default function Home() {
                         <span className="product-card-price-symbol-responsive">¥</span>
                         {Number(p.price).toFixed(2)}
                       </span>
-                      {p.original_price && p.original_price > p.price && (
+                      {Number(p.original_price) > Number(p.price) && (
                         <span className="product-card-original-price-responsive">¥{Number(p.original_price).toFixed(2)}</span>
                       )}
                     </div>
@@ -2037,7 +2031,7 @@ export default function Home() {
           display: flex !important;
           align-items: center !important;
           gap: 4px !important;
-          padding: 5px 10px !important;
+          padding: 4px 10px !important;
           background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
           color: #fff !important;
           font-size: 11px !important;
@@ -2045,15 +2039,19 @@ export default function Home() {
           border-radius: 20px !important;
           box-shadow: 0 4px 12px rgba(16,185,129,0.4) !important;
           backdrop-filter: blur(4px) !important;
+          white-space: nowrap !important;
+          flex-shrink: 0 !important;
         }
         .product-card-tag-responsive {
-          padding: 5px 10px !important;
+          padding: 4px 10px !important;
           background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%) !important;
           color: #fff !important;
           font-size: 11px !important;
           font-weight: 700 !important;
           border-radius: 20px !important;
           box-shadow: 0 4px 12px rgba(236,72,153,0.4) !important;
+          white-space: nowrap !important;
+          flex-shrink: 0 !important;
         }
         .product-card-price-tag-responsive {
           position: absolute !important;
