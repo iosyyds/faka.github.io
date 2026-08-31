@@ -861,9 +861,12 @@ export default function Admin() {
       {showProductModal && (
         <div className="modal-overlay">
           <div className="modal" onClick={(e) => e.stopPropagation()} style={{maxWidth: '560px'}}>
-            <div className="modal-header">
+            <div className="modal-header product-modal-header">
               <div className="modal-title">{editingProduct ? '编辑商品' : '添加商品'}</div>
-              <div className="modal-close" onClick={() => setShowProductModal(false)}>×</div>
+              <div className="product-modal-actions">
+                <button className="btn btn-secondary btn-sm product-modal-cancel" onClick={() => setShowProductModal(false)}>取消</button>
+                <button className="btn btn-primary btn-sm product-modal-save" onClick={saveProduct}>保存</button>
+              </div>
             </div>
             <div className="modal-body modal-body-scroll">
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
@@ -927,7 +930,7 @@ export default function Admin() {
               <div className="form-group"><label className="form-label">商品简介</label><textarea className="form-textarea" style={{minHeight: '60px'}} value={productForm.description} onChange={(e) => setProductForm({...productForm, description: e.target.value})} /></div>
               <div className="form-group"><label className="form-label">商品详情（支持HTML）</label><textarea className="form-textarea" style={{minHeight: '80px'}} value={productForm.detail} onChange={(e) => setProductForm({...productForm, detail: e.target.value})} /></div>
             </div>
-            <div className="modal-footer product-modal-footer">
+            <div className="modal-footer product-modal-footer" style={{display: 'none'}}>
               <button className="btn btn-secondary" onClick={() => setShowProductModal(false)}>取消</button>
               <button className="btn btn-primary" onClick={saveProduct}>保存</button>
             </div>

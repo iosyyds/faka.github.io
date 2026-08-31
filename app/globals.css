@@ -2906,3 +2906,56 @@ html, body {
             font-size: 10px !important;
           }
         }
+
+
+/* ===== 商品编辑弹窗 - 顶部操作按钮 ===== */
+.product-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.product-modal-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.product-modal-actions .btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.product-modal-save {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+}
+.product-modal-save:hover {
+  background: #1d4ed8;
+}
+.product-modal-cancel {
+  background: #fff;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+.product-modal-cancel:hover {
+  background: #f9fafb;
+}
+
+/* 手机端：顶部按钮更紧凑 */
+@media (max-width: 768px) {
+  .product-modal-header {
+    padding: 12px 16px;
+  }
+  .product-modal-actions .btn {
+    padding: 5px 14px;
+    font-size: 12px;
+  }
+  .product-modal-actions {
+    gap: 6px;
+  }
+  .modal-body-scroll {
+    max-height: calc(100vh - 140px) !important;
+  }
+}
