@@ -130,8 +130,12 @@ export default function Admin() {
         alert('保存成功'); setShowProductModal(false); 
         // 强制刷新数据，避免缓存
         setTimeout(() => { window.location.reload(); }, 500);
-      } else { alert(data.error || '保存失败'); }
-    } catch (e) { alert('保存失败'); }
+      } else {
+        const errMsg = data.error || data.message || '保存失败';
+        if (res.status === 401) { alert('登录已过期，请重新登录'); localStorage.removeItem('admin_token'); router.push('/admin'); return; }
+        alert(errMsg);
+      }
+    } catch (e) { alert('保存失败：' + (e.message || '')); }
   };
 
   const deleteProduct = async (id) => {
@@ -260,8 +264,14 @@ export default function Admin() {
         body: JSON.stringify(settings)
       });
       const data = await res.json();
-      if (data.success) alert('保存成功'); else alert(data.error || '保存失败');
-    } catch (e) { alert('保存失败'); }
+      if (data.success) {
+        alert('保存成功');
+      } else {
+        const errMsg = data.error || data.message || '保存失败';
+        if (res.status === 401) { alert('登录已过期，请重新登录'); localStorage.removeItem('admin_token'); router.push('/admin'); return; }
+        alert(errMsg);
+      }
+    } catch (e) { alert('保存失败：' + (e.message || '')); }
   };
 
   const handleTestEmail = async () => {
