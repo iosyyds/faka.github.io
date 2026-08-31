@@ -955,7 +955,15 @@ export default function Admin() {
       )}
         </div>
 
-        {/* 移动端底部导航已移除 - 后台使用侧边栏菜单 */}
+        {/* 移动端悬浮底部导航 */}
+        <nav className="admin-mobile-nav">
+          {MENU.map((item) => (
+            <div key={item.key} className={`admin-mobile-nav-item ${activeMenu === item.key ? 'active' : ''}`} onClick={() => setActiveMenu(item.key)}>
+              <div className="admin-mobile-nav-icon"><Icon name={item.icon} size={20} /></div>
+              <div className="admin-mobile-nav-label">{item.label.replace('管理', '')}</div>
+            </div>
+          ))}
+        </nav>
       </div>
     </div>
   );
