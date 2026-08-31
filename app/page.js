@@ -413,7 +413,7 @@ export default function Home() {
               {/* 支付二维码页面 */}
               {qrCode && order && order.status === 'pending' ? (
                 <div style={{textAlign: 'center', padding: '10px 0'}}>
-                  <div style={{fontSize: '16px', fontWeight: 600, color: '#111827', marginBottom: '6px'}}>请使用支付宝扫码支付</div>
+                  <div style={{fontSize: '16px', fontWeight: 600, color: '#111827', marginBottom: '6px'}}>{payMethod === 'wechat' ? '请使用微信扫码支付' : '请使用支付宝扫码支付'}</div>
                   <div style={{fontSize: '13px', color: '#6b7280', marginBottom: '16px'}}>
                     订单号：<span style={{fontFamily: 'monospace'}}>{order.order_no}</span>
                   </div>
@@ -557,6 +557,20 @@ export default function Home() {
                         }} />
                         <span className="pay-name-responsive">支付宝</span>
                         <span className="pay-check-responsive">{payMethod === 'alipay' && '✓'}</span>
+                      </div>
+                      <div
+                        className={`pay-method-item-responsive ${payMethod === 'wechat' ? 'active' : ''}`}
+                        onClick={() => setPayMethod('wechat')}
+                      >
+                        <img src="/wechat-icon.png" alt="微信支付" style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '6px',
+                          objectFit: 'cover',
+                          boxShadow: '0 2px 6px rgba(7,193,96,0.25)'
+                        }} />
+                        <span className="pay-name-responsive">微信支付</span>
+                        <span className="pay-check-responsive">{payMethod === 'wechat' && '✓'}</span>
                       </div>
 
                     </div>

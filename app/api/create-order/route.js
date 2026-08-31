@@ -50,6 +50,57 @@ export async function POST(req) {
     // 创建订单（待支付状态）
     const order = await db.createOrder(orderNo, productId, product.name, quantity, amount, email, null);
 
+    // ========== 微信支付 ==========
+    if (payMethod === 'wechat' || payMethod === 'weixin' || payMethod === 'wxpay') {
+      const WechatPay = (await import('@/lib/wechatpay')).default;
+      const wechatPay = new WechatPay({
+        appId: process.env.WXPAY_APP_ID,
+        mchId: process.env.WXPAY_MCH_ID,
+        serialNo: process.env.WXPAY_SERIAL_NO,
+        privateKey: process.env.WXPAY_PRIVATE_KEY,
+        apiV3Key: process.env.WXPAY_API_V3_KEY,
+        notifyUrl: process.env.WXPAY_NOTIFY_URL || (process.env.NEXT_PUBLIC_SITE_URL || '') + '/api/notify'
+      });
+
+      if (!wechatPay.isConfigured()) {
+        return NextResponse.json({
+          success: false,
+          message: '微信支付尚未配置，请联系管理员在环境变量中配置 WXPAY_APP_ID、WXPAY_MCH_ID、WXPAY_SERIAL_NO、WXPAY_PRIVATE_KEY、WXPAY_API_V3_KEY',
+          order: {
+            id: order.id,
+            order_no: orderNo,
+            product_name: product.name,
+            quantity,
+            amount,
+            status: 'pending'
+          }
+        }, { status: 500 });
+      }
+
+      const payResult = await wechatPay.nativePrepay({
+        outTradeNo: orderNo,
+        description: `${product.name} x${quantity}`,
+        totalFee: Math.round(amount * 100) // 微信支付金额单位为分
+      });
+
+      return NextResponse.json({
+        success: true,
+        order: {
+          id: order.id,
+          order_no: orderNo,
+          product_name: product.name,
+          quantity,
+          amount,
+          status: 'pending',
+          email
+        },
+        qr_code: payResult.codeUrl,
+        pay_method: 'wechat',
+        trade_no: payResult.prepayId
+      });
+    }
+
+    // ========== 支付宝当面付 ==========
     // 检查支付宝是否配置
     const alipayConfigured = process.env.ALIPAY_APP_ID && process.env.ALIPAY_APP_ID !== 'placeholder' &&
       process.env.ALIPAY_PRIVATE_KEY && process.env.ALIPAY_PRIVATE_KEY !== 'placeholder' &&
@@ -100,6 +151,7 @@ export async function POST(req) {
         email
       },
       qr_code: payResult.qrCode,
+      pay_method: 'alipay',
       trade_no: payResult.tradeNo
     });
 
