@@ -1,16 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import '../ui.css';
+import Layout from '../components/Layout';
+import { IconRefresh } from '../components/Icons';
 
 const API = typeof window !== 'undefined' && location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
-const NAV = [
-  { key:'dashboard', label:'概览', icon:'📊', path:'/admin/dashboard' },
-  { key:'products', label:'商品', icon:'📦', path:'/admin/products' },
-  { key:'cards', label:'卡密', icon:'🔑', path:'/admin/cards' },
-  { key:'orders', label:'订单', icon:'📋', path:'/admin/orders' },
-  { key:'settings', label:'设置', icon:'⚙️', path:'/admin/settings' },
-];
 
 export default function Cards() {
   const router = useRouter();
@@ -46,48 +40,37 @@ export default function Cards() {
     else alert(data.error || '导入失败');
   };
 
-  const logout = () => { localStorage.removeItem('admin_token'); router.push('/admin/login'); };
-
   return (
-    <div>
-      <nav className="top-nav">
-        <div className="nav-logo"><div className="nav-logo-icon">甜</div><div className="nav-logo-text">甜甜发卡后台</div></div>
-        <div className="nav-menu">{NAV.map(n => (<div key={n.key} className={`nav-menu-item ${n.key==='cards'?'active':''}`} onClick={()=>router.push(n.path)}><span>{n.icon}</span>{n.label}</div>))}</div>
-        <div className="nav-right"><button className="nav-logout" onClick={logout}>退出</button></div>
-      </nav>
-      <div className="main-wrap">
-        <div className="page-content">
-          <div className="page-header"><div className="page-title">卡密管理</div><div className="page-sub">批量导入和管理卡密库存</div></div>
-          <div className="card" style={{marginBottom:'20px'}}>
-            <div className="card-header"><div className="card-title">批量导入卡密</div></div>
-            <div className="card-body">
-              <div className="form-group"><label className="form-label">选择商品</label><select className="form-select" value={selPid} onChange={e=>{setSelPid(e.target.value);setCards([]);}}><option value="">请选择商品</option>{products.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></div>
-              <div className="form-group"><label className="form-label">卡密内容（每行一个）</label><textarea className="form-textarea" style={{minHeight:'120px',fontFamily:'monospace',fontSize:'13px'}} value={text} onChange={e=>setText(e.target.value)} placeholder={'卡号----密码\n卡号----密码\n...'} /></div>
-              <div style={{fontSize:'12px',color:'#9ca3af',marginBottom:'14px'}}>共 {text.split('\n').filter(c=>c.trim()).length} 条</div>
-              <button className="btn btn-primary" onClick={importCards}>导入卡密</button>
-            </div>
-          </div>
-          {selPid && (
-            <div className="card">
-              <div className="card-header"><div className="card-title">卡密列表（{cards.length}）</div><button className="btn btn-sm btn-secondary" onClick={loadCards}>刷新</button></div>
-              <div className="card-body">
-                {cards.length === 0 ? (
-                  <div className="empty"><div className="empty-icon">🔑</div><div className="empty-text">暂无卡密</div></div>
-                ) : (
-                  <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
-                    {cards.slice(0,50).map(c => (
-                      <div key={c.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 14px',background:'#fafafa',borderRadius:'8px'}}>
-                        <div style={{fontFamily:'monospace',fontSize:'12.5px',color:'#374151',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.card_content||c.content}</div>
-                        <span className={`badge ${c.status==='available'?'badge-green':'badge-gray'}`} style={{marginLeft:'10px'}}>{c.status==='available'?'未售':'已售'}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+    <Layout active="cards">
+      <div className="page-header"><div className="page-title">卡密管理</div><div className="page-sub">批量导入和管理卡密库存</div></div>
+      <div className="card" style={{marginBottom:'20px'}}>
+        <div className="card-header"><div className="card-title">批量导入卡密</div></div>
+        <div className="card-body">
+          <div className="form-group"><label className="form-label">选择商品</label><select className="form-select" value={selPid} onChange={e=>{setSelPid(e.target.value);setCards([]);}}><option value="">请选择商品</option>{products.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></div>
+          <div className="form-group"><label className="form-label">卡密内容（每行一个）</label><textarea className="form-textarea" style={{minHeight:'120px',fontFamily:'monospace',fontSize:'13px'}} value={text} onChange={e=>setText(e.target.value)} placeholder={'卡号----密码\n卡号----密码\n...'} /></div>
+          <div style={{fontSize:'12px',color:'#9ca3af',marginBottom:'14px'}}>共 {text.split('\n').filter(c=>c.trim()).length} 条</div>
+          <button className="btn btn-primary" onClick={importCards}>导入卡密</button>
         </div>
       </div>
-    </div>
+      {selPid && (
+        <div className="card">
+          <div className="card-header"><div className="card-title">卡密列表（{cards.length}）</div><button className="btn btn-sm btn-secondary" onClick={loadCards}><IconRefresh size={12}/> 刷新</button></div>
+          <div className="card-body">
+            {cards.length === 0 ? (
+              <div className="empty"><div className="empty-icon">🔑</div><div className="empty-text">暂无卡密</div></div>
+            ) : (
+              <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+                {cards.slice(0,50).map(c => (
+                  <div key={c.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 14px',background:'#fafafa',borderRadius:'8px'}}>
+                    <div style={{fontFamily:'monospace',fontSize:'12.5px',color:'#374151',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.card_content||c.content}</div>
+                    <span className={`badge ${c.status==='available'?'badge-green':'badge-gray'}`} style={{marginLeft:'10px'}}>{c.status==='available'?'未售':'已售'}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </Layout>
   );
 }

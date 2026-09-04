@@ -1,16 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import '../ui.css';
+import Layout from '../components/Layout';
+import { IconPlus, IconEdit, IconTrash, IconClose, IconUpload } from '../components/Icons';
 
 const API = typeof window !== 'undefined' && location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
-const NAV = [
-  { key:'dashboard', label:'概览', icon:'📊', path:'/admin/dashboard' },
-  { key:'products', label:'商品', icon:'📦', path:'/admin/products' },
-  { key:'cards', label:'卡密', icon:'🔑', path:'/admin/cards' },
-  { key:'orders', label:'订单', icon:'📋', path:'/admin/orders' },
-  { key:'settings', label:'设置', icon:'⚙️', path:'/admin/settings' },
-];
 const EMPTY = {name:'',price:'',original_price:'',category:'',stock:0,sales:0,description:'',detail:'',image:'',tag:'',status:'active'};
 
 export default function Products() {
@@ -54,54 +48,40 @@ export default function Products() {
     load();
   };
 
-  const logout = () => { localStorage.removeItem('admin_token'); router.push('/admin/login'); };
-
   return (
-    <div>
-      <nav className="top-nav">
-        <div className="nav-logo"><div className="nav-logo-icon">甜</div><div className="nav-logo-text">甜甜发卡后台</div></div>
-        <div className="nav-menu">{NAV.map(n => (<div key={n.key} className={`nav-menu-item ${n.key==='products'?'active':''}`} onClick={()=>router.push(n.path)}><span>{n.icon}</span>{n.label}</div>))}</div>
-        <div className="nav-right"><button className="nav-logout" onClick={logout}>退出</button></div>
-      </nav>
-      <div className="main-wrap">
-        <div className="page-content">
-          <div className="page-header" style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end'}}>
-            <div><div className="page-title">商品管理</div><div className="page-sub">共 {list.length} 个商品</div></div>
-            <button className="btn btn-primary" onClick={()=>{setEditing(null);setForm(EMPTY);setShowModal(true);}}>+ 添加商品</button>
-          </div>
-          {list.length === 0 ? (
-            <div className="card"><div className="empty"><div className="empty-icon">📦</div><div className="empty-text">暂无商品，点击右上角添加</div></div></div>
-          ) : (
-            <div className="product-grid">
-              {list.map(p => (
-                <div key={p.id} className="product-card">
-                  {p.image ? <img src={p.image} alt="" className="product-img" /> : <div className="product-img" style={{display:'flex',alignItems:'center',justifyContent:'center',fontSize:'32px',opacity:0.3}}>📦</div>}
-                  <div className="product-info">
-                    <div className="product-name">{p.name}</div>
-                    <div className="product-meta">
-                      <div className="product-price">¥{p.price}</div>
-                      <div className="product-stock">库存 {p.stock||0}</div>
-                    </div>
-                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'10px'}}>
-                      <span className={`badge ${p.status==='active'?'badge-green':'badge-gray'}`}>{p.status==='active'?'上架':'下架'}</span>
-                      <span style={{fontSize:'11px',color:'#9ca3af'}}>销量 {p.sales||0}</span>
-                    </div>
-                    <div className="product-actions">
-                      <button className="btn btn-sm btn-secondary" style={{flex:1}} onClick={()=>{setEditing(p);setForm({...EMPTY,...p});setShowModal(true);}}>编辑</button>
-                      <button className="btn btn-sm btn-danger" onClick={()=>del(p.id)}>删除</button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+    <Layout active="products">
+      <div className="page-header" style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end'}}>
+        <div><div className="page-title">商品管理</div><div className="page-sub">共 {list.length} 个商品</div></div>
+        <button className="btn btn-primary" onClick={()=>{setEditing(null);setForm(EMPTY);setShowModal(true);}}><IconPlus size={14}/> 添加商品</button>
       </div>
+      {list.length === 0 ? (
+        <div className="card"><div className="empty"><div className="empty-icon">📦</div><div className="empty-text">暂无商品，点击右上角添加</div></div></div>
+      ) : (
+        <div className="product-grid">
+          {list.map(p => (
+            <div key={p.id} className="product-card">
+              {p.image ? <img src={p.image} alt="" className="product-img" /> : <div className="product-img" style={{display:'flex',alignItems:'center',justifyContent:'center',fontSize:'32px',opacity:0.3}}>📦</div>}
+              <div className="product-info">
+                <div className="product-name">{p.name}</div>
+                <div className="product-meta"><div className="product-price">¥{p.price}</div><div className="product-stock">库存 {p.stock||0}</div></div>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'10px'}}>
+                  <span className={`badge ${p.status==='active'?'badge-green':'badge-gray'}`}>{p.status==='active'?'上架':'下架'}</span>
+                  <span style={{fontSize:'11px',color:'#9ca3af'}}>销量 {p.sales||0}</span>
+                </div>
+                <div className="product-actions">
+                  <button className="btn btn-sm btn-secondary" style={{flex:1}} onClick={()=>{setEditing(p);setForm({...EMPTY,...p});setShowModal(true);}}><IconEdit size={12}/> 编辑</button>
+                  <button className="btn btn-sm btn-danger" onClick={()=>del(p.id)}><IconTrash size={12}/></button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {showModal && (
         <div className="modal-mask" onClick={e=>{if(e.target===e.currentTarget)setShowModal(false);}}>
           <div className="modal">
-            <div className="modal-header"><div className="modal-title">{editing?'编辑商品':'添加商品'}</div><button className="modal-close" onClick={()=>setShowModal(false)}>×</button></div>
+            <div className="modal-header"><div className="modal-title">{editing?'编辑商品':'添加商品'}</div><button className="modal-close" onClick={()=>setShowModal(false)}><IconClose size={16}/></button></div>
             <div className="modal-body">
               <div className="form-group"><label className="form-label">商品名称 *</label><input className="form-input" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /></div>
               <div className="form-row">
@@ -125,6 +105,6 @@ export default function Products() {
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 }
