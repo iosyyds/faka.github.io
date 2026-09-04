@@ -86,7 +86,7 @@ export default function Admin() {
     setLoading(true);
     try {
       const [prodRes, orderRes, setRes] = await Promise.all([
-        fetch(`${API_BASE}/products`), fetch(`${API_BASE}/orders`), fetch(`${API_BASE}/settings`)
+        fetch(`${API_BASE}/products?all=1`), fetch(`${API_BASE}/orders`), fetch(`${API_BASE}/settings`)
       ]);
       const prodData = await prodRes.json();
       const orderData = await orderRes.json();
