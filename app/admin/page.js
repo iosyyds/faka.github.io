@@ -116,6 +116,17 @@ export default function Admin() {
     finally { setLoading(false); }
   };
 
+  // 只加载商品数据（保存后刷新用）
+  const loadProducts = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/products?all=1`, { cache: 'no-store' });
+      const data = await res.json();
+      const prods = data.products || data.data || [];
+      setProducts(prods);
+      setStats(s => ({ ...s, products: prods.length }));
+    } catch (e) { console.error('加载商品失败:', e); }
+  };
+
   const saveProduct = async () => {
     if (!productForm.name || !productForm.price) { alert('请填写商品名称和价格'); return; }
     try {
@@ -127,9 +138,10 @@ export default function Admin() {
       });
       const data = await res.json();
       if (data.success || data.product || data.id) {
-        alert('保存成功'); setShowProductModal(false); 
-        // 强制刷新数据，避免缓存
-        setTimeout(() => { window.location.reload(); }, 500);
+        alert('保存成功'); 
+        setShowProductModal(false);
+        // 只重新加载商品数据，不刷新整个页面，保持在当前页面
+        await loadProducts();
       } else {
         const errMsg = data.error || data.message || '保存失败';
         if (res.status === 401) { alert('登录已过期，请重新登录'); localStorage.removeItem('admin_token'); router.push('/admin'); return; }
