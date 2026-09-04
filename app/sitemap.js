@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const baseUrl = 'https://faka.example.com';
+  const baseUrl = 'https://www.qqqi.top';
   const now = new Date();
   
   return [

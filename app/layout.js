@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  metadataBase: new URL('https://faka.example.com'),
+  metadataBase: new URL('https://www.qqqi.top'),
   title: {
     default: '甜甜发卡 - 24小时自动发卡平台 | 虚拟商品卡密自动发货秒发卡',
     template: '%s | 甜甜发卡 - 自动发卡平台',
@@ -25,7 +25,7 @@ export const metadata = {
     siteName: '甜甜发卡 - 24小时自动发卡平台',
     title: '甜甜发卡 - 24小时自动发卡平台 | 虚拟商品卡密自动发货秒发卡',
     description: '专业的24小时自动发卡平台，支付宝支付，自动秒发卡密。虚拟商品、软件授权、会员账号、游戏点卡一站式自助购买。',
-    url: 'https://faka.example.com',
+    url: 'https://www.qqqi.top',
     images: [
       {
         url: '/og-image.jpg',
@@ -77,12 +77,12 @@ export default function RootLayout({ children }) {
     "@type": "WebSite",
     "name": "甜甜发卡",
     "alternateName": "甜甜发卡平台",
-    "url": "https://faka.example.com",
+    "url": "https://www.qqqi.top",
     "description": "专业的24小时自动发卡平台，支持支付宝在线支付，付款后自动秒发卡密。",
     "inLanguage": "zh-CN",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://faka.example.com/?search={search_term_string}",
+      "target": "https://www.qqqi.top/?search={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   };
@@ -91,8 +91,8 @@ export default function RootLayout({ children }) {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "甜甜发卡",
-    "url": "https://faka.example.com",
-    "logo": "https://faka.example.com/favicon.ico",
+    "url": "https://www.qqqi.top",
+    "logo": "https://www.qqqi.top/favicon.ico",
     "description": "24小时自动发卡平台，虚拟商品卡密自动发货",
     "areaServed": "CN",
     "knowsAbout": ["自动发卡", "发卡平台", "虚拟商品", "卡密发货", "支付宝支付", "软件授权", "会员账号", "游戏点卡", "秒发卡", "自助购买"]
@@ -161,7 +161,7 @@ export default function RootLayout({ children }) {
         "@type": "ListItem",
         "position": 1,
         "name": "首页",
-        "item": "https://faka.example.com"
+        "item": "https://www.qqqi.top"
       }
     ]
   };
@@ -190,7 +190,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="canonical" href="https://faka.example.com" />
+        <link rel="canonical" href="https://www.qqqi.top" />
         
         <meta name="baidu-site-verification" content="" />
         <meta name="google-site-verification" content="" />

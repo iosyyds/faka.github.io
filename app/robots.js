@@ -32,7 +32,7 @@ export default function robots() {
         disallow: ['/admin', '/api/'],
       },
     ],
-    sitemap: 'https://faka.example.com/sitemap.xml',
-    host: 'https://faka.example.com',
+    sitemap: 'https://www.qqqi.top/sitemap.xml',
+    host: 'https://www.qqqi.top',
   };
 }
