@@ -391,8 +391,8 @@ export default function Home() {
         )}
       </div>
 
-      {/* SEO友好内容区 */}
-      <section className="seo-section-responsive" style={{padding: '40px 0 20px', maxWidth: '1200px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px'}}>
+      {/* SEO友好内容区（隐藏显示，保留SEO） */}
+      <section className="seo-section-responsive" style={{display: 'none'}}>
         <h2 style={{fontSize: '16px', fontWeight: 600, color: '#374151', marginBottom: '12px'}}>关于甜甜发卡自动发卡平台</h2>
         <p style={{fontSize: '13px', color: '#6b7280', lineHeight: 1.8, marginBottom: '8px'}}>
           甜甜发卡是专业的24小时自动发卡平台，致力于为用户提供安全、便捷、高效的虚拟商品自助购买服务。平台支持支付宝在线支付，付款成功后系统自动秒发卡密，无需等待人工发货，真正实现即买即得。

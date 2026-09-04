@@ -120,7 +120,7 @@ export default function QueryOrder() {
               </div>
             </div>
 
-            <button className="btn-primary" style={{width: '100%', marginTop: '8px'}} disabled={querying} onClick={handleQuery}>
+            <button className="btn-primary query-order-btn" style={{width: '100%', marginTop: '8px'}} disabled={querying} onClick={handleQuery}>
               {querying ? '查询中...' : '查询订单'}
             </button>
           </div>
@@ -194,7 +194,7 @@ export default function QueryOrder() {
             </div>
           </div>
           <div className="footer-bottom-responsive">
-            © {new Date().getFullYear()} {settings.site_name || '甜甜发卡'}. All rights reserved.
+            © {new Date().getFullYear()} {settings.site_name || '甜甜发卡'}. Powered by Next.js
             {settings.icp_number && <span style={{marginLeft: '12px'}}>{settings.icp_number}</span>}
           </div>
         </div>
