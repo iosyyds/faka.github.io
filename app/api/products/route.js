@@ -27,7 +27,7 @@ export async function GET(req) {
       is_active: p.is_active !== undefined ? p.is_active : (p.status === 'active'),
       created_at: p.created_at
     }));
-    return NextResponse.json({ success: true, products: safeProducts });
+    return NextResponse.json({ success: true, products: safeProducts }, { headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' } });
   } catch (err) {
     console.error('获取商品列表失败:', err);
     return NextResponse.json({ success: false, message: err.message || '获取商品列表失败' }, { status: 500 });
