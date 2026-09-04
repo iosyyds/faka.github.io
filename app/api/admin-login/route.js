@@ -63,7 +63,7 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: '请输入密码' }, { status: 400 });
     }
 
-    // 直接用环境变量密码，不读数据库，避免数据库密码问题
+    // 从环境变量读取密码，未设置则默认admin123
     const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
 
     // 常量时间比较
