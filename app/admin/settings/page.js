@@ -372,7 +372,7 @@ export default function Admin() {
       </div>
 
       <div className="admin-main">
-        <div className="admin-content">
+        <div className="admin-content" style={{maxWidth: '1200px', margin: '0 auto'}}>
           <h2 style={{fontSize: '20px', fontWeight: 700, color: '#111827', margin: '0 0 20px 0', textAlign: 'center'}}>{MENU.find(m => m.key === activeMenu)?.label}</h2>
           {activeMenu === 'dashboard' && (
             <div>
@@ -883,6 +883,10 @@ export default function Admin() {
           </div>
         </div>
       )}
+          {/* 页面底部退出登录 */}
+          <div style={{textAlign: 'center', marginTop: '40px', padding: '24px', borderTop: '1px solid #e5e7eb'}}>
+            <button onClick={handleLogout} style={{padding: '10px 32px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500}}>退出登录</button>
+          </div>
         </div>
 
         {/* 移动端悬浮底部导航 */}
