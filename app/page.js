@@ -33,18 +33,55 @@ export default function Home() {
   }, []);
 
   const loadData = async () => {
+    // 优先从缓存读取，实现秒开
+    try {
+      const cached = localStorage.getItem('faka_cache');
+      if (cached) {
+        const data = JSON.parse(cached);
+        if (data.products) setProducts(data.products);
+        if (data.settings) setSettings(data.settings);
+        if (data.categories) setCategories(data.categories);
+        setLoading(false);
+        // 同步favicon
+        if (data.settings && data.settings.site_logo) {
+          let favicon = document.querySelector('link[rel="icon"]');
+          if (!favicon) {
+            favicon = document.createElement('link');
+            favicon.rel = 'icon';
+            document.head.appendChild(favicon);
+          }
+          favicon.href = data.settings.site_logo;
+        }
+      }
+    } catch (e) {}
+
+    // 后台静默更新
     try {
       const [prodRes, setRes] = await Promise.all([
-        fetch(`${API_BASE}/products`),
-        fetch(`${API_BASE}/settings`)
+        fetch(`${API_BASE}/products`, { cache: 'no-store' }),
+        fetch(`${API_BASE}/settings`, { cache: 'no-store' })
       ]);
       const prodData = await prodRes.json();
       const setData = await setRes.json();
       const sets = setData.settings || setData.data || {};
-      setProducts(prodData.products || prodData.data || []);
+      const prods = prodData.products || prodData.data || [];
+      const cats = [...new Set(prods.map(p => p.category).filter(Boolean))];
+      
+      setProducts(prods);
       setSettings(sets);
-      const cats = [...new Set((prodData.products || prodData.data || []).map(p => p.category).filter(Boolean))];
       setCategories(cats);
+      setLoading(false);
+      
+      // 写入缓存
+      try {
+        localStorage.setItem('faka_cache', JSON.stringify({
+          products: prods,
+          settings: sets,
+          categories: cats,
+          timestamp: Date.now()
+        }));
+      } catch (e) {}
+      
       // 同步favicon
       if (sets.site_logo) {
         let favicon = document.querySelector('link[rel="icon"]');
@@ -55,8 +92,10 @@ export default function Home() {
         }
         favicon.href = sets.site_logo;
       }
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+    } catch (e) { 
+      console.error(e); 
+      setLoading(false);
+    }
   };
 
   const filteredProducts = products.filter(p => {
@@ -171,8 +210,7 @@ export default function Home() {
 
           {/* 右侧按钮 */}
           <div className="nav-right-responsive">
-            <button className="btn-secondary-responsive" onClick={() => router.push('/query')}>订单查询</button>
-            <a href="/admin" target="_blank" rel="noopener noreferrer" className="btn-primary-responsive" style={{textDecoration: 'none', display: 'inline-flex', alignItems: 'center'}}>管理后台</a>
+            <button className="btn-primary-responsive" onClick={() => router.push('/query')}>订单查询</button>
           </div>
 
           {/* 搜索框 - 手机端显示（居中） */}
@@ -193,9 +231,9 @@ export default function Home() {
         {/* 顶部横幅 */}
         <div className="hero-banner-responsive">
           <div className="hero-banner-left-responsive">
-            <h2 className="hero-banner-title-responsive">
+            <h1 className="hero-banner-title-responsive">
               {settings.banner_title || '虚拟商品·即拍即发'}
-            </h2>
+            </h1>
             <p className="hero-banner-subtitle-responsive">
               {settings.banner_subtitle || '支付宝多渠道支付，付款后自动秒发卡密'}
             </p>
@@ -353,6 +391,20 @@ export default function Home() {
         )}
       </div>
 
+      {/* SEO友好内容区 */}
+      <section className="seo-section-responsive" style={{padding: '40px 0 20px', maxWidth: '1200px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px'}}>
+        <h2 style={{fontSize: '16px', fontWeight: 600, color: '#374151', marginBottom: '12px'}}>关于甜甜发卡自动发卡平台</h2>
+        <p style={{fontSize: '13px', color: '#6b7280', lineHeight: 1.8, marginBottom: '8px'}}>
+          甜甜发卡是专业的24小时自动发卡平台，致力于为用户提供安全、便捷、高效的虚拟商品自助购买服务。平台支持支付宝在线支付，付款成功后系统自动秒发卡密，无需等待人工发货，真正实现即买即得。
+        </p>
+        <p style={{fontSize: '13px', color: '#6b7280', lineHeight: 1.8, marginBottom: '8px'}}>
+          我们提供丰富的虚拟商品品类，包括软件授权、会员账号、游戏点卡、激活码、CDKEY、充值卡、注册码、序列号、兑换码等各类数字商品。所有卡密均经过严格管理，确保每一位用户都能收到有效可用的卡密。
+        </p>
+        <p style={{fontSize: '13px', color: '#6b7280', lineHeight: 1.8}}>
+          甜甜发卡平台采用支付宝官方支付接口，交易安全有保障。支付成功后卡密立即在页面显示，同时自动发送至您填写的邮箱，方便随时查阅。支持订单查询功能，输入订单号和邮箱即可随时查看订单状态和卡密信息。
+        </p>
+      </section>
+
       {/* 页脚 */}
       <footer className="footer-responsive">
         <div className="footer-inner-responsive">
@@ -413,7 +465,7 @@ export default function Home() {
               {/* 支付二维码页面 */}
               {qrCode && order && order.status === 'pending' ? (
                 <div style={{textAlign: 'center', padding: '10px 0'}}>
-                  <div style={{fontSize: '16px', fontWeight: 600, color: '#111827', marginBottom: '6px'}}>{payMethod === 'wechat' ? '请使用微信扫码支付' : '请使用支付宝扫码支付'}</div>
+                  <div style={{fontSize: '16px', fontWeight: 600, color: '#111827', marginBottom: '6px'}}>'请使用支付宝扫码支付'</div>
                   <div style={{fontSize: '13px', color: '#6b7280', marginBottom: '16px'}}>
                     订单号：<span style={{fontFamily: 'monospace'}}>{order.order_no}</span>
                   </div>
@@ -557,20 +609,6 @@ export default function Home() {
                         }} />
                         <span className="pay-name-responsive">支付宝</span>
                         <span className="pay-check-responsive">{payMethod === 'alipay' && '✓'}</span>
-                      </div>
-                      <div
-                        className={`pay-method-item-responsive ${payMethod === 'wechat' ? 'active' : ''}`}
-                        onClick={() => setPayMethod('wechat')}
-                      >
-                        <img src="/wechat-icon.png" alt="微信支付" style={{
-                          width: '28px',
-                          height: '28px',
-                          borderRadius: '6px',
-                          objectFit: 'cover',
-                          boxShadow: '0 2px 6px rgba(7,193,96,0.25)'
-                        }} />
-                        <span className="pay-name-responsive">微信支付</span>
-                        <span className="pay-check-responsive">{payMethod === 'wechat' && '✓'}</span>
                       </div>
 
                     </div>

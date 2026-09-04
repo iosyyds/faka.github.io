@@ -81,12 +81,28 @@ export async function PUT(request, { params }) {
       updates.status = body.is_active ? 'active' : 'inactive';
     }
     if (body.sales !== undefined) updates.sales = parseInt(body.sales) || 0;
+    // 防止字段超长导致数据库报错
+    if (updates.detail && updates.detail.length > 5000) {
+      updates.detail = updates.detail.substring(0, 5000);
+    }
+    if (updates.description && updates.description.length > 1000) {
+      updates.description = updates.description.substring(0, 1000);
+    }
+    
     const { data, error } = await db.client
       .from('products')
       .update(updates)
       .eq('id', parseInt(id))
       .select();
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      // 字段超长错误的友好提示
+      if (error.message && error.message.includes('too long') || error.message && error.message.includes('varying')) {
+        return NextResponse.json({ 
+          error: '商品详情内容过长，请精简后再保存（建议不超过500字）。如需支持更长内容，请在Supabase中将detail字段改为text类型。' 
+        }, { status: 400 });
+      }
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
     return NextResponse.json({ success: true, product: data[0] });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });

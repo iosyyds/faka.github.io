@@ -3141,38 +3141,58 @@ body::after {
 
 /* 弹窗 - 玻璃液态 */
 .modal-overlay {
-  background: rgba(15, 23, 42, 0.3) !important;
+  background: rgba(15, 23, 42, 0.35) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
 }
 
 .modal {
-  background: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.8) !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18) !important;
+  overflow: hidden !important;
 }
 
 .modal-header {
-  background: rgba(255, 255, 255, 0.5) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.6) !important;
+  background: rgba(248, 250, 252, 0.8) !important;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8) !important;
 }
 
-/* 输入框 - 玻璃 */
+/* 后台商品编辑弹窗特殊处理 */
+.product-modal-header {
+  background: rgba(248, 250, 252, 0.9) !important;
+}
+
+/* 输入框 - 玻璃（默认边框可见） */
 .form-input, .form-textarea, .form-select, input, textarea, select {
-  background: rgba(255, 255, 255, 0.6) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  border: 1.5px solid rgba(148, 163, 184, 0.5) !important;
   transition: all 0.3s ease !important;
 }
 
 .form-input:focus, .form-textarea:focus, .form-select:focus, input:focus, textarea:focus, select:focus {
-  background: rgba(255, 255, 255, 0.85) !important;
-  border-color: rgba(37, 99, 235, 0.4) !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(37, 99, 235, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
   outline: none !important;
+}
+
+/* 弹窗内输入框更明显 */
+.modal .form-input, .modal input, .modal textarea, .modal select,
+.product-detail-modal .form-input, .product-detail-modal input {
+  border: 1.5px solid rgba(148, 163, 184, 0.6) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+}
+
+.modal .form-input:focus, .modal input:focus,
+.product-detail-modal .form-input:focus, .product-detail-modal input:focus {
+  border-color: rgba(37, 99, 235, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
 }
 
 /* 页脚 - 玻璃 */
@@ -3316,4 +3336,24 @@ html {
 ::selection {
   background: rgba(37, 99, 235, 0.2);
   color: #1e40af;
+}
+
+
+/* ===== 加载骨架屏 ===== */
+.loading-skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.4) 25%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.4) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 加载中文字样式 */
+.loading-text {
+  color: #9ca3af !important;
+  font-size: 14px !important;
 }

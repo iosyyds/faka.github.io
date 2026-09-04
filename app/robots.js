@@ -1,6 +1,4 @@
 export default function robots() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://faka.example.com';
-  
   return {
     rules: [
       {
@@ -18,8 +16,23 @@ export default function robots() {
         allow: '/',
         disallow: ['/admin', '/api/'],
       },
+      {
+        userAgent: '360Spider',
+        allow: '/',
+        disallow: ['/admin', '/api/'],
+      },
+      {
+        userAgent: 'Sogou web spider',
+        allow: '/',
+        disallow: ['/admin', '/api/'],
+      },
+      {
+        userAgent: 'YisouSpider',
+        allow: '/',
+        disallow: ['/admin', '/api/'],
+      },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
+    sitemap: 'https://faka.example.com/sitemap.xml',
+    host: 'https://faka.example.com',
   };
 }

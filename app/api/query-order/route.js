@@ -1,8 +1,58 @@
 import { NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 
+// 简单的内存频率限制（IP维度）
+const rateLimitMap = new Map();
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1分钟窗口
+  const maxRequests = 20; // 每分钟最多20次
+  
+  if (!rateLimitMap.has(ip)) {
+    rateLimitMap.set(ip, { count: 1, firstTime: now });
+    return true;
+  }
+  
+  const record = rateLimitMap.get(ip);
+  if (now - record.firstTime > windowMs) {
+    record.count = 1;
+    record.firstTime = now;
+    return true;
+  }
+  
+  record.count++;
+  if (record.count > maxRequests) {
+    return false;
+  }
+  return true;
+}
+
+// 清理过期记录（每5分钟执行一次）
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, record] of rateLimitMap.entries()) {
+    if (now - record.firstTime > 5 * 60 * 1000) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}, 5 * 60 * 1000);
+
 export async function GET(req) {
   try {
+    // 获取客户端IP
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               req.headers.get('x-real-ip') || 
+               'unknown';
+    
+    // 频率限制检查
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json({ 
+        success: false, 
+        message: '查询过于频繁，请稍后再试' 
+      }, { status: 429 });
+    }
+
     const { searchParams } = new URL(req.url);
     const orderNo = searchParams.get('order_no') || searchParams.get('orderNo');
     const email = searchParams.get('email');
@@ -11,10 +61,28 @@ export async function GET(req) {
       return NextResponse.json({ success: false, message: '缺少订单号' }, { status: 400 });
     }
 
+    if (!email) {
+      return NextResponse.json({ success: false, message: '请输入邮箱地址' }, { status: 400 });
+    }
+
+    // 验证邮箱格式
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json({ success: false, message: '邮箱格式不正确' }, { status: 400 });
+    }
+
     const db = getDB();
     let order = await db.getOrderByNo(orderNo);
     if (!order) {
       return NextResponse.json({ success: false, message: '订单不存在' }, { status: 404 });
+    }
+
+    // 验证邮箱是否匹配（安全关键：防止凭订单号遍历查卡密）
+    const orderEmail = order.remark ? order.remark.replace('联系方式: ', '') : '';
+    if (orderEmail.toLowerCase() !== email.toLowerCase()) {
+      return NextResponse.json({ 
+        success: false, 
+        message: '订单号与邮箱不匹配，请确认后重试' 
+      }, { status: 403 });
     }
 
     // 双保险：pending状态主动查询支付宝
@@ -52,19 +120,29 @@ export async function GET(req) {
                 // 发送卡密邮件
                 try {
                   const { sendCardEmail } = await import('@/lib/email');
-                  const email = order.remark ? order.remark.replace('联系方式: ', '') : '';
-                  if (email) {
+                  if (orderEmail) {
+                    let smtpConfig = {};
+                    try {
+                      const settings = await db.getSettings();
+                      smtpConfig = {
+                        host: settings.smtp_host,
+                        port: settings.smtp_port,
+                        user: settings.smtp_user,
+                        pass: settings.smtp_pass,
+                        from: settings.smtp_user,
+                        fromName: settings.smtp_from_name || settings.site_name || '甜甜发卡',
+                      };
+                    } catch (cfgErr) {}
                     await sendCardEmail({
-                      to: email,
-                      siteName: '甜甜发卡',
+                      to: orderEmail,
+                      siteName: smtpConfig.fromName || '甜甜发卡',
                       orderNo: orderNo,
                       productName: order.product_name,
                       quantity: order.quantity,
                       amount: order.amount,
                       cards: cards,
-                      email: email
-                    });
-                    console.log('卡密邮件已发送:', orderNo, email);
+                      email: orderEmail
+                    }, smtpConfig);
                   }
                 } catch (emailErr) {
                   console.error('卡密邮件发送失败:', orderNo, emailErr.message);
@@ -87,9 +165,10 @@ export async function GET(req) {
       amount: order.amount,
       status: order.status,
       created_at: order.created_at,
-      email: order.remark ? order.remark.replace('联系方式: ', '') : ''
+      email: orderEmail
     };
 
+    // 只有已支付订单才返回卡密
     if (order.status === 'paid') {
       try {
         const cards = await db.getCardsByOrderId(order.id);

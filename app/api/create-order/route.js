@@ -2,12 +2,39 @@ import { NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { generateOrderNo } from '@/lib/security';
 
+// 下单频率限制（IP维度）
+const orderAttempts = new Map();
+function checkOrderRateLimit(ip) {
+  const now = Date.now();
+  const windowMs = 60 * 1000;
+  const maxOrders = 10;
+  if (!orderAttempts.has(ip)) {
+    orderAttempts.set(ip, { count: 0, firstTime: now });
+  }
+  const record = orderAttempts.get(ip);
+  if (now - record.firstTime > windowMs) {
+    record.count = 0;
+    record.firstTime = now;
+  }
+  record.count++;
+  return record.count <= maxOrders;
+}
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, record] of orderAttempts.entries()) {
+    if (now - record.firstTime > 2 * 60 * 1000) orderAttempts.delete(ip);
+  }
+}, 2 * 60 * 1000);
+
 export async function POST(req) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown';
+    if (!checkOrderRateLimit(ip)) {
+      return NextResponse.json({ success: false, message: '下单过于频繁，请稍后再试' }, { status: 429 });
+    }
     const body = await req.json();
     const productId = body.product_id || body.productId;
     const email = body.email || body.contact;
-    const payMethod = body.pay_method || 'alipay';
 
     if (!productId) {
       return NextResponse.json({ success: false, message: '缺少商品ID' }, { status: 400 });
@@ -50,64 +77,12 @@ export async function POST(req) {
     // 创建订单（待支付状态）
     const order = await db.createOrder(orderNo, productId, product.name, quantity, amount, email, null);
 
-    // ========== 微信支付 ==========
-    if (payMethod === 'wechat' || payMethod === 'weixin' || payMethod === 'wxpay') {
-      const WechatPay = (await import('@/lib/wechatpay')).default;
-      const wechatPay = new WechatPay({
-        appId: process.env.WXPAY_APP_ID,
-        mchId: process.env.WXPAY_MCH_ID,
-        serialNo: process.env.WXPAY_SERIAL_NO,
-        privateKey: process.env.WXPAY_PRIVATE_KEY,
-        apiV3Key: process.env.WXPAY_API_V3_KEY,
-        notifyUrl: process.env.WXPAY_NOTIFY_URL || (process.env.NEXT_PUBLIC_SITE_URL || '') + '/api/notify'
-      });
-
-      if (!wechatPay.isConfigured()) {
-        return NextResponse.json({
-          success: false,
-          message: '微信支付尚未配置，请联系管理员在环境变量中配置 WXPAY_APP_ID、WXPAY_MCH_ID、WXPAY_SERIAL_NO、WXPAY_PRIVATE_KEY、WXPAY_API_V3_KEY',
-          order: {
-            id: order.id,
-            order_no: orderNo,
-            product_name: product.name,
-            quantity,
-            amount,
-            status: 'pending'
-          }
-        }, { status: 500 });
-      }
-
-      const payResult = await wechatPay.nativePrepay({
-        outTradeNo: orderNo,
-        description: `${product.name} x${quantity}`,
-        totalFee: Math.round(amount * 100) // 微信支付金额单位为分
-      });
-
-      return NextResponse.json({
-        success: true,
-        order: {
-          id: order.id,
-          order_no: orderNo,
-          product_name: product.name,
-          quantity,
-          amount,
-          status: 'pending',
-          email
-        },
-        qr_code: payResult.codeUrl,
-        pay_method: 'wechat',
-        trade_no: payResult.prepayId
-      });
-    }
-
-    // ========== 支付宝当面付 ==========
     // 检查支付宝是否配置
     const alipayConfigured = process.env.ALIPAY_APP_ID && process.env.ALIPAY_APP_ID !== 'placeholder' &&
       process.env.ALIPAY_PRIVATE_KEY && process.env.ALIPAY_PRIVATE_KEY !== 'placeholder' &&
       process.env.ALIPAY_PUBLIC_KEY && process.env.ALIPAY_PUBLIC_KEY !== 'placeholder';
 
     if (!alipayConfigured) {
-      // 未配置支付宝，返回提示
       return NextResponse.json({
         success: false,
         message: '支付尚未配置，请联系管理员配置支付宝支付',
@@ -151,7 +126,6 @@ export async function POST(req) {
         email
       },
       qr_code: payResult.qrCode,
-      pay_method: 'alipay',
       trade_no: payResult.tradeNo
     });
 

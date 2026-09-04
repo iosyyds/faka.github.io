@@ -11,19 +11,18 @@ export default function QueryOrder() {
   const [orderNo, setOrderNo] = useState('');
   const [email, setEmail] = useState('');
   const [settings, setSettings] = useState({});
-  
-  useEffect(() => {
-    fetch('/api/settings').then(r => r.json()).then(d => {
-      if (d.success) setSettings(d.settings);
-    }).catch(() => {});
-  }, []);
   const [captcha, setCaptcha] = useState('');
   const [captchaCode, setCaptchaCode] = useState('');
   const [querying, setQuerying] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
 
-  useEffect(() => { generateCaptcha(); }, []);
+  useEffect(() => {
+    fetch('/api/settings').then(r => r.json()).then(d => {
+      if (d.success) setSettings(d.settings);
+    }).catch(() => {});
+    generateCaptcha();
+  }, []);
 
   const generateCaptcha = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -61,102 +60,26 @@ export default function QueryOrder() {
 
   return (
     <div>
-      <style jsx>{`
-        .query-footer {
-          margin-top: 40px;
-          padding: 24px 0;
-          background: #fff;
-          border-top: 1px solid #f3f4f6;
-        }
-        .query-footer-inner {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 24px;
-        }
-        .query-footer-top {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 8px;
-          flex-wrap: wrap;
-          gap: 16px;
-        }
-        .query-footer-left {
-          flex: 1;
-          min-width: 200px;
-        }
-        .query-footer-brand {
-          font-size: 16px;
-          font-weight: 700;
-          color: #111827;
-          margin-bottom: 6px;
-        }
-        .query-footer-desc {
-          font-size: 13px;
-          color: #6b7280;
-          line-height: 1.6;
-        }
-        .query-footer-right {
-          display: flex;
-          gap: 20px;
-          align-items: center;
-        }
-        .query-footer-link {
-          font-size: 13px;
-          color: #6b7280;
-          text-decoration: none;
-          transition: color 0.2s ease-out;
-        }
-        .query-footer-link:hover {
-          color: #2563eb;
-        }
-        .query-footer-bottom {
-          padding-top: 4px;
-          font-size: 12px;
-          color: #9ca3af;
-          text-align: left;
-        }
-        @media (max-width: 768px) {
-          .query-footer-inner {
-            padding: 0 16px;
-          }
-          .query-footer-top {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-          }
-          .query-footer-left {
-            text-align: center;
-          }
-          .query-footer-right {
-            gap: 16px;
-            justify-content: center;
-            width: 100%;
-          }
-          .query-footer-bottom {
-            text-align: center;
-          }
-        }
-      `}</style>
-      <nav className="nav">
-        <div className="nav-inner">
-          <div className="nav-logo" onClick={() => router.push('/')} style={{cursor:'pointer'}}>
+      {/* 导航栏 - 与首页一致 */}
+      <nav className="nav-responsive">
+        <div className="nav-inner-responsive">
+          <div className="nav-logo-responsive" onClick={() => router.push('/')} style={{cursor:'pointer'}}>
             {settings.site_logo ? (
               <img src={settings.site_logo} alt="Logo" style={{width: '36px', height: '36px', borderRadius: '8px', objectFit: 'cover'}} />
             ) : (
-              <div className="nav-logo-icon">{settings.logo_text || '甜'}</div>
+              <div className="nav-logo-icon-responsive">{settings.logo_text || '甜'}</div>
             )}
-            <span>{settings.site_name || '甜甜发卡'}</span>
+            <span className="nav-logo-text-responsive">{settings.site_name || '甜甜发卡'}</span>
           </div>
-          <div className="nav-right">
-            <button className="btn btn-secondary btn-sm" onClick={() => router.push('/')}>← 返回首页</button>
+          <div className="nav-right-responsive">
+            <button className="btn-secondary-responsive" onClick={() => router.push('/')}>首页</button>
           </div>
         </div>
       </nav>
 
-      <div className="container" style={{maxWidth: '560px'}}>
-        <div className="card animate-fade-in">
-          <div className="card-body" style={{padding: '32px'}}>
+      <div className="container-responsive" style={{maxWidth: '560px', paddingTop: '24px', paddingBottom: '40px'}}>
+        <div className="card">
+          <div style={{padding: '32px'}}>
             <div style={{textAlign: 'center', marginBottom: '24px'}}>
               <h1 style={{fontSize: '20px', fontWeight: 700, color: '#111827', marginBottom: '4px'}}>订单查询</h1>
               <p style={{fontSize: '14px', color: '#6b7280'}}>输入订单号和邮箱查询您的订单</p>
@@ -197,22 +120,22 @@ export default function QueryOrder() {
               </div>
             </div>
 
-            <button className="btn btn-primary btn-lg" style={{width: '100%'}} disabled={querying} onClick={handleQuery}>
+            <button className="btn-primary" style={{width: '100%', marginTop: '8px'}} disabled={querying} onClick={handleQuery}>
               {querying ? '查询中...' : '查询订单'}
             </button>
           </div>
         </div>
 
         {result && (
-          <div className="card animate-fade-in" style={{marginTop: '20px'}}>
-            <div className="card-header">
-              <div className="card-title">查询结果</div>
+          <div className="card" style={{marginTop: '20px'}}>
+            <div style={{padding: '20px', borderBottom: '1px solid #f3f4f6'}}>
+              <div style={{fontSize: '16px', fontWeight: 600, color: '#111827'}}>查询结果</div>
             </div>
-            <div className="card-body">
+            <div style={{padding: '20px'}}>
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '18px'}}>
                 <div style={{padding: '12px', background: '#f9fafb', borderRadius: '8px'}}>
                   <div style={{fontSize: '12px', color: '#9ca3af', marginBottom: '4px'}}>订单号</div>
-                  <div className="mono" style={{fontSize: '13px', color: '#111827'}}>{result.order_no || result.id}</div>
+                  <div style={{fontSize: '13px', color: '#111827', fontFamily: 'monospace'}}>{result.order_no || result.id}</div>
                 </div>
                 <div style={{padding: '12px', background: '#f9fafb', borderRadius: '8px'}}>
                   <div style={{fontSize: '12px', color: '#9ca3af', marginBottom: '4px'}}>状态</div>
@@ -226,7 +149,7 @@ export default function QueryOrder() {
                 </div>
                 <div style={{padding: '12px', background: '#f9fafb', borderRadius: '8px'}}>
                   <div style={{fontSize: '12px', color: '#9ca3af', marginBottom: '4px'}}>金额</div>
-                  <div className="price-primary" style={{fontSize: '16px'}}><span style={{fontSize: '12px'}}>¥</span>{result.amount || result.total}</div>
+                  <div style={{fontSize: '16px', color: '#dc2626', fontWeight: 700}}><span style={{fontSize: '12px'}}>¥</span>{result.amount || result.total}</div>
                 </div>
               </div>
 
@@ -235,8 +158,8 @@ export default function QueryOrder() {
                   <div style={{fontSize: '14px', fontWeight: 600, color: '#111827', marginBottom: '10px'}}>卡密信息：</div>
                   {result.cards.map((card, i) => (
                     <div key={i} style={{padding: '12px 14px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                      <span className="mono" style={{fontSize: '13px', color: '#2563eb', wordBreak: 'break-all'}}>{card.card_content || card.content || card}</span>
-                      <button className="btn btn-secondary btn-sm" style={{flexShrink: 0, marginLeft: '10px'}} onClick={() => copyCard(card.card_content || card.content || card)}>复制</button>
+                      <span style={{fontSize: '13px', color: '#2563eb', wordBreak: 'break-all', fontFamily: 'monospace'}}>{card.card_content || card.content || card}</span>
+                      <button className="btn-secondary" style={{flexShrink: 0, marginLeft: '10px', fontSize: '12px', padding: '4px 10px'}} onClick={() => copyCard(card.card_content || card.content || card)}>复制</button>
                     </div>
                   ))}
                 </div>
@@ -246,31 +169,31 @@ export default function QueryOrder() {
         )}
       </div>
       
-      {/* 页脚 - 与首页一致 */}
-      <footer className="query-footer">
-        <div className="query-footer-inner">
-          <div className="query-footer-top">
-            <div className="query-footer-left">
-              <div className="query-footer-brand">{settings.site_name || '甜甜发卡'}</div>
-              <div className="query-footer-desc">{settings.footer_desc || '本站仅出售合规虚拟商品，下单即视为同意服务条款。'}</div>
+      {/* 页脚 - 与首页完全一致 */}
+      <footer className="footer-responsive">
+        <div className="footer-inner-responsive">
+          <div className="footer-top-responsive">
+            <div className="footer-left-responsive">
+              <div className="footer-brand-responsive">{settings.site_name || '甜甜发卡'}</div>
+              <div className="footer-desc-responsive">{settings.footer_desc || '本站仅出售合规虚拟商品，下单即视为同意服务条款。'}</div>
             </div>
-            <div className="query-footer-right">
+            <div className="footer-right-responsive">
               {settings.footer_link1_text ? (
-                <a href={settings.footer_link1_url || '#'} className="query-footer-link" target="_blank" rel="noopener noreferrer">{settings.footer_link1_text}</a>
+                <a href={settings.footer_link1_url || '#'} className="footer-link-responsive" target="_blank" rel="noopener noreferrer">{settings.footer_link1_text}</a>
               ) : (
-                <a href="/terms" className="query-footer-link">服务条款</a>
+                <a href="/terms" className="footer-link-responsive">服务条款</a>
               )}
               {settings.footer_link2_text ? (
-                <a href={settings.footer_link2_url || '#'} className="query-footer-link" target="_blank" rel="noopener noreferrer">{settings.footer_link2_text}</a>
+                <a href={settings.footer_link2_url || '#'} className="footer-link-responsive" target="_blank" rel="noopener noreferrer">{settings.footer_link2_text}</a>
               ) : (
-                <a href="/privacy" className="query-footer-link">隐私政策</a>
+                <a href="/privacy" className="footer-link-responsive">隐私政策</a>
               )}
               {settings.footer_link3_text && (
-                <a href={settings.footer_link3_url || '#'} className="query-footer-link" target="_blank" rel="noopener noreferrer">{settings.footer_link3_text}</a>
+                <a href={settings.footer_link3_url || '#'} className="footer-link-responsive" target="_blank" rel="noopener noreferrer">{settings.footer_link3_text}</a>
               )}
             </div>
           </div>
-          <div className="query-footer-bottom">
+          <div className="footer-bottom-responsive">
             © {new Date().getFullYear()} {settings.site_name || '甜甜发卡'}. All rights reserved.
             {settings.icp_number && <span style={{marginLeft: '12px'}}>{settings.icp_number}</span>}
           </div>

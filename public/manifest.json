@@ -1,0 +1,17 @@
+{
+  "name": "甜甜发卡 - 24小时自动发卡平台",
+  "short_name": "甜甜发卡",
+  "description": "专业的24小时自动发卡平台，支付宝支付，自动秒发卡密",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#f8fafc",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
