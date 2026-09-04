@@ -369,14 +369,11 @@ export default function Admin() {
             </div>
           ))}
         </div>
-        <div style={{position: 'absolute', bottom: '20px', left: '12px', right: '12px'}}>
-          <button className="btn btn-secondary" style={{width: '100%'}} onClick={handleLogout}>退出登录</button>
-        </div>
       </div>
 
       <div className="admin-main">
         <div className="admin-content">
-          <h2 style={{fontSize: '20px', fontWeight: 700, color: '#111827', margin: '0 0 20px 0'}}>{MENU.find(m => m.key === activeMenu)?.label}</h2>
+          <h2 style={{fontSize: '20px', fontWeight: 700, color: '#111827', margin: '0 0 20px 0', textAlign: 'center'}}>{MENU.find(m => m.key === activeMenu)?.label}</h2>
           {activeMenu === 'dashboard' && (
             <div>
               <div className="stats-grid">
