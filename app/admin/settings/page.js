@@ -1,145 +1,119 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import '../admin.css';
+import '../ui.css';
 
-const API_BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
-const menuItems = [
-  { key: 'dashboard', label: '数据概览', icon: '📊', path: '/admin' },
-  { key: 'products', label: '商品管理', icon: '📦', path: '/admin/products' },
-  { key: 'cards', label: '卡密管理', icon: '🔑', path: '/admin/cards' },
-  { key: 'orders', label: '订单管理', icon: '📋', path: '/admin/orders' },
-  { key: 'settings', label: '系统设置', icon: '⚙️', path: '/admin/settings' },
+const API = typeof window !== 'undefined' && location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+const NAV = [
+  { key:'dashboard', label:'概览', icon:'📊', path:'/admin/dashboard' },
+  { key:'products', label:'商品', icon:'📦', path:'/admin/products' },
+  { key:'cards', label:'卡密', icon:'🔑', path:'/admin/cards' },
+  { key:'orders', label:'订单', icon:'📋', path:'/admin/orders' },
+  { key:'settings', label:'设置', icon:'⚙️', path:'/admin/settings' },
 ];
 
 export default function Settings() {
   const router = useRouter();
-  const [settings, setSettings] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [s, setS] = useState({});
   const [saving, setSaving] = useState(false);
   const [testEmail, setTestEmail] = useState('');
-  const [testingEmail, setTestingEmail] = useState(false);
-  const [authed, setAuthed] = useState(false);
+  const [testing, setTesting] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    if (!token) { router.push('/admin/login'); return; }
-    setAuthed(true);
-    loadSettings();
-  }, [router]);
+  useEffect(() => { if (!localStorage.getItem('admin_token')) { router.push('/admin/login'); return; } load(); }, [router]);
 
-  const loadSettings = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/settings`, { cache: 'no-store' });
-      const data = await res.json();
-      setSettings(data.settings || {});
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+  const load = async () => {
+    const res = await fetch(`${API}/settings`, {cache:'no-store'});
+    const data = await res.json();
+    setS(data.settings || {});
   };
 
   const save = async () => {
     setSaving(true);
-    try {
-      const token = localStorage.getItem('admin_token');
-      const res = await fetch(`${API_BASE}/settings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify(settings)
-      });
-      const data = await res.json();
-      if (data.success) alert('保存成功');
-      else { if (res.status === 401) { alert('登录已过期'); localStorage.removeItem('admin_token'); router.push('/admin/login'); return; } alert(data.error || data.message || '保存失败'); }
-    } catch (e) { alert('保存失败'); }
-    finally { setSaving(false); }
+    const token = localStorage.getItem('admin_token');
+    const res = await fetch(`${API}/settings`, {method:'POST', headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`}, body:JSON.stringify(s)});
+    const data = await res.json();
+    if (data.success) alert('保存成功');
+    else { if (res.status===401) { alert('登录已过期'); localStorage.removeItem('admin_token'); router.push('/admin/login'); return; } alert(data.error||'保存失败'); }
+    setSaving(false);
   };
 
-  const handleTestEmail = async () => {
-    if (!testEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testEmail)) { alert('请输入有效的邮箱'); return; }
-    setTestingEmail(true);
-    try {
-      const token = localStorage.getItem('admin_token');
-      const res = await fetch(`${API_BASE}/test-email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ test_email: testEmail })
-      });
-      const data = await res.json();
-      alert(data.success ? '测试邮件已发送，请查收' : (data.error || '发送失败'));
-    } catch (e) { alert('发送失败'); }
-    finally { setTestingEmail(false); }
+  const sendTest = async () => {
+    if (!testEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testEmail)) return alert('请输入有效邮箱');
+    setTesting(true);
+    const token = localStorage.getItem('admin_token');
+    const res = await fetch(`${API}/test-email`, {method:'POST', headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`}, body:JSON.stringify({test_email:testEmail})});
+    const data = await res.json();
+    alert(data.success ? '测试邮件已发送' : (data.error||'发送失败'));
+    setTesting(false);
   };
 
-  const handleLogout = () => { localStorage.removeItem('admin_token'); router.push('/admin/login'); };
-  if (!authed || loading) return <div className="admin-v2"><div style={{padding: '60px', textAlign: 'center', color: '#64748b'}}>加载中...</div></div>;
+  const logout = () => { localStorage.removeItem('admin_token'); router.push('/admin/login'); };
 
   return (
-    <div className="admin-v2"><div className="admin-v2-layout">
-      <aside className="admin-v2-sidebar">
-        <div className="admin-v2-logo"><div className="admin-v2-logo-icon">甜</div><div><div className="admin-v2-logo-text">甜甜发卡</div><div className="admin-v2-logo-sub">管理后台</div></div></div>
-        <nav className="admin-v2-menu">{menuItems.map(item => (<div key={item.key} className={`admin-v2-menu-item ${item.key === 'settings' ? 'active' : ''}`} onClick={() => router.push(item.path)}><span className="admin-v2-menu-icon">{item.icon}</span><span>{item.label}</span></div>))}</nav>
-        <div className="admin-v2-sidebar-footer"><button className="admin-v2-logout-btn" onClick={handleLogout}>退出登录</button></div>
-      </aside>
-      <div className="admin-v2-main">
-        <header className="admin-v2-header">
-          <h1 className="admin-v2-header-title">系统设置</h1>
-          <div className="admin-v2-header-actions"><button className="admin-v2-btn admin-v2-btn-primary" onClick={save} disabled={saving}>{saving ? '保存中...' : '保存设置'}</button></div>
-        </header>
-        <div className="admin-v2-content">
-          {/* 基础设置 */}
-          <div className="admin-v2-card" style={{marginBottom: '24px'}}>
-            <div className="admin-v2-card-header"><div className="admin-v2-card-title">基础设置</div></div>
-            <div className="admin-v2-card-body">
-              <div className="admin-v2-form-group"><label className="admin-v2-form-label">网站名称</label><input className="admin-v2-form-input" value={settings.site_name || ''} onChange={(e) => setSettings({...settings, site_name: e.target.value})} /></div>
-              <div className="admin-v2-form-group"><label className="admin-v2-form-label">网站副标题</label><input className="admin-v2-form-input" value={settings.site_subtitle || ''} onChange={(e) => setSettings({...settings, site_subtitle: e.target.value})} /></div>
-              <div className="admin-v2-form-group"><label className="admin-v2-form-label">网站描述</label><textarea className="admin-v2-form-textarea" style={{minHeight: '60px'}} value={settings.site_description || ''} onChange={(e) => setSettings({...settings, site_description: e.target.value})} /></div>
-              <div className="admin-v2-form-group"><label className="admin-v2-form-label">网站Logo URL</label><input className="admin-v2-form-input" value={settings.site_logo || ''} onChange={(e) => setSettings({...settings, site_logo: e.target.value})} /></div>
-              <div className="admin-v2-form-row">
-                <div className="admin-v2-form-group"><label className="admin-v2-form-label">联系QQ</label><input className="admin-v2-form-input" value={settings.contact_qq || ''} onChange={(e) => setSettings({...settings, contact_qq: e.target.value})} /></div>
-                <div className="admin-v2-form-group"><label className="admin-v2-form-label">联系微信</label><input className="admin-v2-form-input" value={settings.contact_wechat || ''} onChange={(e) => setSettings({...settings, contact_wechat: e.target.value})} /></div>
+    <div>
+      <nav className="top-nav">
+        <div className="nav-logo"><div className="nav-logo-icon">甜</div><div className="nav-logo-text">甜甜发卡后台</div></div>
+        <div className="nav-menu">{NAV.map(n => (<div key={n.key} className={`nav-menu-item ${n.key==='settings'?'active':''}`} onClick={()=>router.push(n.path)}><span>{n.icon}</span>{n.label}</div>))}</div>
+        <div className="nav-right"><button className="nav-logout" onClick={logout}>退出</button></div>
+      </nav>
+      <div className="main-wrap">
+        <div className="page-content">
+          <div className="page-header" style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end'}}>
+            <div><div className="page-title">系统设置</div><div className="page-sub">配置商城基础信息</div></div>
+            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving?'保存中...':'保存设置'}</button>
+          </div>
+
+          <div className="card" style={{marginBottom:'20px'}}>
+            <div className="card-header"><div className="card-title">基础设置</div></div>
+            <div className="card-body">
+              <div className="form-group"><label className="form-label">网站名称</label><input className="form-input" value={s.site_name||''} onChange={e=>setS({...s,site_name:e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">网站副标题</label><input className="form-input" value={s.site_subtitle||''} onChange={e=>setS({...s,site_subtitle:e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">网站描述</label><textarea className="form-textarea" style={{minHeight:'60px'}} value={s.site_description||''} onChange={e=>setS({...s,site_description:e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">网站Logo URL</label><input className="form-input" value={s.site_logo||''} onChange={e=>setS({...s,site_logo:e.target.value})} /></div>
+              <div className="form-row">
+                <div className="form-group"><label className="form-label">联系QQ</label><input className="form-input" value={s.contact_qq||''} onChange={e=>setS({...s,contact_qq:e.target.value})} /></div>
+                <div className="form-group"><label className="form-label">联系微信</label><input className="form-input" value={s.contact_wechat||''} onChange={e=>setS({...s,contact_wechat:e.target.value})} /></div>
               </div>
-              <div className="admin-v2-form-row">
-                <div className="admin-v2-form-group"><label className="admin-v2-form-label">联系邮箱</label><input className="admin-v2-form-input" value={settings.contact_email || ''} onChange={(e) => setSettings({...settings, contact_email: e.target.value})} /></div>
-                <div className="admin-v2-form-group"><label className="admin-v2-form-label">ICP备案号</label><input className="admin-v2-form-input" value={settings.icp_number || ''} onChange={(e) => setSettings({...settings, icp_number: e.target.value})} /></div>
+              <div className="form-row">
+                <div className="form-group"><label className="form-label">联系邮箱</label><input className="form-input" value={s.contact_email||''} onChange={e=>setS({...s,contact_email:e.target.value})} /></div>
+                <div className="form-group"><label className="form-label">ICP备案号</label><input className="form-input" value={s.icp_number||''} onChange={e=>setS({...s,icp_number:e.target.value})} /></div>
               </div>
             </div>
           </div>
 
-          {/* 首页横幅 */}
-          <div className="admin-v2-card" style={{marginBottom: '24px'}}>
-            <div className="admin-v2-card-header"><div className="admin-v2-card-title">首页横幅配置</div></div>
-            <div className="admin-v2-card-body">
-              <div className="admin-v2-form-group"><label className="admin-v2-form-label">横幅标题</label><input className="admin-v2-form-input" value={settings.banner_title || ''} onChange={(e) => setSettings({...settings, banner_title: e.target.value})} /></div>
-              <div className="admin-v2-form-group"><label className="admin-v2-form-label">横幅副标题</label><input className="admin-v2-form-input" value={settings.banner_subtitle || ''} onChange={(e) => setSettings({...settings, banner_subtitle: e.target.value})} /></div>
-              <div className="admin-v2-form-row">
-                <div className="admin-v2-form-group"><label className="admin-v2-form-label">标签1</label><input className="admin-v2-form-input" value={settings.banner_tag1 || ''} onChange={(e) => setSettings({...settings, banner_tag1: e.target.value})} /></div>
-                <div className="admin-v2-form-group"><label className="admin-v2-form-label">标签2</label><input className="admin-v2-form-input" value={settings.banner_tag2 || ''} onChange={(e) => setSettings({...settings, banner_tag2: e.target.value})} /></div>
-                <div className="admin-v2-form-group"><label className="admin-v2-form-label">标签3</label><input className="admin-v2-form-input" value={settings.banner_tag3 || ''} onChange={(e) => setSettings({...settings, banner_tag3: e.target.value})} /></div>
+          <div className="card" style={{marginBottom:'20px'}}>
+            <div className="card-header"><div className="card-title">首页横幅配置</div></div>
+            <div className="card-body">
+              <div className="form-group"><label className="form-label">横幅标题</label><input className="form-input" value={s.banner_title||''} onChange={e=>setS({...s,banner_title:e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">横幅副标题</label><input className="form-input" value={s.banner_subtitle||''} onChange={e=>setS({...s,banner_subtitle:e.target.value})} /></div>
+              <div className="form-row-3">
+                <div className="form-group"><label className="form-label">标签1</label><input className="form-input" value={s.banner_tag1||''} onChange={e=>setS({...s,banner_tag1:e.target.value})} /></div>
+                <div className="form-group"><label className="form-label">标签2</label><input className="form-input" value={s.banner_tag2||''} onChange={e=>setS({...s,banner_tag2:e.target.value})} /></div>
+                <div className="form-group"><label className="form-label">标签3</label><input className="form-input" value={s.banner_tag3||''} onChange={e=>setS({...s,banner_tag3:e.target.value})} /></div>
               </div>
-              <div className="admin-v2-form-group"><label className="admin-v2-form-label">横幅右侧图片URL</label><input className="admin-v2-form-input" value={settings.banner_image || ''} onChange={(e) => setSettings({...settings, banner_image: e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">横幅右侧图片URL</label><input className="form-input" value={s.banner_image||''} onChange={e=>setS({...s,banner_image:e.target.value})} /></div>
             </div>
           </div>
 
-          {/* 邮件配置 */}
-          <div className="admin-v2-card">
-            <div className="admin-v2-card-header"><div className="admin-v2-card-title">邮件自动发送配置</div></div>
-            <div className="admin-v2-card-body">
-              <div style={{fontSize: '13px', color: '#64748b', marginBottom: '20px', lineHeight: 1.6}}>支付成功后自动发送卡密到用户邮箱。推荐使用QQ邮箱，密码处填写授权码（非登录密码）。</div>
-              <div className="admin-v2-form-row">
-                <div className="admin-v2-form-group"><label className="admin-v2-form-label">SMTP服务器</label><input className="admin-v2-form-input" value={settings.smtp_host || ''} onChange={(e) => setSettings({...settings, smtp_host: e.target.value})} placeholder="如：smtp.qq.com" /></div>
-                <div className="admin-v2-form-group"><label className="admin-v2-form-label">端口</label><input type="number" className="admin-v2-form-input" value={settings.smtp_port || ''} onChange={(e) => setSettings({...settings, smtp_port: e.target.value})} placeholder="465" /></div>
+          <div className="card">
+            <div className="card-header"><div className="card-title">邮件自动发送配置</div></div>
+            <div className="card-body">
+              <div style={{fontSize:'12.5px',color:'#9ca3af',marginBottom:'18px',lineHeight:1.6}}>支付成功后自动发送卡密到用户邮箱。推荐使用QQ邮箱，密码处填写授权码（非登录密码）。</div>
+              <div className="form-row">
+                <div className="form-group"><label className="form-label">SMTP服务器</label><input className="form-input" value={s.smtp_host||''} onChange={e=>setS({...s,smtp_host:e.target.value})} placeholder="如：smtp.qq.com" /></div>
+                <div className="form-group"><label className="form-label">端口</label><input type="number" className="form-input" value={s.smtp_port||''} onChange={e=>setS({...s,smtp_port:e.target.value})} placeholder="465" /></div>
               </div>
-              <div className="admin-v2-form-group"><label className="admin-v2-form-label">发件邮箱</label><input className="admin-v2-form-input" value={settings.smtp_user || ''} onChange={(e) => setSettings({...settings, smtp_user: e.target.value})} /></div>
-              <div className="admin-v2-form-group"><label className="admin-v2-form-label">邮箱授权码/密码</label><input type="password" className="admin-v2-form-input" value={settings.smtp_pass || ''} onChange={(e) => setSettings({...settings, smtp_pass: e.target.value})} /></div>
-              <div className="admin-v2-form-group"><label className="admin-v2-form-label">发件人名称</label><input className="admin-v2-form-input" value={settings.smtp_from_name || ''} onChange={(e) => setSettings({...settings, smtp_from_name: e.target.value})} placeholder="如：甜甜发卡" /></div>
-              <div style={{display: 'flex', gap: '10px', alignItems: 'flex-end'}}>
-                <div className="admin-v2-form-group" style={{flex: 1, marginBottom: 0}}><label className="admin-v2-form-label">测试邮箱</label><input type="email" className="admin-v2-form-input" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} placeholder="输入测试邮箱地址" /></div>
-                <button className="admin-v2-btn admin-v2-btn-secondary" onClick={handleTestEmail} disabled={testingEmail} style={{whiteSpace: 'nowrap'}}>{testingEmail ? '发送中...' : '发送测试邮件'}</button>
+              <div className="form-group"><label className="form-label">发件邮箱</label><input className="form-input" value={s.smtp_user||''} onChange={e=>setS({...s,smtp_user:e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">邮箱授权码/密码</label><input type="password" className="form-input" value={s.smtp_pass||''} onChange={e=>setS({...s,smtp_pass:e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">发件人名称</label><input className="form-input" value={s.smtp_from_name||''} onChange={e=>setS({...s,smtp_from_name:e.target.value})} placeholder="如：甜甜发卡" /></div>
+              <div style={{display:'flex',gap:'10px',alignItems:'flex-end'}}>
+                <div className="form-group" style={{flex:1,marginBottom:0}}><label className="form-label">测试邮箱</label><input type="email" className="form-input" value={testEmail} onChange={e=>setTestEmail(e.target.value)} placeholder="输入测试邮箱地址" /></div>
+                <button className="btn btn-secondary" onClick={sendTest} disabled={testing} style={{whiteSpace:'nowrap'}}>{testing?'发送中...':'发送测试邮件'}</button>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <nav className="admin-v2-mobile-nav">{menuItems.map(item => (<div key={item.key} className={`admin-v2-mobile-nav-item ${item.key === 'settings' ? 'active' : ''}`} onClick={() => router.push(item.path)}><span className="admin-v2-mobile-nav-icon">{item.icon}</span><span className="admin-v2-mobile-nav-label">{item.label.replace('管理', '')}</span></div>))}</nav>
-    </div></div>
+    </div>
   );
 }
