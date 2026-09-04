@@ -369,15 +369,14 @@ export default function Admin() {
             </div>
           ))}
         </div>
-        <div style={{position: 'absolute', bottom: '20px', left: '12px', right: '12px'}}>
-          <button className="btn btn-secondary" style={{width: '100%'}} onClick={handleLogout}>退出登录</button>
+        <div style={{position: 'absolute', bottom: '20px', left: 0, right: 0, textAlign: 'center'}}>
+          <button onClick={handleLogout} style={{background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '13px', padding: '8px 16px'}}>退出登录</button>
         </div>
       </div>
 
       <div className="admin-main">
-        <div className="admin-header">
+        <div className="admin-header" style={{justifyContent: 'center'}}>
           <div className="admin-header-title">{MENU.find(m => m.key === activeMenu)?.label}</div>
-          <button className="btn btn-secondary btn-sm" onClick={() => router.push('/')}>查看前台</button>
         </div>
 
         <div className="admin-content">
